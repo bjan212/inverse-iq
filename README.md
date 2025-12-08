@@ -547,3 +547,4 @@ const signals = await engine.generateSmartSignals(['BTCUSDT', 'ETHUSDT']);
 **Option 1 (FREE):** `node scripts/bootstrapHybridAI.js`  
 **Option 2 (PAID):** `node scripts/collect.js --platform binance --api-key YOUR_KEY --api-secret YOUR_SECRET`
 
+# inverse-iq
