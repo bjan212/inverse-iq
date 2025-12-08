@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InverseIQ - Admin Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(to bottom right, #030712, #1f2937, #111827);
+            color: #f3f4f6;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* Grid Pattern Overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(74, 222, 128, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(74, 222, 128, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Terminal Window */
+        .terminal-window {
+            background: rgba(3, 7, 18, 0.8);
+            border: 1px solid #374151;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+        }
+        
+        .terminal-header {
+            background: #1f2937;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #374151;
+        }
+        
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .terminal-dot.red { background: #ef4444; }
+        .terminal-dot.yellow { background: #eab308; }
+        .terminal-dot.green { background: #22c55e; }
+        
+        .terminal-title {
+            margin-left: 12px;
+            font-size: 13px;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            background: rgba(3, 7, 18, 0.6);
+            border-radius: 12px;
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+        }
+
+        .header h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+            color: #4ade80;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+        }
+        
+        .header h1::before {
+            content: '> ';
+            color: #22c55e;
+        }
+
+        .header p {
+            font-size: 18px;
+            color: #d1d5db;
+            font-weight: 400;
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+            justify-content: center;
+        }
+
+        .nav-btn {
+            padding: 15px 30px;
+            background: rgba(3, 7, 18, 0.6);
+            border: 1px solid #374151;
+            border-radius: 10px;
+            color: #f3f4f6;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .nav-btn:hover {
+            border-color: #4ade80;
+            background: rgba(74, 222, 128, 0.1);
+            box-shadow: 0 0 20px rgba(74, 222, 128, 0.2);
+        }
+        
+        .nav-btn.active {
+            border-color: #22c55e;
+            background: #16a34a;
+            color: #000000;
+            font-weight: 700;
+            box-shadow: 0 0 30px rgba(74, 222, 128, 0.4);
+        }
+
+        /* Section */
+        .section {
+            background: rgba(3, 7, 18, 0.8);
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid #374151;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+        }
+
+        .section h2 {
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #4ade80;
+            font-weight: 700;
+        }
+
+        /* Payout Settings */
+        .payout-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .payout-tier {
+            background: rgba(3, 7, 18, 0.6);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #374151;
+        }
+
+        .tier-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .tier-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #4ade80;
+        }
+
+        .tier-range {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .payout-input-group {
+            margin-bottom: 20px;
+        }
+
+        .payout-input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #f3f4f6;
+        }
+
+        .payout-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(3, 7, 18, 0.8);
+            border: 1px solid #374151;
+            border-radius: 8px;
+            color: #f3f4f6;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .payout-input:focus {
+            outline: none;
+            border-color: #4ade80;
+            box-shadow: 0 0 20px rgba(74, 222, 128, 0.2);
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 15px;
+            background: #16a34a;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 8px;
+            color: #000000;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(74, 222, 128, 0.4);
+            background: #22c55e;
+        }
+
+        /* Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: rgba(3, 7, 18, 0.6);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid #374151;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #4ade80;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(74, 222, 128, 0.3);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Recent Submissions */
+        .submissions-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .submissions-table th,
+        .submissions-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #3a3a4e;
+        }
+
+        .submissions-table th {
+            background: rgba(3, 7, 18, 0.6);
+            font-weight: 600;
+            color: #4ade80;
+        }
+
+        .submissions-table tr:hover {
+            background: rgba(74, 222, 128, 0.05);
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .status-pending {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+        }
+
+        .status-failed {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(3, 7, 18, 0.95);
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid #374151;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            color: #4ade80;
+            font-weight: 700;
+        }
+
+        .modal p {
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn-primary {
+            background: #16a34a;
+            color: #000000;
+            font-weight: 700;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+        
+        .modal-btn-primary:hover {
+            background: #22c55e;
+            box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
+        }
+
+        .modal-btn-secondary {
+            background: rgba(3, 7, 18, 0.6);
+            color: #f3f4f6;
+            border: 1px solid #374151;
+        }
+        
+        .modal-btn-secondary:hover {
+            border-color: #4ade80;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .spinner {
+            border: 4px solid rgba(74, 222, 128, 0.2);
+            border-top: 4px solid #4ade80;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .payout-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Terminal Window -->
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <div class="terminal-dot red"></div>
+                <div class="terminal-dot yellow"></div>
+                <div class="terminal-dot green"></div>
+                <div class="terminal-title">inverse-iq:~/admin</div>
+            </div>
+        </div>
+        
+        <!-- Header -->
+        <div class="header">
+            <h1>InverseIQ Admin</h1>
+            <p>Intelligence in reverse - Manage your AI trading platform</p>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav">
+            <button class="nav-btn active" onclick="showSection('payouts')">💰 Payout Settings</button>
+            <button class="nav-btn" onclick="showSection('stats')">📊 Statistics</button>
+            <button class="nav-btn" onclick="showSection('submissions')">📋 Recent Submissions</button>
+        </div>
+
+        <!-- Payout Settings Section -->
+        <div id="payouts-section" class="section">
+            <h2>💰 Payout Configuration</h2>
+            <p style="margin-bottom: 30px; color: #999;">Adjust payment amounts for different quality tiers. Changes take effect immediately.</p>
+
+            <div class="payout-grid">
+                <div class="payout-tier">
+                    <div class="tier-header">
+                        <div class="tier-name">EXCELLENT</div>
+                        <div class="tier-range">85-100% score</div>
+                    </div>
+                    <div class="payout-input-group">
+                        <label for="excellent-payment">Payment Amount (USDT)</label>
+                        <input type="number" id="excellent-payment" class="payout-input" min="0" step="0.1" value="40">
+                    </div>
+                    <button class="save-btn" onclick="savePayout('excellent')">Save Changes</button>
+                </div>
+
+                <div class="payout-tier">
+                    <div class="tier-header">
+                        <div class="tier-name">GOOD</div>
+                        <div class="tier-range">75-84% score</div>
+                    </div>
+                    <div class="payout-input-group">
+                        <label for="good-payment">Payment Amount (USDT)</label>
+                        <input type="number" id="good-payment" class="payout-input" min="0" step="0.1" value="25">
+                    </div>
+                    <button class="save-btn" onclick="savePayout('good')">Save Changes</button>
+                </div>
+
+                <div class="payout-tier">
+                    <div class="tier-header">
+                        <div class="tier-name">ACCEPTABLE</div>
+                        <div class="tier-range">60-74% score</div>
+                    </div>
+                    <div class="payout-input-group">
+                        <label for="acceptable-payment">Payment Amount (USDT)</label>
+                        <input type="number" id="acceptable-payment" class="payout-input" min="0" step="0.1" value="15">
+                    </div>
+                    <button class="save-btn" onclick="savePayout('acceptable')">Save Changes</button>
+                </div>
+
+                <div class="payout-tier">
+                    <div class="tier-header">
+                        <div class="tier-name">BASIC</div>
+                        <div class="tier-range">40-59% score</div>
+                    </div>
+                    <div class="payout-input-group">
+                        <label for="basic-payment">Payment Amount (USDT)</label>
+                        <input type="number" id="basic-payment" class="payout-input" min="0" step="0.1" value="10">
+                    </div>
+                    <button class="save-btn" onclick="savePayout('basic')">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div id="stats-section" class="section" style="display: none;">
+            <h2>📊 System Statistics</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-submissions">0</div>
+                    <div class="stat-label">Total Submissions</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-value" id="completed-submissions">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-value" id="total-paid">0</div>
+                    <div class="stat-label">Total Paid (USDT)</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-value" id="avg-quality">0%</div>
+                    <div class="stat-label">Average Quality Score</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Submissions Section -->
+        <div id="submissions-section" class="section" style="display: none;">
+            <h2>📋 Recent Submissions</h2>
+
+            <div id="submissions-loading" class="loading">
+                <div class="spinner"></div>
+                <p>Loading submissions...</p>
+            </div>
+
+            <table id="submissions-table" class="submissions-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Submission ID</th>
+                        <th>Exchange</th>
+                        <th>Quality Score</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="submissions-body">
+                    <!-- Submissions will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="modal">
+        <div class="modal-content">
+            <h3>✅ Settings Updated</h3>
+            <p>Payout settings have been successfully updated. Changes will take effect immediately for new submissions.</p>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-primary" onclick="closeModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Current payout settings (will be loaded from server)
+        let currentPayouts = {
+            excellent: 40,
+            good: 25,
+            acceptable: 15,
+            basic: 10
+        };
+
+        // Load current settings on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCurrentSettings();
+            loadStats();
+            loadRecentSubmissions();
+        });
+
+        // Navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.getElementById('payouts-section').style.display = 'none';
+            document.getElementById('stats-section').style.display = 'none';
+            document.getElementById('submissions-section').style.display = 'none';
+
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+            // Show selected section
+            document.getElementById(sectionName + '-section').style.display = 'block';
+
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        // Load current payout settings from server
+        async function loadCurrentSettings() {
+            try {
+                const response = await fetch('/api/requirements');
+                const data = await response.json();
+
+                if (data.paymentTiers) {
+                    data.paymentTiers.forEach(tier => {
+                        const tierKey = tier.label.toLowerCase();
+                        if (currentPayouts[tierKey] !== undefined) {
+                            currentPayouts[tierKey] = tier.payment;
+                            document.getElementById(tierKey + '-payment').value = tier.payment;
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to load current settings:', error);
+            }
+        }
+
+        // Save payout setting
+        async function savePayout(tier) {
+            const newValue = parseFloat(document.getElementById(tier + '-payment').value);
+
+            if (isNaN(newValue) || newValue < 0) {
+                alert('Please enter a valid payment amount');
+                return;
+            }
+
+            try {
+                // Make API call to update server
+                const response = await fetch('/api/admin/payouts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tier: tier,
+                        amount: newValue
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update local currentPayouts
+                    currentPayouts[tier] = newValue;
+
+                    // Show success modal
+                    document.getElementById('success-modal').style.display = 'block';
+
+                    console.log(`✅ Updated ${tier} payout to ${newValue} USDT`);
+                } else {
+                    alert('Failed to save settings: ' + result.error);
+                }
+            } catch (error) {
+                alert('Failed to save settings. Please try again.');
+                console.error('Save error:', error);
+            }
+        }
+
+        // Load statistics
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/admin/stats');
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('total-submissions').textContent = data.stats.totalSubmissions;
+                    document.getElementById('completed-submissions').textContent = data.stats.completedSubmissions;
+                    document.getElementById('total-paid').textContent = data.stats.totalPaid.toLocaleString();
+                    document.getElementById('avg-quality').textContent = data.stats.avgQualityScore + '%';
+                } else {
+                    console.error('Failed to load stats:', data.error);
+                }
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+
+        // Load recent submissions
+        async function loadRecentSubmissions() {
+            try {
+                const response = await fetch('/api/admin/submissions');
+                const data = await response.json();
+
+                // Hide loading
+                document.getElementById('submissions-loading').style.display = 'none';
+                document.getElementById('submissions-table').style.display = 'table';
+
+                if (data.success) {
+                    const tbody = document.getElementById('submissions-body');
+                    tbody.innerHTML = '';
+
+                    data.submissions.forEach(sub => {
+                        const row = document.createElement('tr');
+                        const date = new Date(sub.timestamp).toLocaleDateString();
+                        row.innerHTML = `
+                            <td>${sub.id}</td>
+                            <td>${sub.exchange}</td>
+                            <td>${sub.qualityScore}%</td>
+                            <td>${sub.payment} USDT</td>
+                            <td><span class="status-badge status-${sub.status}">${sub.status}</span></td>
+                            <td>${date}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    console.error('Failed to load submissions:', data.error);
+                    document.getElementById('submissions-loading').innerHTML = '<p>Failed to load submissions</p>';
+                }
+
+            } catch (error) {
+                console.error('Failed to load submissions:', error);
+                document.getElementById('submissions-loading').innerHTML = '<p>Failed to load submissions</p>';
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('success-modal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('success-modal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

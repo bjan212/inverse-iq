@@ -1,0 +1,389 @@
+[
+  {
+    "signalId": "BTCUSDT_1765173417_test123",
+    "symbol": "BTCUSDT",
+    "direction": "LONG",
+    "confidence": 75,
+    "patternKey": "TEST_PATTERN",
+    "patternSource": null,
+    "generatedAt": "2025-12-08T05:56:57.109Z",
+    "expiresAt": "2025-12-08T09:56:57.109Z",
+    "closedAt": null,
+    "status": "active",
+    "outcome": null,
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": null,
+    "pnlPercentage": null,
+    "duration": null,
+    "fullSignal": {
+      "signalId": "BTCUSDT_1765173417_test123",
+      "symbol": "BTCUSDT",
+      "direction": "LONG",
+      "confidence": 75,
+      "pattern": {
+        "key": "TEST_PATTERN"
+      },
+      "generatedAt": "2025-12-08T05:56:57.109Z",
+      "expiresAt": "2025-12-08T09:56:57.109Z"
+    }
+  },
+  {
+    "signalId": "ETHUSDT_1765173417_test456",
+    "symbol": "ETHUSDT",
+    "direction": "SHORT",
+    "confidence": 80,
+    "patternKey": "TEST_PATTERN_2",
+    "patternSource": null,
+    "generatedAt": "2025-12-08T05:56:57.226Z",
+    "expiresAt": "2025-12-08T09:56:57.226Z",
+    "closedAt": null,
+    "status": "active",
+    "outcome": null,
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": null,
+    "pnlPercentage": null,
+    "duration": null,
+    "fullSignal": {
+      "signalId": "ETHUSDT_1765173417_test456",
+      "symbol": "ETHUSDT",
+      "direction": "SHORT",
+      "confidence": 80,
+      "pattern": {
+        "key": "TEST_PATTERN_2"
+      },
+      "generatedAt": "2025-12-08T05:56:57.226Z",
+      "expiresAt": "2025-12-08T09:56:57.226Z"
+    }
+  },
+  {
+    "signalId": "BNBUSDT_1765173417_test789",
+    "symbol": "BNBUSDT",
+    "direction": "LONG",
+    "confidence": 70,
+    "patternKey": "TEST_PATTERN_3",
+    "patternSource": null,
+    "generatedAt": "2025-12-08T05:56:57.227Z",
+    "expiresAt": "2025-12-08T09:56:57.227Z",
+    "closedAt": null,
+    "status": "active",
+    "outcome": null,
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": null,
+    "pnlPercentage": null,
+    "duration": null,
+    "fullSignal": {
+      "signalId": "BNBUSDT_1765173417_test789",
+      "symbol": "BNBUSDT",
+      "direction": "LONG",
+      "confidence": 70,
+      "pattern": {
+        "key": "TEST_PATTERN_3"
+      },
+      "generatedAt": "2025-12-08T05:56:57.227Z",
+      "expiresAt": "2025-12-08T09:56:57.227Z"
+    }
+  },
+  {
+    "signalId": "BTCUSDT_1765174002_test1",
+    "symbol": "BTCUSDT",
+    "direction": "LONG",
+    "confidence": 85,
+    "patternKey": "MANUAL_TEST_PATTERN",
+    "patternSource": null,
+    "generatedAt": "2025-12-08T06:06:42.278Z",
+    "expiresAt": "2025-12-08T10:06:42.278Z",
+    "closedAt": "2025-12-08T06:06:42.319Z",
+    "status": "closed",
+    "outcome": "win",
+    "entryPrice": 45000,
+    "exitPrice": 46125,
+    "pnl": 500,
+    "pnlPercentage": 2.5,
+    "duration": null,
+    "fullSignal": {
+      "signalId": "BTCUSDT_1765174002_test1",
+      "symbol": "BTCUSDT",
+      "direction": "LONG",
+      "confidence": 85,
+      "pattern": {
+        "key": "MANUAL_TEST_PATTERN"
+      },
+      "generatedAt": "2025-12-08T06:06:42.278Z",
+      "expiresAt": "2025-12-08T10:06:42.278Z",
+      "reason": "Manually registered for testing"
+    }
+  },
+  {
+    "signalId": "ETHUSDT_1765174002_test2",
+    "symbol": "ETHUSDT",
+    "direction": "SHORT",
+    "confidence": 78,
+    "patternKey": "MANUAL_TEST_PATTERN",
+    "patternSource": null,
+    "generatedAt": "2025-12-08T06:06:42.291Z",
+    "expiresAt": "2025-12-08T10:06:42.291Z",
+    "closedAt": "2025-12-08T06:06:42.330Z",
+    "status": "closed",
+    "outcome": "win",
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": 300,
+    "pnlPercentage": 1.8,
+    "duration": null,
+    "fullSignal": {
+      "signalId": "ETHUSDT_1765174002_test2",
+      "symbol": "ETHUSDT",
+      "direction": "SHORT",
+      "confidence": 78,
+      "pattern": {
+        "key": "MANUAL_TEST_PATTERN"
+      },
+      "generatedAt": "2025-12-08T06:06:42.291Z",
+      "expiresAt": "2025-12-08T10:06:42.291Z",
+      "reason": "Manually registered for testing"
+    }
+  },
+  {
+    "signalId": "BNBUSDT_1765174002_test3",
+    "symbol": "BNBUSDT",
+    "direction": "LONG",
+    "confidence": 72,
+    "patternKey": "MANUAL_TEST_PATTERN",
+    "patternSource": null,
+    "generatedAt": "2025-12-08T06:06:42.299Z",
+    "expiresAt": "2025-12-08T10:06:42.299Z",
+    "closedAt": "2025-12-08T06:06:42.338Z",
+    "status": "closed",
+    "outcome": "loss",
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": -150,
+    "pnlPercentage": -0.9,
+    "duration": null,
+    "fullSignal": {
+      "signalId": "BNBUSDT_1765174002_test3",
+      "symbol": "BNBUSDT",
+      "direction": "LONG",
+      "confidence": 72,
+      "pattern": {
+        "key": "MANUAL_TEST_PATTERN"
+      },
+      "generatedAt": "2025-12-08T06:06:42.299Z",
+      "expiresAt": "2025-12-08T10:06:42.299Z",
+      "reason": "Manually registered for testing"
+    }
+  },
+  {
+    "signalId": "SOLUSDT_1765174002_test4",
+    "symbol": "SOLUSDT",
+    "direction": "LONG",
+    "confidence": 80,
+    "patternKey": "MANUAL_TEST_PATTERN",
+    "patternSource": null,
+    "generatedAt": "2025-12-08T06:06:42.397Z",
+    "expiresAt": "2025-12-08T10:06:42.397Z",
+    "closedAt": "2025-12-08T06:06:42.417Z",
+    "status": "closed",
+    "outcome": "win",
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": 200,
+    "pnlPercentage": 0,
+    "duration": null,
+    "fullSignal": {
+      "signalId": "SOLUSDT_1765174002_test4",
+      "symbol": "SOLUSDT",
+      "direction": "LONG",
+      "confidence": 80,
+      "pattern": {
+        "key": "MANUAL_TEST_PATTERN"
+      },
+      "generatedAt": "2025-12-08T06:06:42.397Z",
+      "expiresAt": "2025-12-08T10:06:42.397Z",
+      "reason": "Manually registered for testing"
+    }
+  },
+  {
+    "signalId": "ADAUSDT_1765174002_test5",
+    "symbol": "ADAUSDT",
+    "direction": "SHORT",
+    "confidence": 75,
+    "patternKey": "MANUAL_TEST_PATTERN",
+    "patternSource": null,
+    "generatedAt": "2025-12-08T06:06:42.408Z",
+    "expiresAt": "2025-12-08T10:06:42.408Z",
+    "closedAt": "2025-12-08T06:06:42.417Z",
+    "status": "closed",
+    "outcome": "loss",
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": -100,
+    "pnlPercentage": 0,
+    "duration": null,
+    "fullSignal": {
+      "signalId": "ADAUSDT_1765174002_test5",
+      "symbol": "ADAUSDT",
+      "direction": "SHORT",
+      "confidence": 75,
+      "pattern": {
+        "key": "MANUAL_TEST_PATTERN"
+      },
+      "generatedAt": "2025-12-08T06:06:42.408Z",
+      "expiresAt": "2025-12-08T10:06:42.408Z",
+      "reason": "Manually registered for testing"
+    }
+  },
+  {
+    "signalId": "BTCUSDT_1765174147_test1",
+    "symbol": "BTCUSDT",
+    "direction": "LONG",
+    "confidence": 85,
+    "patternKey": "MANUAL_TEST_PATTERN",
+    "patternSource": null,
+    "generatedAt": "2025-12-08T06:09:07.892Z",
+    "expiresAt": "2025-12-08T10:09:07.892Z",
+    "closedAt": "2025-12-08T06:09:07.943Z",
+    "status": "closed",
+    "outcome": "win",
+    "entryPrice": 45000,
+    "exitPrice": 46125,
+    "pnl": 500,
+    "pnlPercentage": 2.5,
+    "duration": null,
+    "fullSignal": {
+      "signalId": "BTCUSDT_1765174147_test1",
+      "symbol": "BTCUSDT",
+      "direction": "LONG",
+      "confidence": 85,
+      "pattern": {
+        "key": "MANUAL_TEST_PATTERN"
+      },
+      "generatedAt": "2025-12-08T06:09:07.892Z",
+      "expiresAt": "2025-12-08T10:09:07.892Z",
+      "reason": "Manually registered for testing"
+    }
+  },
+  {
+    "signalId": "ETHUSDT_1765174147_test2",
+    "symbol": "ETHUSDT",
+    "direction": "SHORT",
+    "confidence": 78,
+    "patternKey": "MANUAL_TEST_PATTERN",
+    "patternSource": null,
+    "generatedAt": "2025-12-08T06:09:07.908Z",
+    "expiresAt": "2025-12-08T10:09:07.908Z",
+    "closedAt": "2025-12-08T06:09:07.953Z",
+    "status": "closed",
+    "outcome": "win",
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": 300,
+    "pnlPercentage": 1.8,
+    "duration": null,
+    "fullSignal": {
+      "signalId": "ETHUSDT_1765174147_test2",
+      "symbol": "ETHUSDT",
+      "direction": "SHORT",
+      "confidence": 78,
+      "pattern": {
+        "key": "MANUAL_TEST_PATTERN"
+      },
+      "generatedAt": "2025-12-08T06:09:07.908Z",
+      "expiresAt": "2025-12-08T10:09:07.908Z",
+      "reason": "Manually registered for testing"
+    }
+  },
+  {
+    "signalId": "BNBUSDT_1765174147_test3",
+    "symbol": "BNBUSDT",
+    "direction": "LONG",
+    "confidence": 72,
+    "patternKey": "MANUAL_TEST_PATTERN",
+    "patternSource": null,
+    "generatedAt": "2025-12-08T06:09:07.916Z",
+    "expiresAt": "2025-12-08T10:09:07.916Z",
+    "closedAt": "2025-12-08T06:09:07.961Z",
+    "status": "closed",
+    "outcome": "loss",
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": -150,
+    "pnlPercentage": -0.9,
+    "duration": null,
+    "fullSignal": {
+      "signalId": "BNBUSDT_1765174147_test3",
+      "symbol": "BNBUSDT",
+      "direction": "LONG",
+      "confidence": 72,
+      "pattern": {
+        "key": "MANUAL_TEST_PATTERN"
+      },
+      "generatedAt": "2025-12-08T06:09:07.916Z",
+      "expiresAt": "2025-12-08T10:09:07.916Z",
+      "reason": "Manually registered for testing"
+    }
+  },
+  {
+    "signalId": "SOLUSDT_1765174147_test4",
+    "symbol": "SOLUSDT",
+    "direction": "LONG",
+    "confidence": 80,
+    "patternKey": "MANUAL_TEST_PATTERN",
+    "patternSource": null,
+    "generatedAt": "2025-12-08T06:09:08.016Z",
+    "expiresAt": "2025-12-08T10:09:08.016Z",
+    "closedAt": "2025-12-08T06:09:08.030Z",
+    "status": "closed",
+    "outcome": "win",
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": 200,
+    "pnlPercentage": 0,
+    "duration": null,
+    "fullSignal": {
+      "signalId": "SOLUSDT_1765174147_test4",
+      "symbol": "SOLUSDT",
+      "direction": "LONG",
+      "confidence": 80,
+      "pattern": {
+        "key": "MANUAL_TEST_PATTERN"
+      },
+      "generatedAt": "2025-12-08T06:09:08.016Z",
+      "expiresAt": "2025-12-08T10:09:08.016Z",
+      "reason": "Manually registered for testing"
+    }
+  },
+  {
+    "signalId": "ADAUSDT_1765174147_test5",
+    "symbol": "ADAUSDT",
+    "direction": "SHORT",
+    "confidence": 75,
+    "patternKey": "MANUAL_TEST_PATTERN",
+    "patternSource": null,
+    "generatedAt": "2025-12-08T06:09:08.023Z",
+    "expiresAt": "2025-12-08T10:09:08.023Z",
+    "closedAt": "2025-12-08T06:09:08.031Z",
+    "status": "closed",
+    "outcome": "loss",
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": -100,
+    "pnlPercentage": 0,
+    "duration": null,
+    "fullSignal": {
+      "signalId": "ADAUSDT_1765174147_test5",
+      "symbol": "ADAUSDT",
+      "direction": "SHORT",
+      "confidence": 75,
+      "pattern": {
+        "key": "MANUAL_TEST_PATTERN"
+      },
+      "generatedAt": "2025-12-08T06:09:08.023Z",
+      "expiresAt": "2025-12-08T10:09:08.023Z",
+      "reason": "Manually registered for testing"
+    }
+  }
+]

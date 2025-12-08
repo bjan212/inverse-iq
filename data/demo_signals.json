@@ -1,0 +1,95 @@
+[
+  {
+    "signalId": "BTCUSDT_1699000000_abc123",
+    "symbol": "BTCUSDT",
+    "direction": "LONG",
+    "confidence": 75,
+    "patternKey": "BTCUSDT_LONG_RSI_OVERSOLD",
+    "patternSource": "combined",
+    "generatedAt": "2025-12-08T06:08:32.449Z",
+    "expiresAt": "2025-12-08T10:08:32.449Z",
+    "closedAt": "2025-12-08T06:08:32.451Z",
+    "status": "closed",
+    "outcome": "win",
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": 500,
+    "pnlPercentage": 2.5,
+    "duration": null,
+    "fullSignal": {
+      "signalId": "BTCUSDT_1699000000_abc123",
+      "symbol": "BTCUSDT",
+      "direction": "LONG",
+      "confidence": 75,
+      "pattern": {
+        "key": "BTCUSDT_LONG_RSI_OVERSOLD",
+        "source": "combined"
+      },
+      "generatedAt": "2025-12-08T06:08:32.449Z",
+      "expiresAt": "2025-12-08T10:08:32.449Z",
+      "reason": "Mock signal for testing"
+    }
+  },
+  {
+    "signalId": "ETHUSDT_1699000100_def456",
+    "symbol": "ETHUSDT",
+    "direction": "SHORT",
+    "confidence": 82,
+    "patternKey": "ETHUSDT_SHORT_RSI_OVERBOUGHT",
+    "patternSource": "trader",
+    "generatedAt": "2025-12-08T06:08:32.449Z",
+    "expiresAt": "2025-12-08T10:08:32.449Z",
+    "closedAt": "2025-12-08T06:08:32.452Z",
+    "status": "closed",
+    "outcome": "win",
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": 300,
+    "pnlPercentage": 1.8,
+    "duration": null,
+    "fullSignal": {
+      "signalId": "ETHUSDT_1699000100_def456",
+      "symbol": "ETHUSDT",
+      "direction": "SHORT",
+      "confidence": 82,
+      "pattern": {
+        "key": "ETHUSDT_SHORT_RSI_OVERBOUGHT",
+        "source": "trader"
+      },
+      "generatedAt": "2025-12-08T06:08:32.449Z",
+      "expiresAt": "2025-12-08T10:08:32.449Z",
+      "reason": "Mock signal for testing"
+    }
+  },
+  {
+    "signalId": "BNBUSDT_1699000200_ghi789",
+    "symbol": "BNBUSDT",
+    "direction": "LONG",
+    "confidence": 68,
+    "patternKey": "BNBUSDT_LONG_SUPPORT_BOUNCE",
+    "patternSource": "public",
+    "generatedAt": "2025-12-08T06:08:32.449Z",
+    "expiresAt": "2025-12-08T10:08:32.449Z",
+    "closedAt": "2025-12-08T06:08:32.452Z",
+    "status": "closed",
+    "outcome": "loss",
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": -150,
+    "pnlPercentage": -0.9,
+    "duration": null,
+    "fullSignal": {
+      "signalId": "BNBUSDT_1699000200_ghi789",
+      "symbol": "BNBUSDT",
+      "direction": "LONG",
+      "confidence": 68,
+      "pattern": {
+        "key": "BNBUSDT_LONG_SUPPORT_BOUNCE",
+        "source": "public"
+      },
+      "generatedAt": "2025-12-08T06:08:32.449Z",
+      "expiresAt": "2025-12-08T10:08:32.449Z",
+      "reason": "Mock signal for testing"
+    }
+  }
+]

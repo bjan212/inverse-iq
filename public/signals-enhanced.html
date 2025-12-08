@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InverseIQ - AI Trading Signals</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0e27;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .connect-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .connect-btn.connected {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+        }
+        
+        .exchange-badge {
+            padding: 8px 16px;
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4caf50;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #4caf50;
+            font-weight: bold;
+        }
+        
+        .header-stats {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .info-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+        }
+        
+        .info-card-title {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        
+        .info-card-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .info-card-subtitle {
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .info-card.green .info-card-value {
+            color: #4caf50;
+        }
+        
+        .info-card.blue .info-card-value {
+            color: #667eea;
+        }
+        
+        .info-card.purple .info-card-value {
+            color: #764ba2;
+        }
+        
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .filter-btn:hover {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent;
+        }
+        
+        /* Signals Grid */
+        .signals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        
+        .signal-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .signal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+        
+        .signal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        /* Signal Header */
+        .signal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .signal-symbol {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .signal-direction {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .signal-direction.long {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+            border: 1px solid #4caf50;
+        }
+        
+        .signal-direction.short {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: 1px solid #f44336;
+        }
+        
+        /* Confidence Bar */
+        .confidence-section {
+            margin-bottom: 20px;
+        }
+        
+        .confidence-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .confidence-value {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .confidence-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+        
+        /* Pattern Info */
+        .pattern-info {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .pattern-title {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+        
+        .pattern-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .pattern-stat {
+            font-size: 13px;
+        }
+        
+        .pattern-stat-label {
+            color: #888;
+        }
+        
+        .pattern-stat-value {
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        /* Risk Badge */
+        .risk-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .risk-badge.very-low {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+        
+        .risk-badge.low {
+            background: rgba(139, 195, 74, 0.2);
+            color: #8bc34a;
+        }
+        
+        .risk-badge.medium {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+        
+        .risk-badge.high {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+        
+        /* Reason Box */
+        .reason-box {
+            background: rgba(0,0,0,0.3);
+            border-left: 3px solid #667eea;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .action-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .action-btn.copy {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .action-btn.trade {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Timestamp */
+        .signal-timestamp {
+            text-align: center;
+            font-size: 11px;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #1a1a2e;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+        }
+        
+        .modal-header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .modal-body {
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+        
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .modal-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .modal-btn.secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        
+        .modal-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+            display: none;
+        }
+        
+        .toast.active {
+            display: block;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(102, 126, 234, 0.2);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .empty-subtitle {
+            color: #888;
+            font-size: 16px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .signals-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .header-stats {
+                width: 100%;
+                justify-content: space-around;
+            }
+            
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🧠 InverseIQ</div>
+            <div class="header-actions">
+                <div id="exchangeStatus"></div>
+                <button class="connect-btn" id="connectBtn" onclick="showConnectModal()">
+                    🔗 Connect Exchange
+                </button>
+            </div>
+        </div>
+        
+        <!-- Dashboard Cards -->
+        <div class="dashboard-grid">
+            <div class="info-card green">
+                <div class="info-card-title">Active Signals</div>
+                <div class="info-card-value" id="activeSignals">-</div>
+                <div class="info-card-subtitle">Ready to trade</div>
+            </div>
+            <div class="info-card blue">
+                <div class="info-card-title">Avg Confidence</div>
+                <div class="info-card-value" id="avgConfidence">-</div>
+                <div class="info-card-subtitle">AI certainty level</div>
+            </div>
+            <div class="info-card purple">
+                <div class="info-card-title">Auto-Trades</div>
+                <div class="info-card-value" id="autoTrades">0</div>
+                <div class="info-card-subtitle">Executed today</div>
+            </div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">All Signals</button>
+            <button class="filter-btn" data-filter="high">High Confidence (85%+)</button>
+            <button class="filter-btn" data-filter="combined">Combined Patterns</button>
+            <button class="filter-btn" data-filter="long">LONG Only</button>
+            <button class="filter-btn" data-filter="short">SHORT Only</button>
+        </div>
+        
+        <!-- Signals Grid -->
+        <div class="signals-grid" id="signalsGrid">
+            <!-- Loading state -->
+            <div class="loading" id="loadingState">
+                <div class="loading-spinner"></div>
+                <div>Generating AI signals...</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Connect Exchange Modal -->
+    <div class="modal" id="connectModal">
+        <div class="modal-content">
+            <div class="modal-header">🔗 Connect Exchange</div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Exchange</label>
+                    <select class="form-select" id="exchangeSelect">
+                        <option value="">Select Exchange</option>
+                        <option value="binance">Binance Futures</option>
+                        <option value="bybit">Bybit Futures</option>
+                        <option value="okx">OKX Futures</option>
+                        <option value="mexc">MEXC Futures</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">API Key</label>
+                    <input type="text" class="form-input" id="apiKeyInput" placeholder="Enter your API key">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">API Secret</label>
+                    <input type="password" class="form-input" id="apiSecretInput" placeholder="Enter your API secret">
+                </div>
+                <div class="form-group" id="passphraseGroup" style="display: none;">
+                    <label class="form-label">Passphrase (OKX only)</label>
+                    <input type="password" class="form-input" id="passphraseInput" placeholder="Enter your passphrase">
+                </div>
+                <div style="font-size: 12px; color: #888; margin-top: 15px;">
+                    ⚠️ <strong>Important:</strong> Use read-only API keys with trading permissions. Never share your API keys.
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeConnectModal()">Cancel</button>
+                <button class="modal-btn primary" onclick="connectExchange()">Connect</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+    
+    <script>
+        let allSignals = [];
+        let currentFilter = 'all';
+        let exchangeConnected = false;
+        let exchangeConfig = null;
+        let autoTradesCount = 0;
+        
+        // Initialize
+        async function init() {
+            await loadSignals();
+            setupFilters();
+            checkExchangeConnection();
+            setInterval(loadSignals, 60000); // Refresh every minute
+        }
+        
+        // Load signals from API
+        async function loadSignals() {
+            try {
+                const response = await fetch('/api/signals');
+                const data = await response.json();
+                
+                if (data.success) {
+                    allSignals = data.signals;
+                    updateDashboard(data.stats);
+                    renderSignals();
+                } else {
+                    showEmptyState();
+                }
+            } catch (error) {
+                console.error('Failed to load signals:', error);
+                showEmptyState();
+            }
+        }
+        
+        // Update dashboard stats
+        function updateDashboard(stats) {
+            document.getElementById('activeSignals').textContent = stats.activeSignals || 0;
+            document.getElementById('avgConfidence').textContent = stats.avgConfidence ? stats.avgConfidence + '%' : '-';
+            document.getElementById('autoTrades').textContent = autoTradesCount;
+        }
+        
+        // Render signals
+        function renderSignals() {
+            const grid = document.getElementById('signalsGrid');
+            
+            // Filter signals
+            let filtered = allSignals;
+            
+            if (currentFilter === 'high') {
+                filtered = allSignals.filter(s => s.confidence >= 85);
+            } else if (currentFilter === 'combined') {
+                filtered = allSignals.filter(s => s.pattern.source === 'combined');
+            } else if (currentFilter === 'long') {
+                filtered = allSignals.filter(s => s.direction === 'LONG');
+            } else if (currentFilter === 'short') {
+                filtered = allSignals.filter(s => s.direction === 'SHORT');
+            }
+            
+            if (filtered.length === 0) {
+                showEmptyState();
+                return;
+            }
+            
+            grid.innerHTML = filtered.map(signal => createSignalCard(signal)).join('');
+        }
+        
+        // Create signal card HTML
+        function createSignalCard(signal) {
+            const directionClass = signal.direction.toLowerCase();
+            const riskClass = signal.riskLevel.toLowerCase().replace('_', '-');
+            const confidencePercent = signal.confidence;
+            const tradeDisabled = !exchangeConnected ? 'disabled' : '';
+            
+            return `
+                <div class="signal-card">
+                    <div class="signal-header">
+                        <div class="signal-symbol">${signal.symbol}</div>
+                        <div class="signal-direction ${directionClass}">${signal.direction}</div>
+                    </div>
+                    
+                    <div class="confidence-section">
+                        <div class="confidence-label">
+                            <span>Confidence Score</span>
+                            <span class="confidence-value">${confidencePercent}%</span>
+                        </div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: ${confidencePercent}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="pattern-info">
+                        <div class="pattern-title">Pattern Intelligence</div>
+                        <div class="pattern-stats">
+                            <div class="pattern-stat">
+                                <span class="pattern-stat-label">Traders: </span>
+                                <span class="pattern-stat-value">${signal.pattern.tradersAffected}</span>
+                            </div>
+                            <div class="pattern-stat">
+                                <span class="pattern-stat-label">Occurrences: </span>
+                                <span class="pattern-stat-value">${signal.pattern.totalOccurrences}</span>
+                            </div>
+                            <div class="pattern-stat">
+                                <span class="pattern-stat-label">Total Losses: </span>
+                                <span class="pattern-stat-value">$${signal.pattern.totalLosses.toFixed(0)}</span>
+                            </div>
+                            <div class="pattern-stat">
+                                <span class="pattern-stat-label">Risk: </span>
+                                <span class="risk-badge ${riskClass}">${signal.riskLevel.replace('_', ' ')}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="reason-box">
+                        ${signal.reason}
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="action-btn copy" onclick="copySignal('${signal.signalId}')">
+                            📋 Copy Setup
+                        </button>
+                        <button class="action-btn trade" onclick="executeTrade('${signal.signalId}')" ${tradeDisabled}>
+                            ⚡ Auto Trade
+                        </button>
+                    </div>
+                    
+                    <div class="signal-timestamp">
+                        Generated: ${new Date(signal.generatedAt).toLocaleString()}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Show empty state
+        function showEmptyState() {
+            const grid = document.getElementById('signalsGrid');
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">📊</div>
+                    <div class="empty-title">No Signals Available</div>
+                    <div class="empty-subtitle">
+                        ${currentFilter === 'all' 
+                            ? 'Run the bootstrap script to generate signals' 
+                            : 'Try a different filter'}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Setup filter buttons
+        function setupFilters() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    renderSignals();
+                });
+            });
+        }
+        
+        // Copy signal to clipboard
+        function copySignal(signalId) {
+            const signal = allSignals.find(s => s.signalId === signalId);
+            if (!signal) return;
+            
+            const text = `
+🧠 InverseIQ Signal
+
+Symbol: ${signal.symbol}
+Direction: ${signal.direction}
+Confidence: ${signal.confidence}%
+Risk Level: ${signal.riskLevel}
+
+📊 Pattern Intelligence:
+• Traders Affected: ${signal.pattern.tradersAffected}
+• Total Occurrences: ${signal.pattern.totalOccurrences}
+• Total Losses: $${signal.pattern.totalLosses.toFixed(2)}
+
+💡 Reason: ${signal.reason}
+
+⏰ Generated: ${new Date(signal.generatedAt).toLocaleString()}
+
+---
+InverseIQ - Learn from losses, profit from patterns
+            `.trim();
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('✅ Signal copied to clipboard!');
+            }).catch(() => {
+                showToast('❌ Failed to copy signal');
+            });
+        }
+        
+        // Show connect modal
+        function showConnectModal() {
+            document.getElementById('connectModal').classList.add('active');
+        }
+        
+        // Close connect modal
+        function closeConnectModal() {
+            document.getElementById('connectModal').classList.remove('active');
+        }
+        
+        // Handle exchange selection
+        document.getElementById('exchangeSelect')?.addEventListener('change', (e) => {
+            const passphraseGroup = document.getElementById('passphraseGroup');
+            if (e.target.value === 'okx') {
+                passphraseGroup.style.display = 'block';
+            } else {
+                passphraseGroup.style.display = 'none';
+            }
+        });
+        
+        // Connect exchange
+        async function connectExchange() {
+            const exchange = document.getElementById('exchangeSelect').value;
+            const apiKey = document.getElementById('apiKeyInput').value;
+            const apiSecret = document.getElementById('apiSecretInput').value;
+            const passphrase = document.getElementById('passphraseInput').value;
+            
+            if (!exchange || !apiKey || !apiSecret) {
+                showToast('❌ Please fill in all required fields');
+                return;
+            }
+            
+            if (exchange === 'okx' && !passphrase) {
+                showToast('❌ OKX requires a passphrase');
+                return;
+            }
+            
+            // Store exchange config (in production, send to backend)
+            exchangeConfig = {
+                exchange,
+                apiKey,
+                apiSecret,
+                passphrase: exchange === 'okx' ? passphrase : null
+            };
+            
+            exchangeConnected = true;
+            updateExchangeStatus();
+            closeConnectModal();
+            showToast(`✅ Connected to ${exchange.toUpperCase()}`);
+            renderSignals(); // Re-render to enable trade buttons
+        }
+        
+        // Check exchange connection
+        function checkExchangeConnection() {
+            // Check if exchange is already connected (from localStorage)
+            const saved = localStorage.getItem('exchangeConfig');
+            if (saved) {
+                exchangeConfig = JSON.parse(saved);
+                exchangeConnected = true;
+                updateExchangeStatus();
+            }
+        }
+        
+        // Update exchange status display
+        function updateExchangeStatus() {
+            const statusDiv = document.getElementById('exchangeStatus');
+            const connectBtn = document.getElementById('connectBtn');
+            
+            if (exchangeConnected && exchangeConfig) {
+                statusDiv.innerHTML = `<div class="exchange-badge">✓ ${exchangeConfig.exchange.toUpperCase()}</div>`;
+                connectBtn.textContent = '🔗 Change Exchange';
+                connectBtn.classList.add('connected');
+            } else {
+                statusDiv.innerHTML = '';
+                connectBtn.textContent = '🔗 Connect Exchange';
+                connectBtn.classList.remove('connected');
+            }
+        }
+        
+        // Execute trade automatically
+        async function executeTrade(signalId) {
+            if (!exchangeConnected) {
+                showToast('❌ Please connect your exchange first');
+                return;
+            }
+            
+            const signal = allSignals.find(s => s.signalId === signalId);
+            if (!signal) return;
+            
+            // Confirm trade
+            if (!confirm(`Execute ${signal.direction} trade on ${signal.symbol}?\n\nConfidence: ${signal.confidence}%\nRisk: ${signal.riskLevel}`)) {
+                return;
+            }
+            
+            showToast('⏳ Executing trade...');
+            
+            try {
+                // In production, this would call your backend API
+                const response = await fetch('/api/execute-trade', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        signal,
+                        exchange: exchangeConfig.exchange,
+                        apiKey: exchangeConfig.apiKey,
+                        apiSecret: exchangeConfig.apiSecret,
+                        passphrase: exchangeConfig.passphrase
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    autoTradesCount++;
+                    document.getElementById('autoTrades').textContent = autoTradesCount;
+                    showToast(`✅ Trade executed successfully! Order ID: ${result.orderId}`);
+                } else {
+                    showToast(`❌ Trade failed: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('Trade execution error:', error);
+                showToast('❌ Failed to execute trade. Please try again.');
+            }
+        }
+        
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('active');
+            
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+        
+        // Initialize on page load
+        init();
+    </script>
+</body>
+</html>
