@@ -16,6 +16,7 @@ const AutomatedSubmissionHandler = require('./scripts/automatedSubmissionHandler
 const SelfImprovingEngine = require('./src/ai-engine/selfImprovingEngine');
 const DataPipeline = require('./src/ai-engine/dataPipeline');
 const SignalTracker = require('./src/tracking/signalTracker');
+const NotificationManager = require('./src/notifications/notificationManager');
 
 const app = express();
 const server = http.createServer(app);
@@ -29,18 +30,25 @@ app.use(express.static('public'));
 // Store active WebSocket connections
 const connections = new Map();
 
-// Initialize AI Engine, Data Pipeline, and Signal Tracker
+// Initialize AI Engine, Data Pipeline, Signal Tracker, and Notification Manager
 const aiEngine = new SelfImprovingEngine();
 const dataPipeline = new DataPipeline();
 const signalTracker = new SignalTracker('./data/active_signals.json');
+const notificationManager = new NotificationManager();
 
 // Connect signal tracker to AI engine
 aiEngine.setSignalTracker(signalTracker);
+
+// Initialize notification manager
+notificationManager.initialize().catch(err => {
+  console.error('Failed to initialize notification manager:', err);
+});
 
 // Export for testing purposes
 if (process.env.NODE_ENV === 'test') {
   module.exports.signalTracker = signalTracker;
   module.exports.aiEngine = aiEngine;
+  module.exports.notificationManager = notificationManager;
 }
 
 // Start data pipeline monitoring
@@ -418,6 +426,19 @@ app.get('/api/signals', async (req, res) => {
     const symbols = req.query.symbols ? req.query.symbols.split(',') : ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT'];
     const signals = await engine.generateSmartSignals(symbols);
     
+    // Send notifications for new signals (async, don't block response)
+    if (signals.length > 0 && notificationManager.isReady()) {
+      setImmediate(async () => {
+        for (const signal of signals) {
+          try {
+            await notificationManager.notifySignal(signal);
+          } catch (error) {
+            console.error(`Failed to send notifications for signal ${signal.signalId}:`, error.message);
+          }
+        }
+      });
+    }
+    
     // Get database stats
     const stats = engine.getHybridStatistics();
     
@@ -751,6 +772,273 @@ app.get('/api/feedback/signal/:signalId', (req, res) => {
     res.json({
       success: true,
       signal
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// ============================================================================
+// NOTIFICATION SUBSCRIPTION ENDPOINTS
+// ============================================================================
+
+/**
+ * Subscribe to notifications
+ * POST /api/notifications/subscribe
+ */
+app.post('/api/notifications/subscribe', async (req, res) => {
+  try {
+    const { email, telegramChatId, preferences } = req.body;
+
+    // Validate input
+    if (!email && !telegramChatId) {
+      return res.status(400).json({
+        success: false,
+        error: 'At least one contact method (email or telegramChatId) is required'
+      });
+    }
+
+    // Add subscriber
+    const subscriberDB = notificationManager.getSubscriberDB();
+    const subscriber = subscriberDB.addSubscriber({
+      email,
+      telegramChatId,
+      preferences
+    });
+
+    console.log(`✅ New subscriber added: ${subscriber.id}`);
+
+    res.json({
+      success: true,
+      message: 'Successfully subscribed to notifications',
+      subscriber: {
+        id: subscriber.id,
+        email: subscriber.email,
+        telegramChatId: subscriber.telegramChatId,
+        preferences: subscriber.preferences,
+        createdAt: subscriber.createdAt
+      }
+    });
+
+  } catch (error) {
+    console.error('Subscription error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get subscriber information
+ * GET /api/notifications/subscriber/:id
+ */
+app.get('/api/notifications/subscriber/:id', (req, res) => {
+  try {
+    const subscriberDB = notificationManager.getSubscriberDB();
+    const subscriber = subscriberDB.getSubscriber(req.params.id);
+
+    if (!subscriber) {
+      return res.status(404).json({
+        success: false,
+        error: 'Subscriber not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      subscriber
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Update notification preferences
+ * PUT /api/notifications/preferences/:id
+ */
+app.put('/api/notifications/preferences/:id', (req, res) => {
+  try {
+    const { preferences } = req.body;
+
+    if (!preferences) {
+      return res.status(400).json({
+        success: false,
+        error: 'Preferences object is required'
+      });
+    }
+
+    const subscriberDB = notificationManager.getSubscriberDB();
+    const subscriber = subscriberDB.updatePreferences(req.params.id, preferences);
+
+    console.log(`✅ Updated preferences for subscriber: ${req.params.id}`);
+
+    res.json({
+      success: true,
+      message: 'Preferences updated successfully',
+      subscriber
+    });
+
+  } catch (error) {
+    console.error('Preference update error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Update contact information
+ * PUT /api/notifications/contact/:id
+ */
+app.put('/api/notifications/contact/:id', (req, res) => {
+  try {
+    const { email, telegramChatId } = req.body;
+
+    const subscriberDB = notificationManager.getSubscriberDB();
+    const subscriber = subscriberDB.updateContact(req.params.id, {
+      email,
+      telegramChatId
+    });
+
+    console.log(`✅ Updated contact info for subscriber: ${req.params.id}`);
+
+    res.json({
+      success: true,
+      message: 'Contact information updated successfully',
+      subscriber
+    });
+
+  } catch (error) {
+    console.error('Contact update error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Unsubscribe from notifications
+ * DELETE /api/notifications/unsubscribe/:id
+ */
+app.delete('/api/notifications/unsubscribe/:id', (req, res) => {
+  try {
+    const subscriberDB = notificationManager.getSubscriberDB();
+    const subscriber = subscriberDB.deactivateSubscriber(req.params.id);
+
+    console.log(`✅ Unsubscribed: ${req.params.id}`);
+
+    res.json({
+      success: true,
+      message: 'Successfully unsubscribed from notifications',
+      subscriber
+    });
+
+  } catch (error) {
+    console.error('Unsubscribe error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Reactivate subscription
+ * POST /api/notifications/reactivate/:id
+ */
+app.post('/api/notifications/reactivate/:id', (req, res) => {
+  try {
+    const subscriberDB = notificationManager.getSubscriberDB();
+    const subscriber = subscriberDB.reactivateSubscriber(req.params.id);
+
+    console.log(`✅ Reactivated subscription: ${req.params.id}`);
+
+    res.json({
+      success: true,
+      message: 'Subscription reactivated successfully',
+      subscriber
+    });
+
+  } catch (error) {
+    console.error('Reactivation error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Send test notification
+ * POST /api/notifications/test/:id
+ */
+app.post('/api/notifications/test/:id', async (req, res) => {
+  try {
+    const result = await notificationManager.sendTestNotification(req.params.id);
+
+    console.log(`✅ Test notification sent to subscriber: ${req.params.id}`);
+
+    res.json({
+      success: true,
+      message: 'Test notification sent',
+      result
+    });
+
+  } catch (error) {
+    console.error('Test notification error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get notification statistics
+ * GET /api/notifications/stats
+ */
+app.get('/api/notifications/stats', (req, res) => {
+  try {
+    const stats = notificationManager.getStatistics();
+
+    res.json({
+      success: true,
+      stats
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get all subscribers (Admin only)
+ * GET /api/notifications/subscribers
+ */
+app.get('/api/notifications/subscribers', (req, res) => {
+  try {
+    const subscriberDB = notificationManager.getSubscriberDB();
+    const subscribers = subscriberDB.getAllSubscribers();
+
+    res.json({
+      success: true,
+      count: subscribers.length,
+      subscribers
     });
 
   } catch (error) {

@@ -1,0 +1,27 @@
+[
+  {
+    "id": "0863ff9ecc4f206f21780c4819da3095",
+    "email": "test@example.com",
+    "telegramChatId": null,
+    "preferences": {
+      "channels": {
+        "email": true
+      },
+      "minConfidence": 85,
+      "symbols": [
+        "BTCUSDT"
+      ],
+      "directions": [
+        "LONG",
+        "SHORT"
+      ],
+      "notifyOnHighConfidence": true,
+      "notifyOnCombinedPatterns": true
+    },
+    "createdAt": "2026-01-02T14:32:47.719Z",
+    "updatedAt": "2026-01-02T14:33:46.505Z",
+    "active": true,
+    "notificationCount": 0,
+    "lastNotificationAt": null
+  }
+]

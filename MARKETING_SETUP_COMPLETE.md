@@ -9,7 +9,7 @@
 ## 📋 What We've Built
 
 ### 1. ✅ Dedicated Landing Page
-**File:** `public/get-paid-for-data.html`
+**File:** `public/get-paid-for-data.hoption tml`
 
 **Features:**
 - 🎯 Compelling headline: "Turn Your Trading History Into $100-$300 Cash"
