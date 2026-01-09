@@ -17,7 +17,7 @@ class EmailService {
         user: config.user || process.env.SMTP_USER,
         pass: config.pass || process.env.SMTP_PASS
       },
-      from: config.from || process.env.SMTP_FROM || 'InverseIQ <noreply@inverseiq.com>'
+      from: config.from || process.env.SMTP_FROM || 'Xrypt <notify@xrypt.net>'
     };
 
     this.transporter = null;
@@ -77,7 +77,7 @@ class EmailService {
       const mailOptions = {
         from: this.config.from,
         to: email,
-        subject: `🎯 InverseIQ Signal: ${signal.symbol} ${signal.direction} (${signal.confidence}% confidence)`,
+        subject: `🎯 Xrypt Signal: ${signal.symbol} ${signal.direction} (${signal.confidence}% confidence)`,
         text: text,
         html: html
       };
@@ -109,19 +109,19 @@ class EmailService {
       const mailOptions = {
         from: this.config.from,
         to: email,
-        subject: '✅ InverseIQ - Test Notification',
-        text: 'This is a test notification from InverseIQ. Your email notifications are working correctly!',
+        subject: '✅ Xrypt - Test Notification',
+        text: 'This is a test notification from Xrypt. Your email notifications are working correctly!',
         html: `
           <div style="font-family: 'Courier New', monospace; max-width: 600px; margin: 0 auto; background: #030712; color: #f3f4f6; padding: 30px; border-radius: 10px;">
             <h1 style="color: #4ade80; margin-bottom: 20px;">✅ Test Notification</h1>
             <p style="font-size: 16px; line-height: 1.6;">
-              This is a test notification from <strong>InverseIQ</strong>.
+              This is a test notification from <strong>Xrypt</strong>.
             </p>
             <p style="font-size: 16px; line-height: 1.6;">
               Your email notifications are working correctly! You will receive alerts here when new inverse signals are generated.
             </p>
             <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #374151; font-size: 12px; color: #888;">
-              <p>InverseIQ - Learn from losses, profit from patterns</p>
+              <p>Xrypt - Learn from losses, profit from patterns</p>
             </div>
           </div>
         `
@@ -161,7 +161,7 @@ class EmailService {
           
           <!-- Header -->
           <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #4ade80; font-size: 28px; margin: 0;">🧠 InverseIQ</h1>
+            <h1 style="color: #4ade80; font-size: 28px; margin: 0;">🧠 Xrypt</h1>
             <p style="color: #888; font-size: 14px; margin-top: 5px;">AI-Powered Inverse Signal</p>
           </div>
 
@@ -252,7 +252,7 @@ class EmailService {
           <!-- Footer -->
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #374151; text-align: center;">
             <p style="font-size: 12px; color: #888; margin: 5px 0;">
-              InverseIQ - Learn from losses, profit from patterns
+              Xrypt - Learn from losses, profit from patterns
             </p>
             <p style="font-size: 11px; color: #666; margin: 5px 0;">
               This is an automated notification. To manage your preferences, visit your account settings.
@@ -270,7 +270,7 @@ class EmailService {
    */
   generateSignalEmailText(signal) {
     return `
-🧠 InverseIQ - AI-Powered Inverse Signal
+🧠 Xrypt - AI-Powered Inverse Signal
 
 ═══════════════════════════════════════
 
@@ -298,7 +298,7 @@ Sentiment: ${signal.currentConditions.marketSentiment}
 
 Generated: ${new Date(signal.generatedAt).toLocaleString()}
 
-InverseIQ - Learn from losses, profit from patterns
+Xrypt - Learn from losses, profit from patterns
     `.trim();
   }
 }

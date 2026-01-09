@@ -1,7 +1,7 @@
 {
-  "name": "inverseiq",
+  "name": "xrypt-trading-service",
   "version": "1.0.0",
-  "description": "InverseIQ - Learn from losses, profit from patterns. AI-powered trading signals from inverse learning.",
+  "description": "Xrypt - AI-powered trading signals and data collection service.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -11,7 +11,7 @@
     "test": "node scripts/testHybridSystem.js"
   },
   "keywords": [
-    "inverseiq",
+    "xrypt",
     "trading",
     "ai",
     "signals",
@@ -22,15 +22,19 @@
     "pattern-recognition",
     "hybrid-ai"
   ],
-  "author": "InverseIQ",
+  "author": "Xrypt",
   "license": "MIT",
   "dependencies": {
     "axios": "^1.6.0",
-    "crypto": "^1.0.1",
-    "express": "^4.18.2",
     "cors": "^2.8.5",
-    "ws": "^8.14.0",
+    "crypto": "^1.0.1",
+    "dotenv": "^17.2.3",
+    "express": "^4.18.2",
+    "express-rate-limit": "^8.2.1",
+    "express-validator": "^7.3.1",
+    "helmet": "^8.1.0",
+    "node-telegram-bot-api": "^0.64.0",
     "nodemailer": "^6.9.7",
-    "node-telegram-bot-api": "^0.64.0"
+    "ws": "^8.14.0"
   }
 }

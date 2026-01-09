@@ -139,11 +139,11 @@ You should see:
 ### Via API:
 
 ```bash
-curl -X POST http://localhost:3000/api/notifications/subscribe \
+curl -X POST http://localhost:8000/api/notifications/subscribe \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "your@email.com",
-    "telegramChatId": "123456789",
+    "email": "notify@xrypt.net",
+    "telegramChatId": "5881754625",
     "preferences": {
       "channels": {
         "email": true,

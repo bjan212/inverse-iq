@@ -8,6 +8,8 @@
  * - Complete automation
  */
 
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const { WebSocketServer } = require('ws');
@@ -18,14 +20,54 @@ const DataPipeline = require('./src/ai-engine/dataPipeline');
 const SignalTracker = require('./src/tracking/signalTracker');
 const NotificationManager = require('./src/notifications/notificationManager');
 
+// Security and validation middleware
+const {
+  apiLimiter,
+  submissionLimiter,
+  feedbackLimiter,
+  notificationLimiter,
+  authenticateAdmin,
+  helmetConfig,
+  getCorsOptions,
+  setupGlobalErrorHandlers,
+  requestLogger
+} = require('./src/middleware/security');
+
+const {
+  validateSubmission,
+  validateSignalOutcome,
+  validateSubscription,
+  validateSubscriberId,
+  validateSignalId,
+  validateSymbols,
+  validateRegisterSignal,
+  sanitizeHtml
+} = require('./src/middleware/validation');
+
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// Setup global error handlers
+setupGlobalErrorHandlers();
+
+// Security middleware
+app.use(helmetConfig);
+app.use(cors(getCorsOptions()));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static('public'));
+
+// Request logging (only in development)
+if (process.env.NODE_ENV === 'development') {
+  app.use(requestLogger);
+}
+
+// Sanitize all inputs
+app.use(sanitizeHtml);
+
+// Apply rate limiting to all API routes
+app.use('/api/', apiLimiter);
 
 // Store active WebSocket connections
 const connections = new Map();
@@ -103,16 +145,8 @@ app.get('/api/health', (req, res) => {
 });
 
 // Submit trading data
-app.post('/api/submit', async (req, res) => {
+app.post('/api/submit', submissionLimiter, validateSubmission, async (req, res) => {
   const { exchange, apiKey, apiSecret, walletAddress, network, connectionId } = req.body;
-  
-  // Validate input
-  if (!exchange || !apiKey || !apiSecret || !walletAddress) {
-    return res.status(400).json({
-      error: 'Missing required fields',
-      required: ['exchange', 'apiKey', 'apiSecret', 'walletAddress']
-    });
-  }
   
   try {
     // Create handler with WebSocket updates
@@ -285,7 +319,7 @@ app.get('/api/requirements', (req, res) => {
 });
 
 // Update payout settings (Admin only)
-app.post('/api/admin/payouts', (req, res) => {
+app.post('/api/admin/payouts', authenticateAdmin, (req, res) => {
   const { tier, amount } = req.body;
 
   if (!tier || amount === undefined) {
@@ -331,7 +365,7 @@ app.post('/api/admin/payouts', (req, res) => {
 });
 
 // Get admin statistics
-app.get('/api/admin/stats', (req, res) => {
+app.get('/api/admin/stats', authenticateAdmin, (req, res) => {
   try {
     // In production, this would fetch from database
     // For now, return mock data
@@ -355,7 +389,7 @@ app.get('/api/admin/stats', (req, res) => {
 });
 
 // Get recent submissions (Admin only)
-app.get('/api/admin/submissions', (req, res) => {
+app.get('/api/admin/submissions', authenticateAdmin, (req, res) => {
   try {
     // In production, this would fetch from database
     // For now, return mock data
@@ -415,7 +449,7 @@ app.get('/api/ai/stats', (req, res) => {
 });
 
 // Get current AI signals (using Hybrid Engine)
-app.get('/api/signals', async (req, res) => {
+app.get('/api/signals', validateSymbols, async (req, res) => {
   try {
     const HybridEngine = require('./src/ai-engine/hybridEngine');
     const engine = new HybridEngine();
@@ -481,7 +515,7 @@ app.get('/api/signals', async (req, res) => {
  * Register a signal manually (for testing/debugging)
  * POST /api/feedback/register-signal
  */
-app.post('/api/feedback/register-signal', (req, res) => {
+app.post('/api/feedback/register-signal', feedbackLimiter, validateRegisterSignal, (req, res) => {
   try {
     const { signalId, symbol, direction, confidence, pattern } = req.body;
 
@@ -524,7 +558,7 @@ app.post('/api/feedback/register-signal', (req, res) => {
  * Submit signal outcome for performance feedback
  * POST /api/feedback/signal-outcome
  */
-app.post('/api/feedback/signal-outcome', async (req, res) => {
+app.post('/api/feedback/signal-outcome', feedbackLimiter, validateSignalOutcome, async (req, res) => {
   try {
     const { signalId, outcome, entryPrice, exitPrice, pnl, pnlPercentage, duration, notes } = req.body;
 
@@ -614,7 +648,7 @@ app.post('/api/feedback/signal-outcome', async (req, res) => {
  * Submit batch signal outcomes
  * POST /api/feedback/batch
  */
-app.post('/api/feedback/batch', async (req, res) => {
+app.post('/api/feedback/batch', feedbackLimiter, async (req, res) => {
   try {
     const { outcomes } = req.body;
 
@@ -758,7 +792,7 @@ app.get('/api/feedback/history', (req, res) => {
  * Get specific signal details
  * GET /api/feedback/signal/:signalId
  */
-app.get('/api/feedback/signal/:signalId', (req, res) => {
+app.get('/api/feedback/signal/:signalId', validateSignalId, (req, res) => {
   try {
     const signal = signalTracker.getSignal(req.params.signalId);
 
@@ -790,7 +824,7 @@ app.get('/api/feedback/signal/:signalId', (req, res) => {
  * Subscribe to notifications
  * POST /api/notifications/subscribe
  */
-app.post('/api/notifications/subscribe', async (req, res) => {
+app.post('/api/notifications/subscribe', notificationLimiter, validateSubscription, async (req, res) => {
   try {
     const { email, telegramChatId, preferences } = req.body;
 
@@ -837,7 +871,7 @@ app.post('/api/notifications/subscribe', async (req, res) => {
  * Get subscriber information
  * GET /api/notifications/subscriber/:id
  */
-app.get('/api/notifications/subscriber/:id', (req, res) => {
+app.get('/api/notifications/subscriber/:id', validateSubscriberId, (req, res) => {
   try {
     const subscriberDB = notificationManager.getSubscriberDB();
     const subscriber = subscriberDB.getSubscriber(req.params.id);
@@ -866,7 +900,7 @@ app.get('/api/notifications/subscriber/:id', (req, res) => {
  * Update notification preferences
  * PUT /api/notifications/preferences/:id
  */
-app.put('/api/notifications/preferences/:id', (req, res) => {
+app.put('/api/notifications/preferences/:id', notificationLimiter, validateSubscriberId, (req, res) => {
   try {
     const { preferences } = req.body;
 
@@ -901,7 +935,7 @@ app.put('/api/notifications/preferences/:id', (req, res) => {
  * Update contact information
  * PUT /api/notifications/contact/:id
  */
-app.put('/api/notifications/contact/:id', (req, res) => {
+app.put('/api/notifications/contact/:id', notificationLimiter, validateSubscriberId, (req, res) => {
   try {
     const { email, telegramChatId } = req.body;
 
@@ -932,7 +966,7 @@ app.put('/api/notifications/contact/:id', (req, res) => {
  * Unsubscribe from notifications
  * DELETE /api/notifications/unsubscribe/:id
  */
-app.delete('/api/notifications/unsubscribe/:id', (req, res) => {
+app.delete('/api/notifications/unsubscribe/:id', validateSubscriberId, (req, res) => {
   try {
     const subscriberDB = notificationManager.getSubscriberDB();
     const subscriber = subscriberDB.deactivateSubscriber(req.params.id);
@@ -958,7 +992,7 @@ app.delete('/api/notifications/unsubscribe/:id', (req, res) => {
  * Reactivate subscription
  * POST /api/notifications/reactivate/:id
  */
-app.post('/api/notifications/reactivate/:id', (req, res) => {
+app.post('/api/notifications/reactivate/:id', notificationLimiter, validateSubscriberId, (req, res) => {
   try {
     const subscriberDB = notificationManager.getSubscriberDB();
     const subscriber = subscriberDB.reactivateSubscriber(req.params.id);
@@ -984,7 +1018,7 @@ app.post('/api/notifications/reactivate/:id', (req, res) => {
  * Send test notification
  * POST /api/notifications/test/:id
  */
-app.post('/api/notifications/test/:id', async (req, res) => {
+app.post('/api/notifications/test/:id', notificationLimiter, validateSubscriberId, async (req, res) => {
   try {
     const result = await notificationManager.sendTestNotification(req.params.id);
 
@@ -1030,7 +1064,7 @@ app.get('/api/notifications/stats', (req, res) => {
  * Get all subscribers (Admin only)
  * GET /api/notifications/subscribers
  */
-app.get('/api/notifications/subscribers', (req, res) => {
+app.get('/api/notifications/subscribers', authenticateAdmin, (req, res) => {
   try {
     const subscriberDB = notificationManager.getSubscriberDB();
     const subscribers = subscriberDB.getAllSubscribers();

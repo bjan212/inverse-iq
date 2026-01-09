@@ -1,14 +1,14 @@
-# InverseIQ
+# Xrypt Trading Service
 
-**Learn from losses, profit from patterns.**
+**AI-powered trading signals and data collection platform.**
 
-InverseIQ is an AI-powered trading intelligence platform that learns from trader losses to generate high-confidence inverse signals. By combining public market data with real trader behavior, InverseIQ creates the most accurate trading signals available.
+Xrypt is a sophisticated trading intelligence platform that combines public market data with real trader behavior to generate high-confidence trading signals.
 
 ---
 
-## 🎯 **What is InverseIQ?**
+## 🎯 **What is Xrypt?**
 
-InverseIQ uses **inverse learning** - when traders lose money in specific market conditions, those conditions become powerful signals to trade the opposite direction.
+Xrypt uses **inverse learning** and **hybrid AI** - analyzing both public market patterns and real trader losses to identify profitable trading opportunities.
 
 ### **For Traders:**
 1. **Get AI Trading Signals** - High-confidence setups based on proven patterns
@@ -118,21 +118,6 @@ npm install
 4. **Important:** Enable "Contract" permission
 5. **Important:** Set IP whitelist for security
 
-#### **For OKX:**
-1. Go to https://www.okx.com/account/my-api
-2. Create new API key
-3. **Important:** Select "Read" permissions only
-4. **Important:** Enable "Trading" permission
-5. **Important:** Save your passphrase (required for API access)
-6. **Important:** Set IP whitelist for security
-
-#### **For MEXC:**
-1. Go to https://www.mexc.com/user/openapi
-2. Create new API key
-3. **Important:** Select "Read" permissions only
-4. **Important:** Enable "Futures" permission
-5. **Important:** Set IP whitelist for security
-
 ### **3. Run Validation:**
 
 #### **Binance:**
@@ -151,116 +136,6 @@ node scripts/collect.js \
   --api-secret YOUR_BYBIT_API_SECRET
 ```
 
-#### **OKX:**
-```bash
-node scripts/collect.js \
-  --platform okx \
-  --api-key YOUR_OKX_API_KEY \
-  --api-secret YOUR_OKX_API_SECRET \
-  --passphrase YOUR_OKX_PASSPHRASE
-```
-
-#### **MEXC:**
-```bash
-node scripts/collect.js \
-  --platform mexc \
-  --api-key YOUR_MEXC_API_KEY \
-  --api-secret YOUR_MEXC_API_SECRET
-```
-
-### **4. Review Results:**
-
-The script will:
-1. ✅ Test your API connection
-2. ✅ Check capital requirements
-3. ✅ Analyze trading history
-4. ✅ Calculate quality grade
-5. ✅ Display payment amount
-6. ✅ Save results to `output/` folder
-
----
-
-## 📊 **Example Output:**
-
-```
-╔════════════════════════════════════════════════════════════╗
-║     TRADING DATA COLLECTION & VALIDATION SERVICE          ║
-╚════════════════════════════════════════════════════════════╝
-
-Platform: BINANCE
-API Key: abc12345...xyz9
-
-Starting validation process...
-
-════════════════════════════════════════════════════════════
-
-=== Binance Futures Validation ===
-
-1. Testing API connection...
-   ✓ Connection successful
-
-2. Checking capital requirements...
-   Peak Capital: $15,234.56
-   Current Capital: $12,890.34
-   ✓ Capital requirement met
-
-3. Checking trading history...
-   Total Trades: 1,247
-   Total Positions: 423
-   Symbols Traded: 8 (BTCUSDT, ETHUSDT, BNBUSDT, SOLUSDT, ...)
-   Trading Span: 287 days
-   Max Gap: 12 days
-   Win Rate: 62.5%
-   Profit Factor: 2.34
-
-   ✓ Trade count sufficient
-   ✓ Max gap acceptable
-   ✓ Symbol diversity sufficient
-
-✅ VALIDATION PASSED!
-
-════════════════════════════════════════════════════════════
-
-╔════════════════════════════════════════════════════════════╗
-║                  ✅ VALIDATION PASSED!                     ║
-╚════════════════════════════════════════════════════════════╝
-
-📊 DATA QUALITY REPORT:
-
-   Grade: A
-   Score: 89/100
-   Payment: $260.00
-
-📈 STATISTICS:
-
-   Capital:
-     Peak: $15,234.56
-     Current: $12,890.34
-
-   Trading History:
-     Total Trades: 1,247
-     Total Positions: 423
-     Symbols: 8 (BTCUSDT, ETHUSDT, BNBUSDT, SOLUSDT, ...)
-     Time Span: 287 days
-     Max Gap: 12 days
-     Win Rate: 62.5%
-     Profit Factor: 2.34
-
-💾 Results saved to: output/validation_binance_2024-11-02.json
-
-════════════════════════════════════════════════════════════
-NEXT STEPS:
-════════════════════════════════════════════════════════════
-1. Review the validation results above
-2. Payment required: $260.00
-3. After payment, we will collect your trading data
-4. Your data will be anonymized and used for AI training
-5. You will receive a confirmation email
-
-📧 Contact: support@quantumfutures.ai
-💳 Payment methods: USDT (TRC20), Credit Card
-```
-
 ---
 
 ## 🔒 **Security & Privacy:**
@@ -276,57 +151,12 @@ NEXT STEPS:
 - ✅ **No personal info** - We don't collect name, email, or personal details
 - ✅ **GDPR compliant** - Full data protection compliance
 - ✅ **Secure transmission** - All data encrypted in transit (HTTPS)
-- ✅ **Limited retention** - Data deleted after use in AI training
-
-### **What We Collect:**
-- ✅ Trade history (symbol, direction, price, quantity, PnL, time)
-- ✅ Account balance history (for capital verification)
-- ✅ Trading statistics (win rate, profit factor, etc.)
-
-### **What We DON'T Collect:**
-- ❌ Your name or personal information
-- ❌ Email address or contact details
-- ❌ Withdrawal addresses
-- ❌ Account passwords
-- ❌ Any identifying information
 
 ---
 
-## 💰 **Payment Process:**
+## 🤖 **Hybrid AI System**
 
-### **1. Validation:**
-Run the validation script to check if you qualify and see your payment amount.
-
-### **2. Payment Methods:**
-
-#### **Crypto (Recommended):**
-- USDT (TRC20): `TBD`
-- USDT (ERC20): `TBD`
-- BTC: `TBD`
-
-#### **Credit Card:**
-- Via Stripe payment link (sent after validation)
-
-### **3. Data Collection:**
-After payment confirmation:
-1. We collect your complete trading history
-2. Data is anonymized and stored securely
-3. You receive confirmation email with submission ID
-4. Data is used for AI training within 30 days
-5. API keys are permanently deleted
-
-### **4. Confirmation:**
-You will receive:
-- ✅ Payment confirmation
-- ✅ Unique submission ID
-- ✅ Data collection receipt
-- ✅ Certificate of contribution (optional)
-
----
-
-## 🤖 **NEW: Hybrid AI System**
-
-We now support **TWO ways** to train the AI:
+We support **TWO ways** to train the AI:
 
 ### **1. Public Market Data (FREE)**
 - ✅ Analyze public market patterns
@@ -347,164 +177,46 @@ We now support **TWO ways** to train the AI:
 - ✅ 90-100% confidence
 - ✅ Highest accuracy
 
-**Read more:** [Hybrid AI Guide](docs/HYBRID_AI_GUIDE.md) | [Alternative Data Sources](docs/ALTERNATIVE_DATA_SOURCES.md)
-
 ---
 
 ## 📁 **Project Structure:**
 
 ```
 trading-data-collection-service/
-├── README.md                          # This file
-├── package.json                       # Node.js dependencies
-├── docs/
-│   ├── PLATFORM_ARCHITECTURE.md       # System architecture
-│   ├── HYBRID_AI_GUIDE.md             # Hybrid AI guide ✨ NEW
-│   └── ALTERNATIVE_DATA_SOURCES.md    # Data sources guide ✨ NEW
+├── README.md
+├── package.json
+├── server.js                          # Main server
+├── docs/                              # Documentation
 ├── src/
-│   ├── collectors/
-│   │   ├── binanceCollector.js        # Private trader data collector
-│   │   ├── binancePublicCollector.js  # Public data collector ✨ NEW
-│   │   ├── bybitCollector.js          # Bybit data collector
-│   │   └── okxCollector.js            # OKX collector (coming soon)
-│   ├── ai-engine/
-│   │   ├── inverseSignalEngine.js     # Base AI engine
-│   │   ├── selfImprovingEngine.js     # Learning engine
-│   │   ├── publicDataAnalyzer.js      # Public data analyzer ✨ NEW
-│   │   ├── hybridEngine.js            # Hybrid AI system ✨ NEW
-│   │   └── dataPipeline.js            # Data pipeline
-│   ├── validators/
-│   │   ├── traderValidator.js         # Validation logic
-│   │   └── dataQualityValidator.js    # Quality validator
-│   └── utils/
-│       └── encryption.js              # Security utilities
-├── scripts/
-│   ├── collect.js                     # Collect trader data
-│   ├── bootstrapHybridAI.js           # Bootstrap hybrid AI ✨ NEW
-│   ├── runAIEngine.js                 # Run AI engine
-│   └── automatedSubmissionHandler.js  # Automated handler
-├── config/
-│   └── platforms.json                 # Platform configurations
-├── data/
-│   ├── pattern_database.json          # Original pattern database
-│   ├── hybrid_pattern_database.json   # Hybrid database ✨ NEW
-│   └── public/                        # Public data cache ✨ NEW
-└── output/
-    ├── validation_*.json              # Validation results
-    ├── submissions/                   # Trader submissions
-    └── latest_signals.json            # Generated signals ✨ NEW
+│   ├── collectors/                    # Data collectors
+│   ├── ai-engine/                     # AI engines
+│   ├── notifications/                 # Notification system
+│   ├── validators/                    # Data validators
+│   ├── tracking/                      # Signal tracker
+│   └── payment/                       # Payment processor
+├── scripts/                           # Utility scripts
+├── public/                            # Web interface
+└── data/                              # Databases
 ```
 
 ---
 
-## 🎯 **Use Cases:**
+## 🚀 **API Endpoints:**
 
-### **For Traders:**
-- **Monetize your data** - Get paid $100-$300+ for your trading history
-- **One-time payment** - No recurring fees or subscriptions
-- **Passive income** - Submit once, get paid, done
-- **Help improve AI** - Contribute to better trading algorithms
+### **Public Endpoints:**
+- `GET /api/health` - Health check
+- `GET /api/signals` - Get current trading signals
+- `GET /api/exchanges` - List supported exchanges
+- `POST /api/submit` - Submit trading data
 
-### **For Trading Groups:**
-- **Bulk submissions** - Submit multiple accounts
-- **Group discounts** - Special pricing for 5+ submissions
-- **Revenue sharing** - Earn from member submissions
+### **Feedback Endpoints:**
+- `POST /api/feedback/signal-outcome` - Submit signal outcome
+- `GET /api/feedback/stats` - Get performance statistics
+- `GET /api/feedback/history` - Get signal history
 
-### **For Prop Firms:**
-- **Monetize trader data** - Get paid for your traders' history
-- **Quality data** - Prop traders typically have excellent track records
-- **Bulk pricing** - Special rates for 10+ submissions
-
----
-
-## ❓ **FAQ:**
-
-### **Q: Is this safe?**
-A: Yes! We only require read-only API access. We cannot withdraw funds or place trades. Your capital is 100% safe.
-
-### **Q: What happens to my data?**
-A: Your trading data is anonymized and used to train AI trading algorithms. Your identity is never stored or shared.
-
-### **Q: Can I submit multiple accounts?**
-A: Yes! Each account is validated separately. You can submit as many accounts as you have.
-
-### **Q: What if I don't meet the requirements?**
-A: Continue trading to build more history, then resubmit when you meet the criteria. There's no penalty for failed validation.
-
-### **Q: How long does validation take?**
-A: 1-5 minutes depending on your trading history size.
-
-### **Q: When do I get paid?**
-A: You pay us! We pay you for your data. Payment is required before data collection.
-
-### **Q: Can I delete my data later?**
-A: Yes, contact us with your submission ID and we'll delete your data within 30 days.
-
-### **Q: Do you support spot trading?**
-A: Not currently. We only collect futures trading data.
-
-### **Q: What about options trading?**
-A: Coming soon! Deribit options support planned for Q1 2025.
-
----
-
-## 📞 **Support:**
-
-### **Email:**
-support@quantumfutures.ai
-
-### **Telegram:**
-@QuantumFuturesSupport
-
-### **Discord:**
-https://discord.gg/quantumfutures
-
-### **Website:**
-https://quantumfutures.ai
-
----
-
-## 🚀 **Roadmap:**
-
-### **Phase 1 (Current):**
-- ✅ Binance Futures support
-- ✅ Bybit Futures support
-- ✅ Automated validation
-- ✅ Quality grading system
-- ✅ **Hybrid AI System** ✨ NEW
-- ✅ **Public Data Collection** ✨ NEW
-- ✅ **Pattern Analysis** ✨ NEW
-
-### **Phase 2 (Q4 2024):**
-- 🔜 OKX Futures support
-- 🔜 Bitget Futures support
-- 🔜 Web-based submission portal
-- 🔜 Automated payment processing
-- 🔜 **Multi-timeframe analysis** ✨
-- 🔜 **Real-time signal generation** ✨
-
-### **Phase 3 (Q1 2025):**
-- 🔜 Gate.io Futures support
-- 🔜 KuCoin Futures support
-- 🔜 Deribit Options support
-- 🔜 Admin dashboard
-- 🔜 Bulk submission API
-- 🔜 **Advanced pattern detection** ✨
-- 🔜 **Performance tracking** ✨
-
----
-
-## 📄 **License:**
-
-MIT License - See LICENSE file for details
-
----
-
-## 🙏 **Acknowledgments:**
-
-Thank you to all traders who contribute their data to help improve AI trading algorithms!
-
----
+### **Notification Endpoints:**
+- `POST /api/notifications/subscribe` - Subscribe to notifications
+- `GET /api/notifications/stats` - Get notification statistics
 
 ---
 
@@ -536,9 +248,63 @@ const signals = await engine.generateSmartSignals(['BTCUSDT', 'ETHUSDT']);
 
 ## 📚 **Documentation:**
 
-- 📖 [Hybrid AI Guide](docs/HYBRID_AI_GUIDE.md) - Complete guide to the hybrid system
-- 📖 [Alternative Data Sources](docs/ALTERNATIVE_DATA_SOURCES.md) - Where to find data online
-- 📖 [Platform Architecture](docs/PLATFORM_ARCHITECTURE.md) - System architecture
+- 📖 [Hybrid AI Guide](docs/HYBRID_AI_GUIDE.md)
+- 📖 [Alternative Data Sources](docs/ALTERNATIVE_DATA_SOURCES.md)
+- 📖 [Platform Architecture](docs/PLATFORM_ARCHITECTURE.md)
+- 📖 [Deployment Guide](docs/DEPLOYMENT_GUIDE.md)
+- 📖 [Notification System](docs/NOTIFICATION_SYSTEM.md)
+
+---
+
+## 🔧 **Configuration:**
+
+Create a `.env` file with your configuration:
+
+```bash
+# Server Configuration
+PORT=3000
+NODE_ENV=production
+
+# Email Service (Optional)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-app-password
+EMAIL_FROM=noreply@xrypt.net
+
+# Telegram Service (Optional)
+TELEGRAM_BOT_TOKEN=your-bot-token
+TELEGRAM_CHAT_ID=your-chat-id
+```
+
+---
+
+## 🚀 **Roadmap:**
+
+### **Phase 1 (Current):**
+- ✅ Binance & Bybit support
+- ✅ Hybrid AI System
+- ✅ Public Data Collection
+- ✅ Notification System
+- ✅ Performance Feedback Loop
+
+### **Phase 2 (Q1 2025):**
+- 🔜 More exchange support
+- 🔜 Web-based submission portal
+- 🔜 Advanced pattern detection
+- 🔜 Real-time signal generation
+
+---
+
+## 📄 **License:**
+
+MIT License - See LICENSE file for details
+
+---
+
+## 🙏 **Acknowledgments:**
+
+Thank you to all traders who contribute their data to help improve AI trading algorithms!
 
 ---
 
@@ -547,4 +313,7 @@ const signals = await engine.generateSmartSignals(['BTCUSDT', 'ETHUSDT']);
 **Option 1 (FREE):** `node scripts/bootstrapHybridAI.js`  
 **Option 2 (PAID):** `node scripts/collect.js --platform binance --api-key YOUR_KEY --api-secret YOUR_SECRET`
 
-# inverse-iq
+---
+
+**Website:** https://xrypt.net  
+**Support:** support@xrypt.net

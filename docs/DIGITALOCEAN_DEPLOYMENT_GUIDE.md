@@ -206,7 +206,7 @@ git add .
 git commit -m "Initial commit"
 
 # Push to GitHub (create repo first on github.com)
-git remote add origin https://github.com/yourusername/inverseiq.git
+git remote add origin https://github.com/bjan212/inverse-iq.git
 git push -u origin main
 ```
 
@@ -217,7 +217,7 @@ sudo apt install -y git
 
 # Clone repository
 cd ~
-git clone https://github.com/yourusername/inverseiq.git
+git clone https://github.com/bjan212/inverseiq.git
 cd inverseiq
 ```
 

@@ -23,5 +23,33 @@
     "active": true,
     "notificationCount": 0,
     "lastNotificationAt": null
+  },
+  {
+    "id": "eb4a23b226920b8538ce55640293933e",
+    "email": null,
+    "telegramChatId": "5881754625",
+    "preferences": {
+      "channels": {
+        "telegram": true
+      },
+      "minConfidence": 75,
+      "symbols": [
+        "BTCUSDT",
+        "ETHUSDT",
+        "BNBUSDT",
+        "SOLUSDT"
+      ],
+      "directions": [
+        "LONG",
+        "SHORT"
+      ],
+      "notifyOnHighConfidence": true,
+      "notifyOnCombinedPatterns": true
+    },
+    "createdAt": "2026-01-09T03:39:08.772Z",
+    "updatedAt": "2026-01-09T03:53:15.673Z",
+    "active": true,
+    "notificationCount": 0,
+    "lastNotificationAt": null
   }
 ]

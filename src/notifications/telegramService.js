@@ -95,12 +95,12 @@ class TelegramService {
       const message = `
 ✅ <b>Test Notification</b>
 
-This is a test notification from <b>InverseIQ</b>.
+This is a test notification from <b>Xrypt</b>.
 
 Your Telegram notifications are working correctly! You will receive alerts here when new inverse signals are generated.
 
 ━━━━━━━━━━━━━━━━━━━━
-🧠 InverseIQ - Learn from losses, profit from patterns
+🧠 Xrypt - Learn from losses, profit from patterns
       `.trim();
       
       const result = await this.bot.sendMessage(chatId, message, {
@@ -129,7 +129,7 @@ Your Telegram notifications are working correctly! You will receive alerts here 
     const riskEmoji = this.getRiskEmoji(signal.riskLevel);
     
     return `
-🧠 <b>InverseIQ Signal Alert</b>
+🧠 <b>Xrypt Signal Alert</b>
 
 ${directionEmoji} <b>${signal.symbol}</b> - <b>${signal.direction}</b>
 ${confidenceEmoji} Confidence: <b>${signal.confidence}%</b>
