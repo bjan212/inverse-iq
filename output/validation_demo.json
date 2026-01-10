@@ -1,0 +1,8 @@
+{
+  "platform":"demo",
+  "timestamp":"demo",
+  "validation":{"passed":true,"data":{
+    "history":{"symbols":["BTCUSDT"],"totalTrades":100,"symbolCount":1,"spanDays":30,"maxGap":2,"winRate":60},
+    "capital":{"peakCapital":10000,"currentCapital":9000}
+  }}
+}

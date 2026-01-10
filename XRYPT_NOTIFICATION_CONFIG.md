@@ -94,7 +94,7 @@ TELEGRAM_BOT_TOKEN=8187241165:AAGybvkmybrqYHIVhAz2YYLzPQqIvdp3beA
 # ============================================
 
 # Server Configuration
-PORT=3000
+PORT=8000
 NODE_ENV=production
 
 # Database (if applicable)
@@ -151,21 +151,21 @@ This will:
 
 ### Test Email Only:
 ```bash
-curl -X POST http://localhost:3000/api/notifications/test-email \
+curl -X POST http://localhost:8000/api/notifications/test-email \
   -H "Content-Type: application/json" \
   -d '{"email": "your@email.com"}'
 ```
 
 ### Test Telegram Only:
 ```bash
-curl -X POST http://localhost:3000/api/notifications/test-telegram \
+curl -X POST http://localhost:8000/api/notifications/test-telegram \
   -H "Content-Type: application/json" \
   -d '{"chatId": "YOUR_CHAT_ID"}'
 ```
 
 ### Subscribe to Notifications:
 ```bash
-curl -X POST http://localhost:3000/api/notifications/subscribe \
+curl -X POST http://localhost:8000/api/notifications/subscribe \
   -H "Content-Type: application/json" \
   -d '{
     "email": "your@email.com",
@@ -244,12 +244,12 @@ If you're using ProtonMail Plus/Professional:
 
 ### Check Service Status:
 ```bash
-curl http://localhost:3000/api/notifications/stats
+curl http://localhost:8000/api/notifications/stats
 ```
 
 ### View Subscribers:
 ```bash
-curl http://localhost:3000/api/notifications/subscribers
+curl http://localhost:8000/api/notifications/subscribers
 ```
 
 ### Check Logs:

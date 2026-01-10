@@ -48,6 +48,10 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
+// Secure admin authentication
+const { setupSession, requireAdminLogin, handleAdminLogin, handleAdminLogout } = require('./src/middleware/adminAuth');
+setupSession(app);
+
 // Setup global error handlers
 setupGlobalErrorHandlers();
 
@@ -56,6 +60,24 @@ app.use(helmetConfig);
 app.use(cors(getCorsOptions()));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Protect admin.html
+app.get('/admin.html', requireAdminLogin, (req, res, next) => {
+  res.sendFile(__dirname + '/public/admin.html');
+});
+
+// Admin login page
+app.get('/admin-login', (req, res) => {
+  res.sendFile(__dirname + '/public/admin-login.html');
+});
+
+// Handle admin login
+app.post('/admin-login', express.urlencoded({ extended: true }), handleAdminLogin);
+
+// Admin logout
+app.get('/admin-logout', handleAdminLogout);
+
+// Serve static files (after admin protection)
 app.use(express.static('public'));
 
 // Request logging (only in development)
