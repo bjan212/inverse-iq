@@ -441,7 +441,63 @@
                                 <label for="ada">ADA/USDT</label>
                             </div>
                         </div>
-                        <div class="form-help">Select at least one trading pair</div>
+                        <div class="form-help">Select popular pairs above, or choose from all available pairs below</div>
+                    </div>
+                    
+                    <!-- Additional Trading Pairs Dropdown -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            Add More Trading Pairs (Optional)
+                        </label>
+                        <select id="additionalPairs" class="form-input" multiple size="6">
+                            <optgroup label="Major Cryptocurrencies">
+                                <option value="DOGEUSDT">DOGE/USDT</option>
+                                <option value="DOTUSDT">DOT/USDT</option>
+                                <option value="MATICUSDT">MATIC/USDT</option>
+                                <option value="AVAXUSDT">AVAX/USDT</option>
+                                <option value="LINKUSDT">LINK/USDT</option>
+                                <option value="UNIUSDT">UNI/USDT</option>
+                            </optgroup>
+                            <optgroup label="Layer 1 & Layer 2">
+                                <option value="ATOMUSDT">ATOM/USDT</option>
+                                <option value="NEARUSDT">NEAR/USDT</option>
+                                <option value="APTUSDT">APT/USDT</option>
+                                <option value="ARBUSDT">ARB/USDT</option>
+                                <option value="OPUSDT">OP/USDT</option>
+                                <option value="SUIUSDT">SUI/USDT</option>
+                            </optgroup>
+                            <optgroup label="DeFi Tokens">
+                                <option value="AAVEUSDT">AAVE/USDT</option>
+                                <option value="MKRUSDT">MKR/USDT</option>
+                                <option value="CRVUSDT">CRV/USDT</option>
+                                <option value="LDOUSDT">LDO/USDT</option>
+                                <option value="COMPUSDT">COMP/USDT</option>
+                            </optgroup>
+                            <optgroup label="Meme Coins">
+                                <option value="SHIBUSDT">SHIB/USDT</option>
+                                <option value="PEPEUSDT">PEPE/USDT</option>
+                                <option value="FLOKIUSDT">FLOKI/USDT</option>
+                            </optgroup>
+                            <optgroup label="Gaming & Metaverse">
+                                <option value="SANDUSDT">SAND/USDT</option>
+                                <option value="MANAUSDT">MANA/USDT</option>
+                                <option value="AXSUSDT">AXS/USDT</option>
+                                <option value="GALAUSDT">GALA/USDT</option>
+                            </optgroup>
+                            <optgroup label="Other Altcoins">
+                                <option value="LTCUSDT">LTC/USDT</option>
+                                <option value="ETCUSDT">ETC/USDT</option>
+                                <option value="BCHUSDT">BCH/USDT</option>
+                                <option value="XLMUSDT">XLM/USDT</option>
+                                <option value="TRXUSDT">TRX/USDT</option>
+                                <option value="ALGOUSDT">ALGO/USDT</option>
+                                <option value="VETUSDT">VET/USDT</option>
+                                <option value="FILUSDT">FIL/USDT</option>
+                                <option value="ICPUSDT">ICP/USDT</option>
+                                <option value="THETAUSDT">THETA/USDT</option>
+                            </optgroup>
+                        </select>
+                        <div class="form-help">Hold Ctrl (Cmd on Mac) to select multiple pairs from the dropdown</div>
                     </div>
                     
                     <!-- Minimum Confidence -->
@@ -518,9 +574,16 @@
             const telegram = document.getElementById('telegram').value.trim();
             const minConfidence = parseInt(document.getElementById('minConfidence').value);
             
-            // Get selected symbols
+            // Get selected symbols from checkboxes
             const symbolCheckboxes = document.querySelectorAll('#symbolsGroup input[type="checkbox"]:checked');
-            const symbols = Array.from(symbolCheckboxes).map(cb => cb.value);
+            const checkboxSymbols = Array.from(symbolCheckboxes).map(cb => cb.value);
+            
+            // Get selected symbols from dropdown
+            const additionalPairsSelect = document.getElementById('additionalPairs');
+            const dropdownSymbols = Array.from(additionalPairsSelect.selectedOptions).map(option => option.value);
+            
+            // Combine both selections and remove duplicates
+            const symbols = [...new Set([...checkboxSymbols, ...dropdownSymbols])];
             
             // Get notification methods
             const methodCheckboxes = document.querySelectorAll('#emailNotif:checked, #telegramNotif:checked');
