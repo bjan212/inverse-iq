@@ -1,0 +1,176 @@
+===================================
+COMPREHENSIVE API TESTING
+===================================
+
+Base URL: http://localhost:8000
+Results will be saved to: test_results_20260110_162120.txt
+
+### 1. HEALTH & STATUS ENDPOINTS ###
+Testing: Health Check
+Method: GET /api/health
+HTTP Code: 200
+Response: {"status":"ok","timestamp":"2026-01-10T12:21:20.209Z","activeConnections":0}
+
+---
+
+Testing: AI Statistics
+Method: GET /api/ai/stats
+HTTP Code: 200
+Response: {"success":true,"stats":{"database":{"version":1,"created":"2025-11-29T04:25:33.189Z","lastUpdated":"2026-01-10T12:20:03.379Z","totalTraders":2,"totalTrades":3012,"totalPatterns":10},"patter
+---
+
+### 2. SIGNALS ENDPOINTS ###
+Testing: Get Signals
+Method: GET /api/signals
+HTTP Code: 200
+Response: {"success":true,"signals":[{"signalId":"BTCUSDT_1768047681742_9sdppknq5","symbol":"BTCUSDT","direction":"SHORT","confidence":70,"reason":"INVERSE SIGNAL: 1 traders lost $3495.40 going LONG i
+---
+
+Testing: Get Signals with Symbols Filter
+Method: GET /api/signals?symbols=BTCUSDT,ETHUSDT
+HTTP Code: 200
+Response: {"success":true,"signals":[{"signalId":"BTCUSDT_1768047684863_udbawwnbg","symbol":"BTCUSDT","direction":"SHORT","confidence":70,"reason":"INVERSE SIGNAL: 1 traders lost $3495.40 going LONG i
+---
+
+### 3. REFERENCE DATA ENDPOINTS ###
+Testing: Get Supported Exchanges
+Method: GET /api/exchanges
+HTTP Code: 200
+Response: {"exchanges":[{"id":"binance","name":"Binance Futures","supported":true,"speed":"Fast (10-60 seconds)","recommended":true},{"id":"bybit","name":"Bybit Futures","supported":true,"speed":"Medi
+---
+
+Testing: Get Supported Networks
+Method: GET /api/networks
+HTTP Code: 200
+Response: {"networks":[{"network":"TRC20","currency":"USDT","fee":"~1 USDT","speed":"Fast (1-3 min)","recommended":true},{"network":"BEP20","currency":"USDT/USDC","fee":"~0.5 USDT","speed":"Fast (1-5 
+---
+
+Testing: Get Submission Requirements
+Method: GET /api/requirements
+HTTP Code: 200
+Response: {"minimumRequirements":{"minTrades":20,"minCapital":500,"minTradingDays":30,"minSymbols":3,"maxGapDays":60},"scoringWeights":{"tradeCount":30,"capitalSize":20,"consistency":20,"symbolDiversi
+---
+
+### 4. NOTIFICATION ENDPOINTS ###
+Testing: Subscribe to Notifications
+Method: POST /api/notifications/subscribe
+HTTP Code: 500
+Response: {"success":false,"error":"Subscriber already exists with this contact information"}
+
+---
+
+Testing: Get Notification Stats
+Method: GET /api/notifications/stats
+HTTP Code: 200
+Response: {"success":true,"stats":{"totalSent":0,"emailSent":0,"telegramSent":0,"failed":0,"subscribers":{"total":2,"active":2,"inactive":0,"withEmail":1,"withTelegram":1,"totalNotificationsSent":0},"
+---
+
+### 5. FEEDBACK ENDPOINTS ###
+Testing: Get Feedback Stats
+Method: GET /api/feedback/stats
+HTTP Code: 200
+Response: {"success":true,"tracker":{"total":19,"active":6,"closed":10,"expired":3,"wins":6,"losses":4,"winRate":"60.00","totalPnl":"1500.00","avgPnl":"150.00","avgConfidence":"74.84"},"ai":{"totalPat
+---
+
+Testing: Get Feedback History
+Method: GET /api/feedback/history
+HTTP Code: 200
+Response: {"success":true,"count":19,"signals":[{"signalId":"ETHUSDT_1768047685580_1foko7b6d","symbol":"ETHUSDT","direction":"SHORT","confidence":69,"patternKey":"ETHUSDT_LONG_RSI40_NEUTRAL","patternS
+---
+
+### 6. DATA SUBMISSION ENDPOINTS ###
+Testing: Submit Trade Data
+Method: POST /api/submit
+HTTP Code: 400
+Response: {"success":false,"error":"Validation failed","details":[{"type":"field","value":"","msg":"API key is required","path":"apiKey","location":"body"},{"type":"field","value":"","msg":"Invalid AP
+---
+
+### 7. FRONTEND PAGES ###
+Testing: Home Page
+Method: GET /
+HTTP Code: 200
+Response:                                                                                                                 §§§§§§§§    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset=
+---
+
+Testing: Signals Page
+Method: GET /signals.html
+HTTP Code: 200
+Response: <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InverseIQ - AI Trading Signals</title
+---
+
+Testing: Get Paid Page
+Method: GET /get-paid-for-data.html
+HTTP Code: 200
+Response: <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Paid $100-$300 for Your Trading D
+---
+
+Testing: Terms Page
+Method: GET /terms.html
+HTTP Code: 200
+Response: <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - Xrypt</title>
+    
+---
+
+Testing: Privacy Page
+Method: GET /privacy.html
+HTTP Code: 200
+Response: <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Xrypt</title>
+    <s
+---
+
+### 8. ERROR HANDLING TESTS ###
+Testing: Non-existent Endpoint
+Method: GET /api/nonexistent
+HTTP Code: 404
+Response: <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot GET /api/nonexistent</pre>
+</body>
+</html>
+
+---
+
+Testing: Invalid Submission Data
+Method: POST /api/submit
+HTTP Code: 400
+Response: {"success":false,"error":"Validation failed","details":[{"type":"field","value":"","msg":"Exchange is required","path":"exchange","location":"body"},{"type":"field","value":"","msg":"Invalid
+---
+
+Testing: Invalid Email Format
+Method: POST /api/notifications/subscribe
+HTTP Code: 400
+Response: {"success":false,"error":"Validation failed","details":[{"type":"field","value":"invalid-email","msg":"Invalid email address","path":"email","location":"body"}]}
+
+---
+
+===================================
+TESTING COMPLETE
+===================================
