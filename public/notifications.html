@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscribe to Notifications - InverseIQ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(to bottom right, #030712, #1f2937, #111827);
+            color: #f3f4f6;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+        
+        /* Grid Pattern Overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(74, 222, 128, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(74, 222, 128, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* Terminal Window */
+        .terminal-window {
+            background: rgba(3, 7, 18, 0.8);
+            border: 1px solid #374151;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+        }
+        
+        .terminal-header {
+            background: #1f2937;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #374151;
+        }
+        
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .terminal-dot.red { background: #ef4444; }
+        .terminal-dot.yellow { background: #eab308; }
+        .terminal-dot.green { background: #22c55e; }
+        
+        .terminal-title {
+            margin-left: 12px;
+            font-size: 13px;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+        
+        .terminal-content {
+            padding: 40px;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            font-size: 32px;
+            font-weight: 700;
+            color: #4ade80;
+            text-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+            margin-bottom: 10px;
+        }
+        
+        .logo::before {
+            content: '> ';
+            color: #22c55e;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #9ca3af;
+            margin-bottom: 30px;
+        }
+        
+        .description {
+            font-size: 14px;
+            color: #d1d5db;
+            line-height: 1.6;
+            background: rgba(3, 7, 18, 0.6);
+            border-left: 3px solid #4ade80;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        
+        /* Form */
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #4ade80;
+            margin-bottom: 8px;
+        }
+        
+        .form-label .required {
+            color: #ef4444;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(3, 7, 18, 0.6);
+            border: 1px solid #374151;
+            border-radius: 8px;
+            color: #f3f4f6;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #4ade80;
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+        }
+        
+        .form-input::placeholder {
+            color: #6b7280;
+        }
+        
+        .form-help {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 5px;
+        }
+        
+        /* Checkbox Group */
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            background: rgba(3, 7, 18, 0.6);
+            border: 1px solid #374151;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .checkbox-item:hover {
+            border-color: #4ade80;
+            background: rgba(74, 222, 128, 0.05);
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #4ade80;
+        }
+        
+        .checkbox-item label {
+            cursor: pointer;
+            font-size: 13px;
+            color: #f3f4f6;
+        }
+        
+        /* Range Slider */
+        .range-container {
+            margin-top: 10px;
+        }
+        
+        .range-value {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #16a34a;
+            color: #000;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .range-slider {
+            width: 100%;
+            height: 8px;
+            background: rgba(55, 65, 81, 0.5);
+            border-radius: 10px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #4ade80;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+        }
+        
+        .range-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #4ade80;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+            border: none;
+        }
+        
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: #16a34a;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 8px;
+            color: #000000;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            margin-top: 30px;
+        }
+        
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 222, 128, 0.4);
+            background: #22c55e;
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Alert Messages */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .alert.success {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid #22c55e;
+            color: #4ade80;
+        }
+        
+        .alert.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #f87171;
+        }
+        
+        .alert.show {
+            display: block;
+        }
+        
+        /* Back Link */
+        .back-link {
+            display: inline-block;
+            color: #4ade80;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .back-link:hover {
+            color: #22c55e;
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+        }
+        
+        .back-link::before {
+            content: '← ';
+        }
+        
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(0, 0, 0, 0.3);
+            border-top-color: #000;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .terminal-content {
+                padding: 20px;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/signals.html" class="back-link">Back to Signals</a>
+        
+        <!-- Terminal Window -->
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <div class="terminal-dot red"></div>
+                <div class="terminal-dot yellow"></div>
+                <div class="terminal-dot green"></div>
+                <div class="terminal-title">inverse-iq:~/notifications/subscribe</div>
+            </div>
+            <div class="terminal-content">
+                <!-- Header -->
+                <div class="header">
+                    <div class="logo">InverseIQ</div>
+                    <div class="subtitle">Subscribe to Trading Signal Notifications</div>
+                </div>
+                
+                <div class="description">
+                    🔔 Get instant notifications when new high-confidence trading signals are generated. 
+                    Choose your preferred notification method and customize which signals you want to receive.
+                </div>
+                
+                <!-- Alert Messages -->
+                <div id="successAlert" class="alert success"></div>
+                <div id="errorAlert" class="alert error"></div>
+                
+                <!-- Subscription Form -->
+                <form id="subscriptionForm">
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            Email Address <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            class="form-input" 
+                            placeholder="your.email@example.com"
+                            required
+                        >
+                        <div class="form-help">We'll send signal notifications to this email</div>
+                    </div>
+                    
+                    <!-- Telegram -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            Telegram Username (Optional)
+                        </label>
+                        <input 
+                            type="text" 
+                            id="telegram" 
+                            class="form-input" 
+                            placeholder="@yourusername"
+                        >
+                        <div class="form-help">Include @ symbol. Get instant notifications via Telegram bot</div>
+                    </div>
+                    
+                    <!-- Trading Pairs -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            Trading Pairs to Monitor <span class="required">*</span>
+                        </label>
+                        <div class="checkbox-group" id="symbolsGroup">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="btc" value="BTCUSDT" checked>
+                                <label for="btc">BTC/USDT</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="eth" value="ETHUSDT" checked>
+                                <label for="eth">ETH/USDT</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="bnb" value="BNBUSDT">
+                                <label for="bnb">BNB/USDT</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="sol" value="SOLUSDT">
+                                <label for="sol">SOL/USDT</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="xrp" value="XRPUSDT">
+                                <label for="xrp">XRP/USDT</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="ada" value="ADAUSDT">
+                                <label for="ada">ADA/USDT</label>
+                            </div>
+                        </div>
+                        <div class="form-help">Select at least one trading pair</div>
+                    </div>
+                    
+                    <!-- Minimum Confidence -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            Minimum Confidence Level
+                        </label>
+                        <div class="range-container">
+                            <span class="range-value" id="confidenceValue">70%</span>
+                            <input 
+                                type="range" 
+                                id="minConfidence" 
+                                class="range-slider" 
+                                min="50" 
+                                max="95" 
+                                value="70" 
+                                step="5"
+                            >
+                        </div>
+                        <div class="form-help">Only receive signals with confidence above this threshold</div>
+                    </div>
+                    
+                    <!-- Notification Methods -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            Notification Methods <span class="required">*</span>
+                        </label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="emailNotif" value="email" checked>
+                                <label for="emailNotif">📧 Email</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="telegramNotif" value="telegram">
+                                <label for="telegramNotif">💬 Telegram</label>
+                            </div>
+                        </div>
+                        <div class="form-help">Choose how you want to receive notifications</div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        🔔 Subscribe to Notifications
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Update confidence value display
+        const confidenceSlider = document.getElementById('minConfidence');
+        const confidenceValue = document.getElementById('confidenceValue');
+        
+        confidenceSlider.addEventListener('input', (e) => {
+            confidenceValue.textContent = e.target.value + '%';
+        });
+        
+        // Form submission
+        const form = document.getElementById('subscriptionForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const successAlert = document.getElementById('successAlert');
+        const errorAlert = document.getElementById('errorAlert');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Hide previous alerts
+            successAlert.classList.remove('show');
+            errorAlert.classList.remove('show');
+            
+            // Get form values
+            const email = document.getElementById('email').value.trim();
+            const telegram = document.getElementById('telegram').value.trim();
+            const minConfidence = parseInt(document.getElementById('minConfidence').value);
+            
+            // Get selected symbols
+            const symbolCheckboxes = document.querySelectorAll('#symbolsGroup input[type="checkbox"]:checked');
+            const symbols = Array.from(symbolCheckboxes).map(cb => cb.value);
+            
+            // Get notification methods
+            const methodCheckboxes = document.querySelectorAll('#emailNotif:checked, #telegramNotif:checked');
+            const notificationMethods = Array.from(methodCheckboxes).map(cb => cb.value);
+            
+            // Validation
+            if (!email) {
+                showError('Email address is required');
+                return;
+            }
+            
+            if (symbols.length === 0) {
+                showError('Please select at least one trading pair');
+                return;
+            }
+            
+            if (notificationMethods.length === 0) {
+                showError('Please select at least one notification method');
+                return;
+            }
+            
+            if (notificationMethods.includes('telegram') && !telegram) {
+                showError('Telegram username is required when Telegram notifications are enabled');
+                return;
+            }
+            
+            // Prepare request data
+            const requestData = {
+                email: email,
+                preferences: {
+                    symbols: symbols,
+                    minConfidence: minConfidence,
+                    notificationMethods: notificationMethods
+                }
+            };
+            
+            // Add telegram if provided
+            if (telegram) {
+                requestData.telegram = telegram.startsWith('@') ? telegram : '@' + telegram;
+            }
+            
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading-spinner"></span> Subscribing...';
+            
+            try {
+                const response = await fetch('/api/notifications/subscribe', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showSuccess(`✅ Successfully subscribed! Your subscriber ID: ${data.subscriberId}`);
+                    form.reset();
+                    confidenceValue.textContent = '70%';
+                    
+                    // Re-check default options
+                    document.getElementById('btc').checked = true;
+                    document.getElementById('eth').checked = true;
+                    document.getElementById('emailNotif').checked = true;
+                } else {
+                    showError(data.error || 'Subscription failed. Please try again.');
+                }
+            } catch (error) {
+                console.error('Subscription error:', error);
+                showError('Network error. Please check your connection and try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '🔔 Subscribe to Notifications';
+            }
+        });
+        
+        function showSuccess(message) {
+            successAlert.textContent = message;
+            successAlert.classList.add('show');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function showError(message) {
+            errorAlert.textContent = '❌ ' + message;
+            errorAlert.classList.add('show');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
