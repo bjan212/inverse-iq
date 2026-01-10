@@ -1,10 +1,10 @@
 {
   "version": 1,
   "created": "2025-11-29T04:25:33.189Z",
-  "lastUpdated": "2026-01-09T05:50:36.751Z",
-  "totalTraders": 1,
-  "totalTrades": 1808,
-  "totalPatterns": 6,
+  "lastUpdated": "2026-01-10T12:10:10.978Z",
+  "totalTraders": 2,
+  "totalTrades": 2410,
+  "totalPatterns": 10,
   "patterns": {
     "BTCUSDT_SHORT_RSINaN_undefined": {
       "key": "BTCUSDT_SHORT_RSINaN_undefined",
@@ -166,6 +166,126 @@
       "created": "2025-11-29T04:25:43.176Z",
       "lastSeen": "2026-01-09T05:50:36.751Z",
       "version": 318
+    },
+    "BTCUSDT_LONG_RSI40_NEUTRAL": {
+      "key": "BTCUSDT_LONG_RSI40_NEUTRAL",
+      "symbol": "BTCUSDT",
+      "originalDirection": "LONG",
+      "inverseDirection": "SHORT",
+      "traders": [
+        "online_data"
+      ],
+      "occurrences": 172,
+      "totalLoss": 1747.6999999999534,
+      "avgLoss": 10.161046511627637,
+      "conditions": {
+        "priceLevel": 0,
+        "priceChange24h": 0,
+        "volume24h": 0,
+        "volumeRatio": 1,
+        "rsi": 50.000000000000014,
+        "macd": "NEUTRAL",
+        "marketSentiment": "NEUTRAL",
+        "fearGreedIndex": 50.000000000000014,
+        "fundingRate": 0,
+        "openInterest": 0,
+        "longShortRatio": 1
+      },
+      "confidence": 100,
+      "source": "trader",
+      "created": "2026-01-10T12:10:10.977Z",
+      "lastSeen": "2026-01-10T12:10:10.977Z",
+      "version": 172
+    },
+    "BTC_LONG_RSI40_NEUTRAL": {
+      "key": "BTC_LONG_RSI40_NEUTRAL",
+      "symbol": "BTC",
+      "originalDirection": "LONG",
+      "inverseDirection": "SHORT",
+      "traders": [
+        "online_data"
+      ],
+      "occurrences": 99,
+      "totalLoss": 729.9400000000023,
+      "avgLoss": 7.373131313131337,
+      "conditions": {
+        "priceLevel": 0,
+        "priceChange24h": 0,
+        "volume24h": 0,
+        "volumeRatio": 1,
+        "rsi": 49.99999999999998,
+        "macd": "NEUTRAL",
+        "marketSentiment": "NEUTRAL",
+        "fearGreedIndex": 49.99999999999998,
+        "fundingRate": 0,
+        "openInterest": 0,
+        "longShortRatio": 1
+      },
+      "confidence": 98,
+      "source": "trader",
+      "created": "2026-01-10T12:10:10.977Z",
+      "lastSeen": "2026-01-10T12:10:10.977Z",
+      "version": 99
+    },
+    "ETHUSDT_LONG_RSI40_NEUTRAL": {
+      "key": "ETHUSDT_LONG_RSI40_NEUTRAL",
+      "symbol": "ETHUSDT",
+      "originalDirection": "LONG",
+      "inverseDirection": "SHORT",
+      "traders": [
+        "online_data"
+      ],
+      "occurrences": 186,
+      "totalLoss": 99.91000000000304,
+      "avgLoss": 0.5371505376344249,
+      "conditions": {
+        "priceLevel": 0,
+        "priceChange24h": 0,
+        "volume24h": 0,
+        "volumeRatio": 1,
+        "rsi": 50.00000000000001,
+        "macd": "NEUTRAL",
+        "marketSentiment": "NEUTRAL",
+        "fearGreedIndex": 50.00000000000001,
+        "fundingRate": 0,
+        "openInterest": 0,
+        "longShortRatio": 1
+      },
+      "confidence": 98,
+      "source": "trader",
+      "created": "2026-01-10T12:10:10.977Z",
+      "lastSeen": "2026-01-10T12:10:10.978Z",
+      "version": 186
+    },
+    "ETH_LONG_RSI40_NEUTRAL": {
+      "key": "ETH_LONG_RSI40_NEUTRAL",
+      "symbol": "ETH",
+      "originalDirection": "LONG",
+      "inverseDirection": "SHORT",
+      "traders": [
+        "online_data"
+      ],
+      "occurrences": 96,
+      "totalLoss": 45.54000000000087,
+      "avgLoss": 0.4743750000000091,
+      "conditions": {
+        "priceLevel": 0,
+        "priceChange24h": 0,
+        "volume24h": 0,
+        "volumeRatio": 1,
+        "rsi": 49.99999999999998,
+        "macd": "NEUTRAL",
+        "marketSentiment": "NEUTRAL",
+        "fearGreedIndex": 49.99999999999998,
+        "fundingRate": 0,
+        "openInterest": 0,
+        "longShortRatio": 1
+      },
+      "confidence": 98,
+      "source": "trader",
+      "created": "2026-01-10T12:10:10.978Z",
+      "lastSeen": "2026-01-10T12:10:10.978Z",
+      "version": 96
     }
   },
   "performance": {
@@ -182,6 +302,14 @@
       "totalLosses": 216,
       "patternsContributed": 216,
       "source": "public"
+    },
+    {
+      "id": "online_data",
+      "addedAt": "2026-01-10T12:10:10.978Z",
+      "totalTrades": 602,
+      "totalLosses": 553,
+      "patternsContributed": 553,
+      "source": "trader"
     }
   ]
 }

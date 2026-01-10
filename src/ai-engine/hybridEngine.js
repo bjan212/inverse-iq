@@ -36,6 +36,35 @@ class HybridEngine extends SelfImprovingEngine {
   }
 
   /**
+   * Import online_signals.json as trader data (auto-load on startup)
+   */
+  async importOnlineSignals() {
+    const fs = require('fs');
+    try {
+      const onlineData = JSON.parse(fs.readFileSync('data/online_signals.json', 'utf8'));
+      if (!Array.isArray(onlineData) || onlineData.length === 0) {
+        console.log('No online signals to import.');
+        return;
+      }
+      // Format as traderData for addNewTraderData
+      const traderData = {
+        traderId: 'online_data',
+        trades: onlineData.map(d => ({
+          symbol: d.symbol,
+          side: d.direction || d.side || 'LONG',
+          pnl: d.pnl || -Math.abs(Number(d.close) - Number(d.open)),
+          entryTime: d.time,
+          conditions: d.conditions || {}
+        }))
+      };
+      await this.addNewTraderData(traderData);
+      console.log('✅ Imported online signals into AI engine.');
+    } catch (e) {
+      console.error('Failed to import online signals:', e.message);
+    }
+  }
+
+  /**
    * Override to track generated signals
    */
   async generateSmartSignals(symbols = ['BTCUSDT', 'ETHUSDT']) {

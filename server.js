@@ -77,6 +77,14 @@ app.post('/admin-login', express.urlencoded({ extended: true }), handleAdminLogi
 // Admin logout
 app.get('/admin-logout', handleAdminLogout);
 
+// Block direct static access to admin.html
+app.use((req, res, next) => {
+  if (req.path === '/admin.html') {
+    return res.status(403).send('Forbidden');
+  }
+  next();
+});
+
 // Serve static files (after admin protection)
 app.use(express.static('public'));
 
@@ -95,13 +103,17 @@ app.use('/api/', apiLimiter);
 const connections = new Map();
 
 // Initialize AI Engine, Data Pipeline, Signal Tracker, and Notification Manager
-const aiEngine = new SelfImprovingEngine();
+const HybridEngine = require('./src/ai-engine/hybridEngine');
+const aiEngine = new HybridEngine();
 const dataPipeline = new DataPipeline();
 const signalTracker = new SignalTracker('./data/active_signals.json');
 const notificationManager = new NotificationManager();
 
 // Connect signal tracker to AI engine
 aiEngine.setSignalTracker(signalTracker);
+
+// Auto-import online signals on startup
+aiEngine.importOnlineSignals();
 
 // Initialize notification manager
 notificationManager.initialize().catch(err => {
