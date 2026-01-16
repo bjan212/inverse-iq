@@ -26,6 +26,7 @@ const {
   submissionLimiter,
   feedbackLimiter,
   notificationLimiter,
+  adminLoginLimiter,
   authenticateAdmin,
   helmetConfig,
   getCorsOptions,
@@ -48,8 +49,11 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
+// Honor X-Forwarded-* headers when behind a proxy (nginx)
+app.set('trust proxy', 1);
+
 // Secure admin authentication
-const { setupSession, requireAdminLogin, handleAdminLogin, handleAdminLogout } = require('./src/middleware/adminAuth');
+const { setupSession, requireAdminLogin, handleAdminLogin, handleAdminLogout, enforceAdminIpWhitelist } = require('./src/middleware/adminAuth');
 setupSession(app);
 
 // Setup global error handlers
@@ -61,21 +65,23 @@ app.use(cors(getCorsOptions()));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+const adminIpWhitelist = enforceAdminIpWhitelist;
+
 // Protect admin.html
-app.get('/admin.html', requireAdminLogin, (req, res, next) => {
+app.get('/admin.html', adminIpWhitelist, requireAdminLogin, (req, res, next) => {
   res.sendFile(__dirname + '/public/admin.html');
 });
 
 // Admin login page
-app.get('/admin-login', (req, res) => {
+app.get('/admin-login', adminIpWhitelist, (req, res) => {
   res.sendFile(__dirname + '/public/admin-login.html');
 });
 
 // Handle admin login
-app.post('/admin-login', express.urlencoded({ extended: true }), handleAdminLogin);
+app.post('/admin-login', adminIpWhitelist, adminLoginLimiter, express.urlencoded({ extended: true }), handleAdminLogin);
 
 // Admin logout
-app.get('/admin-logout', handleAdminLogout);
+app.get('/admin-logout', adminIpWhitelist, handleAdminLogout);
 
 // Block direct static access to admin.html
 app.use((req, res, next) => {
@@ -103,14 +109,17 @@ app.use('/api/', apiLimiter);
 const connections = new Map();
 
 // Initialize AI Engine, Data Pipeline, Signal Tracker, and Notification Manager
-const HybridEngine = require('./src/ai-engine/hybridEngine');
-const aiEngine = new HybridEngine();
+const ContinuousLearningEngine = require('./src/ai-engine/continuousLearningEngine');
+const aiEngine = new ContinuousLearningEngine();
 const dataPipeline = new DataPipeline();
 const signalTracker = new SignalTracker('./data/active_signals.json');
-const notificationManager = new NotificationManager();
+const notificationManager = new NotificationManager(signalTracker); // FIXED: Pass signalTracker
 
 // Connect signal tracker to AI engine
 aiEngine.setSignalTracker(signalTracker);
+
+// Connect signal tracker to notification manager (redundant but explicit)
+notificationManager.setSignalTracker(signalTracker);
 
 // Auto-import online signals on startup
 aiEngine.importOnlineSignals();
@@ -352,6 +361,106 @@ app.get('/api/requirements', (req, res) => {
   });
 });
 
+// Get enhanced payout tiers and multipliers
+app.get('/api/enhanced-payouts/info', (req, res) => {
+  const EnhancedPayoutValidator = require('./src/validators/enhancedPayoutValidator');
+  const validator = new EnhancedPayoutValidator();
+
+  res.json({
+    success: true,
+    system: 'Enhanced Payout System with Accuracy Multipliers',
+    basePaymentTiers: validator.paymentTiers,
+    accuracyMultipliers: validator.accuracyMultipliers,
+    volumeBonuses: validator.volumeBonuses,
+    capitalBonuses: validator.capitalBonuses,
+    examples: [
+      {
+        profile: 'Elite Trader',
+        winRate: '92%',
+        trades: 1200,
+        capital: '$55k',
+        estimatedPayout: '$295-$475 USDT'
+      },
+      {
+        profile: 'Master Trader',
+        winRate: '87%',
+        trades: 600,
+        capital: '$25k',
+        estimatedPayout: '$152-$277 USDT'
+      },
+      {
+        profile: 'Advanced Trader',
+        winRate: '77%',
+        trades: 350,
+        capital: '$8k',
+        estimatedPayout: '$72-$125 USDT'
+      }
+    ]
+  });
+});
+
+// Test enhanced payout calculation with sample data
+app.post('/api/enhanced-payouts/calculate', async (req, res) => {
+  try {
+    const { tradeCount, winRate, peakCapital, tradingDays, tradingSpan, symbols } = req.body;
+
+    // Validate input
+    if (!tradeCount || !winRate || !peakCapital) {
+      return res.status(400).json({
+        success: false,
+        error: 'tradeCount, winRate, and peakCapital are required'
+      });
+    }
+
+    // Generate sample trade data
+    const { generateTradeData } = require('./scripts/testEnhancedPayouts');
+    const tradeData = generateTradeData({
+      tradeCount: parseInt(tradeCount),
+      winRate: parseFloat(winRate) / 100,
+      peakCapital: parseFloat(peakCapital),
+      tradingDays: parseInt(tradingDays) || 180,
+      tradingSpan: parseInt(tradingSpan) || 365,
+      symbols: symbols || ['BTCUSDT', 'ETHUSDT', 'BNBUSDT']
+    });
+
+    // Calculate payout using enhanced validator
+    const EnhancedPayoutValidator = require('./src/validators/enhancedPayoutValidator');
+    const validator = new EnhancedPayoutValidator();
+    const result = await validator.validateAndScore(tradeData);
+
+    if (result.passed) {
+      res.json({
+        success: true,
+        result: {
+          passed: true,
+          totalPayout: result.payment,
+          paymentCurrency: result.paymentCurrency,
+          breakdown: result.paymentBreakdown,
+          qualityScore: result.score,
+          qualityTier: result.tier,
+          metrics: result.enhancedPayout?.metrics
+        }
+      });
+    } else {
+      res.json({
+        success: false,
+        result: {
+          passed: false,
+          failureReason: result.failureReason,
+          requirements: result.requirements
+        }
+      });
+    }
+
+  } catch (error) {
+    console.error('Enhanced payout calculation error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // Update payout settings (Admin only)
 app.post('/api/admin/payouts', authenticateAdmin, (req, res) => {
   const { tier, amount } = req.body;
@@ -482,17 +591,229 @@ app.get('/api/ai/stats', (req, res) => {
   }
 });
 
+// Get continuous learning statistics
+app.get('/api/ai/continuous-learning', (req, res) => {
+  try {
+    const stats = aiEngine.getContinuousLearningStats();
+
+    // Clean up circular references for JSON serialization
+    const cleanStats = {
+      enabled: stats.continuousLearning.enabled,
+      uptime: stats.continuousLearning.uptime,
+      dataPointsPerHour: stats.continuousLearning.dataPointsPerHour,
+      learningEfficiency: stats.continuousLearning.learningEfficiency,
+      dataSourceContributions: stats.continuousLearning.learningMetrics.dataSourceContributions,
+      totalDataPoints: stats.continuousLearning.learningMetrics.totalDataPoints,
+      patternsLearned: stats.continuousLearning.learningMetrics.patternsLearned,
+      learningRate: stats.continuousLearning.learningMetrics.learningRate,
+      lastAccuracyCheck: stats.continuousLearning.learningMetrics.lastAccuracyCheck,
+      dataSources: {}
+    };
+
+    // Clean data sources info
+    for (const [name, config] of Object.entries(stats.continuousLearning.dataSources)) {
+      cleanStats.dataSources[name] = {
+        active: config.active,
+        interval: config.interval,
+        lastUpdate: config.lastUpdate ? config.lastUpdate.toISOString() : null
+      };
+    }
+
+    res.json({
+      success: true,
+      continuousLearning: cleanStats,
+      hybridStats: {
+        totalPatterns: stats.database.totalPatterns,
+        totalTraders: stats.database.totalTraders,
+        combinedPatterns: stats.hybrid.bySource.combined,
+        accuracy: stats.performance.accuracy
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Show continuous learning status (Admin only)
+app.get('/api/ai/continuous-learning/status', authenticateAdmin, (req, res) => {
+  try {
+    aiEngine.showContinuousLearningStatus();
+    res.json({
+      success: true,
+      message: 'Continuous learning status logged to console'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Control data sources (Admin only)
+app.post('/api/ai/data-sources/:action', authenticateAdmin, (req, res) => {
+  try {
+    const { action } = req.params;
+    const { sourceName } = req.body;
+
+    if (!sourceName) {
+      return res.status(400).json({
+        success: false,
+        error: 'sourceName is required'
+      });
+    }
+
+    switch (action) {
+      case 'enable':
+        if (aiEngine.dataSources[sourceName]) {
+          aiEngine.dataSources[sourceName].active = true;
+          aiEngine.startDataSource(sourceName, aiEngine.dataSources[sourceName]);
+          console.log(`✅ Enabled data source: ${sourceName}`);
+          res.json({
+            success: true,
+            message: `Enabled data source: ${sourceName}`
+          });
+        } else {
+          res.status(400).json({
+            success: false,
+            error: `Unknown data source: ${sourceName}`
+          });
+        }
+        break;
+
+      case 'disable':
+        if (aiEngine.dataSources[sourceName]) {
+          aiEngine.dataSources[sourceName].active = false;
+          if (aiEngine.dataSources[sourceName].intervalId) {
+            clearInterval(aiEngine.dataSources[sourceName].intervalId);
+            aiEngine.dataSources[sourceName].intervalId = null;
+          }
+          console.log(`🛑 Disabled data source: ${sourceName}`);
+          res.json({
+            success: true,
+            message: `Disabled data source: ${sourceName}`
+          });
+        } else {
+          res.status(400).json({
+            success: false,
+            error: `Unknown data source: ${sourceName}`
+          });
+        }
+        break;
+
+      default:
+        res.status(400).json({
+          success: false,
+          error: `Unknown action: ${action}. Use 'enable' or 'disable'`
+        });
+    }
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Force data collection from specific source (Admin only)
+app.post('/api/ai/collect/:sourceName', authenticateAdmin, async (req, res) => {
+  try {
+    const { sourceName } = req.params;
+
+    if (!aiEngine.dataSources[sourceName]) {
+      return res.status(400).json({
+        success: false,
+        error: `Unknown data source: ${sourceName}`
+      });
+    }
+
+    console.log(`🔄 Forcing data collection from: ${sourceName}`);
+    await aiEngine.collectDataFromSource(sourceName);
+
+    res.json({
+      success: true,
+      message: `Data collection completed for: ${sourceName}`
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Get available data sources
+app.get('/api/ai/data-sources', (req, res) => {
+  try {
+    const dataSources = {};
+
+    for (const [name, config] of Object.entries(aiEngine.dataSources)) {
+      dataSources[name] = {
+        active: config.active,
+        interval: config.interval,
+        lastUpdate: config.lastUpdate,
+        description: aiEngine.getDataSourceDescription(name)
+      };
+    }
+
+    res.json({
+      success: true,
+      dataSources
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Get signal cache statistics
+app.get('/api/ai/cache', (req, res) => {
+  try {
+    const cacheStats = aiEngine.getCacheStats();
+    res.json({
+      success: true,
+      cache: cacheStats
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Clear signal cache (Admin only)
+app.post('/api/ai/cache/clear', authenticateAdmin, (req, res) => {
+  try {
+    const { symbol } = req.body;
+    aiEngine.clearCache(symbol);
+    
+    res.json({
+      success: true,
+      message: symbol ? `Cache cleared for ${symbol}` : 'All cache cleared'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // Get current AI signals (using Hybrid Engine)
 app.get('/api/signals', validateSymbols, async (req, res) => {
   try {
-    const HybridEngine = require('./src/ai-engine/hybridEngine');
-    const engine = new HybridEngine();
-    
-    // Connect signal tracker to engine
-    engine.setSignalTracker(signalTracker);
-    
+    // FIXED: Use the SAME aiEngine instance instead of creating a new one
     const symbols = req.query.symbols ? req.query.symbols.split(',') : ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT'];
-    const signals = await engine.generateSmartSignals(symbols);
+    const signals = await aiEngine.generateSmartSignals(symbols);
     
     // Send notifications for new signals (async, don't block response)
     if (signals.length > 0 && notificationManager.isReady()) {
@@ -508,7 +829,7 @@ app.get('/api/signals', validateSymbols, async (req, res) => {
     }
     
     // Get database stats
-    const stats = engine.getHybridStatistics();
+    const stats = aiEngine.getHybridStatistics();
     
     res.json({
       success: true,
@@ -1152,7 +1473,7 @@ app.get('/api/pipeline/stats', (req, res) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 3000;
+const §PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {
   console.log(`\n╔════════════════════════════════════════════════════════════╗`);

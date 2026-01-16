@@ -1,0 +1,325 @@
+[
+  {
+    "signalId": "E2E_TEST_001",
+    "symbol": "BTCUSDT",
+    "direction": "LONG",
+    "confidence": 85,
+    "patternKey": "test_pattern",
+    "patternSource": "test",
+    "generatedAt": "2026-01-11T13:49:48.161Z",
+    "expiresAt": "2026-01-11T17:49:48.161Z",
+    "closedAt": null,
+    "status": "active",
+    "averageEntryPrice": 50000,
+    "stopLoss": 48200,
+    "takeProfit1": 53000,
+    "takeProfit2": 55400,
+    "outcome": null,
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": null,
+    "pnlPercentage": null,
+    "duration": null,
+    "notificationsSent": [],
+    "lastNotificationAt": null,
+    "notificationCount": 0,
+    "fullSignal": {
+      "signalId": "E2E_TEST_001",
+      "symbol": "BTCUSDT",
+      "direction": "LONG",
+      "confidence": 85,
+      "riskLevel": "LOW",
+      "pattern": {
+        "key": "test_pattern",
+        "tradersAffected": 5,
+        "totalOccurrences": 10,
+        "totalLosses": 5000,
+        "avgLoss": 500,
+        "source": "test"
+      },
+      "currentConditions": {
+        "price": 50000,
+        "priceChange24h": 2.5,
+        "rsi": 65,
+        "marketSentiment": "bullish",
+        "atr": 1000
+      },
+      "generatedAt": "2026-01-11T13:49:48.161Z",
+      "expiresAt": "2026-01-11T17:49:48.161Z",
+      "averageEntryPrice": 50000,
+      "stopLoss": 48200,
+      "takeProfit1": 53000,
+      "takeProfit2": 55400,
+      "riskRewardRatio1": "1.67",
+      "riskRewardRatio2": "3.00",
+      "stopLossPercent": "3.60",
+      "takeProfit1Percent": "6.00",
+      "takeProfit2Percent": "10.80"
+    }
+  },
+  {
+    "signalId": "NOTIF_TEST_001",
+    "symbol": "ETHUSDT",
+    "direction": "SHORT",
+    "confidence": 90,
+    "patternKey": null,
+    "patternSource": null,
+    "generatedAt": "2026-01-11T13:49:48.163Z",
+    "expiresAt": "2026-01-11T17:49:48.163Z",
+    "closedAt": null,
+    "status": "active",
+    "averageEntryPrice": 3000,
+    "stopLoss": 3150,
+    "takeProfit1": 2850,
+    "takeProfit2": 2700,
+    "outcome": null,
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": null,
+    "pnlPercentage": null,
+    "duration": null,
+    "notificationsSent": [
+      {
+        "channel": "test",
+        "sentAt": "2026-01-11T13:49:48.164Z"
+      }
+    ],
+    "lastNotificationAt": "2026-01-11T13:49:48.164Z",
+    "notificationCount": 1,
+    "fullSignal": {
+      "signalId": "NOTIF_TEST_001",
+      "symbol": "ETHUSDT",
+      "direction": "SHORT",
+      "confidence": 90,
+      "riskLevel": "LOW",
+      "averageEntryPrice": 3000,
+      "stopLoss": 3150,
+      "takeProfit1": 2850,
+      "takeProfit2": 2700,
+      "stopLossPercent": "5.00",
+      "takeProfit1Percent": "5.00",
+      "takeProfit2Percent": "10.00",
+      "riskRewardRatio1": "1.00",
+      "riskRewardRatio2": "2.00",
+      "pattern": {
+        "tradersAffected": 8,
+        "totalOccurrences": 15,
+        "totalLosses": 10000,
+        "avgLoss": 666.67
+      },
+      "currentConditions": {
+        "price": 3000,
+        "priceChange24h": -3.5,
+        "rsi": 75,
+        "marketSentiment": "bearish"
+      },
+      "reason": "Test signal for notification integration",
+      "generatedAt": "2026-01-11T13:49:48.163Z",
+      "expiresAt": "2026-01-11T17:49:48.163Z"
+    }
+  },
+  {
+    "signalId": "COOLDOWN_TEST_001",
+    "symbol": "BTCUSDT",
+    "direction": "LONG",
+    "confidence": 85,
+    "patternKey": null,
+    "patternSource": null,
+    "generatedAt": "2026-01-11T13:49:48.164Z",
+    "expiresAt": "2026-01-11T17:49:48.164Z",
+    "closedAt": null,
+    "status": "active",
+    "averageEntryPrice": null,
+    "stopLoss": null,
+    "takeProfit1": null,
+    "takeProfit2": null,
+    "outcome": null,
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": null,
+    "pnlPercentage": null,
+    "duration": null,
+    "notificationsSent": [
+      {
+        "channel": "test",
+        "sentAt": "2026-01-11T13:49:48.165Z"
+      }
+    ],
+    "lastNotificationAt": "2026-01-11T13:49:48.165Z",
+    "notificationCount": 1,
+    "fullSignal": {
+      "signalId": "COOLDOWN_TEST_001",
+      "symbol": "BTCUSDT",
+      "direction": "LONG",
+      "confidence": 85,
+      "pattern": {
+        "tradersAffected": 5,
+        "totalOccurrences": 10,
+        "totalLosses": 5000,
+        "avgLoss": 500
+      },
+      "currentConditions": {
+        "price": 50000,
+        "priceChange24h": 2.5,
+        "rsi": 65,
+        "marketSentiment": "bullish"
+      },
+      "riskLevel": "LOW",
+      "generatedAt": "2026-01-11T13:49:48.164Z",
+      "expiresAt": "2026-01-11T17:49:48.164Z"
+    }
+  },
+  {
+    "signalId": "STATS_TEST_0",
+    "symbol": "BTCUSDT",
+    "direction": "LONG",
+    "confidence": 85,
+    "patternKey": null,
+    "patternSource": null,
+    "generatedAt": "2026-01-11T13:49:49.267Z",
+    "expiresAt": "2026-01-11T17:49:49.267Z",
+    "closedAt": null,
+    "status": "active",
+    "averageEntryPrice": null,
+    "stopLoss": null,
+    "takeProfit1": null,
+    "takeProfit2": null,
+    "outcome": null,
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": null,
+    "pnlPercentage": null,
+    "duration": null,
+    "notificationsSent": [
+      {
+        "channel": "test",
+        "sentAt": "2026-01-11T13:49:49.312Z"
+      }
+    ],
+    "lastNotificationAt": "2026-01-11T13:49:49.312Z",
+    "notificationCount": 1,
+    "fullSignal": {
+      "signalId": "STATS_TEST_0",
+      "symbol": "BTCUSDT",
+      "direction": "LONG",
+      "confidence": 85,
+      "pattern": {
+        "tradersAffected": 5,
+        "totalOccurrences": 10,
+        "totalLosses": 5000,
+        "avgLoss": 500
+      },
+      "currentConditions": {
+        "price": 50000,
+        "priceChange24h": 2.5,
+        "rsi": 65,
+        "marketSentiment": "bullish"
+      },
+      "riskLevel": "LOW",
+      "generatedAt": "2026-01-11T13:49:49.267Z",
+      "expiresAt": "2026-01-11T17:49:49.267Z"
+    }
+  },
+  {
+    "signalId": "STATS_TEST_1",
+    "symbol": "BTCUSDT",
+    "direction": "LONG",
+    "confidence": 85,
+    "patternKey": null,
+    "patternSource": null,
+    "generatedAt": "2026-01-11T13:49:49.313Z",
+    "expiresAt": "2026-01-11T17:49:49.313Z",
+    "closedAt": null,
+    "status": "active",
+    "averageEntryPrice": null,
+    "stopLoss": null,
+    "takeProfit1": null,
+    "takeProfit2": null,
+    "outcome": null,
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": null,
+    "pnlPercentage": null,
+    "duration": null,
+    "notificationsSent": [
+      {
+        "channel": "test",
+        "sentAt": "2026-01-11T13:49:49.321Z"
+      }
+    ],
+    "lastNotificationAt": "2026-01-11T13:49:49.321Z",
+    "notificationCount": 1,
+    "fullSignal": {
+      "signalId": "STATS_TEST_1",
+      "symbol": "BTCUSDT",
+      "direction": "LONG",
+      "confidence": 85,
+      "pattern": {
+        "tradersAffected": 5,
+        "totalOccurrences": 10,
+        "totalLosses": 5000,
+        "avgLoss": 500
+      },
+      "currentConditions": {
+        "price": 50000,
+        "priceChange24h": 2.5,
+        "rsi": 65,
+        "marketSentiment": "bullish"
+      },
+      "riskLevel": "LOW",
+      "generatedAt": "2026-01-11T13:49:49.313Z",
+      "expiresAt": "2026-01-11T17:49:49.313Z"
+    }
+  },
+  {
+    "signalId": "STATS_TEST_2",
+    "symbol": "BTCUSDT",
+    "direction": "LONG",
+    "confidence": 85,
+    "patternKey": null,
+    "patternSource": null,
+    "generatedAt": "2026-01-11T13:49:49.321Z",
+    "expiresAt": "2026-01-11T17:49:49.321Z",
+    "closedAt": null,
+    "status": "active",
+    "averageEntryPrice": null,
+    "stopLoss": null,
+    "takeProfit1": null,
+    "takeProfit2": null,
+    "outcome": null,
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": null,
+    "pnlPercentage": null,
+    "duration": null,
+    "notificationsSent": [
+      {
+        "channel": "test",
+        "sentAt": "2026-01-11T13:49:49.323Z"
+      }
+    ],
+    "lastNotificationAt": "2026-01-11T13:49:49.323Z",
+    "notificationCount": 1,
+    "fullSignal": {
+      "signalId": "STATS_TEST_2",
+      "symbol": "BTCUSDT",
+      "direction": "LONG",
+      "confidence": 85,
+      "pattern": {
+        "tradersAffected": 5,
+        "totalOccurrences": 10,
+        "totalLosses": 5000,
+        "avgLoss": 500
+      },
+      "currentConditions": {
+        "price": 50000,
+        "priceChange24h": 2.5,
+        "rsi": 65,
+        "marketSentiment": "bullish"
+      },
+      "riskLevel": "LOW",
+      "generatedAt": "2026-01-11T13:49:49.321Z",
+      "expiresAt": "2026-01-11T17:49:49.321Z"
+    }
+  }
+]

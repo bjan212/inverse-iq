@@ -204,7 +204,7 @@ package.json                      # Added dependencies
 
 ### Test Email Service
 ```bash
-# Subscribe with email
+# Subscribe with email 
 curl -X POST http://localhost:3000/api/notifications/subscribe \
   -H "Content-Type: application/json" \
   -d '{"email": "test@example.com"}'
@@ -232,7 +232,10 @@ npm run bootstrap
 # Or via API
 curl http://localhost:3000/api/signals
 ```
-
+# example (Binance)
+node scripts/collect.js --platform binance --api-key YOUR_KEY --api-secret YOUR_SECRET
+# this creates ./output/validation_*.json then run engine
+node scripts/runAIEngine.js --mode process
 ## Statistics
 
 Check notification statistics:

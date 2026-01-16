@@ -345,7 +345,7 @@ class DataQualityValidator {
     if (trades.length < 2) return 0;
     
     const timestamps = trades
-      .map(t => new Date(trade.time || t.updateTime).getTime())
+      .map(t => new Date(t.time || t.updateTime).getTime())
       .sort((a, b) => a - b);
     
     let maxGap = 0;

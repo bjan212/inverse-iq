@@ -26,6 +26,22 @@ const apiLimiter = rateLimit({
 });
 
 /**
+ * Admin login rate limiter
+ * Strict to slow brute force attempts
+ */
+const adminLoginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10,
+  message: {
+    success: false,
+    error: 'Too many admin login attempts. Please try again later.',
+    retryAfter: '15 minutes'
+  },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+/**
  * Strict rate limiter for submission endpoint
  * 5 submissions per hour per IP
  */
@@ -78,26 +94,28 @@ const notificationLimiter = rateLimit({
  * Checks for valid API key in headers
  */
 const authenticateAdmin = (req, res, next) => {
+  // Allow authenticated admin sessions (login via /admin-login)
+  if (req.session && req.session.isAdmin) {
+    return next();
+  }
+
   const apiKey = req.headers['x-api-key'] || req.headers['authorization']?.replace('Bearer ', '');
-  
-  // Get admin API key from environment
   const adminApiKey = process.env.ADMIN_API_KEY;
-  
-  // If no admin key is configured, allow access (development mode)
+
+  // If no admin key is configured, keep legacy open-access behavior
   if (!adminApiKey) {
     console.warn('⚠️  ADMIN_API_KEY not configured - admin endpoints are unprotected!');
     return next();
   }
-  
-  // Check if provided key matches
-  if (!apiKey || apiKey !== adminApiKey) {
-    return res.status(401).json({
-      success: false,
-      error: 'Unauthorized - Invalid or missing API key'
-    });
+
+  if (apiKey && apiKey === adminApiKey) {
+    return next();
   }
-  
-  next();
+
+  return res.status(401).json({
+    success: false,
+    error: 'Unauthorized - Invalid or missing credentials'
+  });
 };
 
 /**
@@ -122,14 +140,19 @@ const helmetConfig = helmet({
  * CORS configuration
  */
 const getCorsOptions = () => {
-  const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  const allowedOriginsRaw = process.env.ALLOWED_ORIGINS 
     ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
     : ['http://localhost:3000', 'http://localhost:3001'];
+
+  // Normalize to be resilient to trailing slashes and casing
+  const allowedOrigins = allowedOriginsRaw.map(o => o.toLowerCase().replace(/\/$/, ''));
   
   return {
     origin: (origin, callback) => {
       // Allow requests with no origin (mobile apps, Postman, etc.)
       if (!origin) return callback(null, true);
+
+      const normalizedOrigin = origin.toLowerCase().replace(/\/$/, '');
       
       // In development, allow all origins
       if (process.env.NODE_ENV === 'development') {
@@ -137,7 +160,7 @@ const getCorsOptions = () => {
       }
       
       // Check if origin is in allowed list
-      if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+      if (allowedOrigins.includes(normalizedOrigin) || allowedOrigins.includes('*')) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));
@@ -202,10 +225,13 @@ const ipWhitelist = (whitelist = []) => {
     }
     
     const clientIp = req.ip || req.connection.remoteAddress;
-    
-    if (whitelist.includes(clientIp)) {
+    const normalizedClientIp = (clientIp || '').replace('::ffff:', '');
+    const normalizedWhitelist = whitelist.map(ip => ip.replace('::ffff:', ''));
+
+    if (normalizedWhitelist.includes(normalizedClientIp)) {
       next();
     } else {
+      console.warn(`Admin IP whitelist blocked request from ${normalizedClientIp || 'unknown IP'}`);
       res.status(403).json({
         success: false,
         error: 'Access denied - IP not whitelisted'
@@ -219,6 +245,7 @@ module.exports = {
   submissionLimiter,
   feedbackLimiter,
   notificationLimiter,
+  adminLoginLimiter,
   authenticateAdmin,
   helmetConfig,
   getCorsOptions,

@@ -33,6 +33,11 @@ class HybridEngine extends SelfImprovingEngine {
       traderPatterns: 0,
       combinedPatterns: 0
     };
+    
+    // Signal caching to prevent spam
+    this.signalCache = new Map();
+    this.cacheTTL = Number(process.env.SIGNAL_CACHE_TTL || 3600000); // 1 hour default
+    this.similarityThreshold = Number(process.env.SIGNAL_SIMILARITY_THRESHOLD || 0.95); // 95% similar
   }
 
   /**
@@ -246,52 +251,43 @@ class HybridEngine extends SelfImprovingEngine {
    * Weights patterns based on data source and confirmation
    */
   calculateHybridConfidence(pattern) {
-    let confidence = 50; // Base confidence
-    
-    // Source-based confidence
-    if (pattern.source === 'combined') {
-      // BEST: Both public and trader data confirm this pattern
-      confidence += 30;
-    } else if (pattern.source === 'trader') {
-      // GOOD: Real trader data
-      confidence += 20;
-    } else if (pattern.source === 'public') {
-      // OK: Public market data
-      confidence += 10;
-    }
-    
-    // Trader count bonus (more traders = higher confidence)
-    const traderBonus = Math.min(pattern.traders.length * 8, 25);
-    confidence += traderBonus;
-    
-    // Occurrence bonus
-    const occurrenceBonus = Math.min(pattern.occurrences * 1.5, 15);
-    confidence += occurrenceBonus;
-    
-    // Loss amount bonus (expensive lessons!)
-    if (pattern.totalLoss > 20000) confidence += 15;
-    else if (pattern.totalLoss > 10000) confidence += 12;
-    else if (pattern.totalLoss > 5000) confidence += 8;
-    else if (pattern.totalLoss > 1000) confidence += 5;
-    
-    // Pattern type bonus (some patterns are more reliable)
-    if (pattern.patternType === 'FALSE_BREAKOUT') confidence += 5;
-    if (pattern.patternType === 'LIQUIDATION_WICK') confidence += 5;
-    
-    // Recent activity bonus
-    const daysSinceLastSeen = (Date.now() - new Date(pattern.lastSeen)) / (1000 * 60 * 60 * 24);
-    if (daysSinceLastSeen < 7) confidence += 5;
-    else if (daysSinceLastSeen < 30) confidence += 3;
-    
-    // Performance-based adjustment
+    const now = Date.now();
+    const daysSinceLastSeen = (now - new Date(pattern.lastSeen)) / (1000 * 60 * 60 * 24);
+
+    const sourceBase = {
+      combined: 28,
+      trader: 20,
+      public: 12
+    }[pattern.source] || 10;
+
+    // Sample strength with diminishing returns
+    const traderFactor = Math.min(pattern.traders.length * 7, 28);
+    const occurrenceFactor = Math.min(Math.log(1 + pattern.occurrences) * 6, 18);
+
+    // Laplace-smoothed performance (prevents divide-by-zero and overfitting)
+    let performanceBonus = 0;
     if (pattern.performance) {
-      const successRate = pattern.performance.wins / (pattern.performance.wins + pattern.performance.losses);
-      if (successRate > 0.8) confidence += 10;
-      else if (successRate > 0.7) confidence += 5;
-      else if (successRate < 0.5) confidence -= 10;
+      const wins = pattern.performance.wins || 0;
+      const losses = pattern.performance.losses || 0;
+      const smoothed = (wins + 1) / (wins + losses + 2);
+      performanceBonus = Math.max(-12, Math.min(18, (smoothed - 0.5) * 60));
     }
-    
-    return Math.min(Math.max(confidence, 0), 100);
+
+    // Recency decay to avoid stale patterns dominating
+    const recencyPenalty = Math.min(12, Math.max(0, (daysSinceLastSeen / 30) * 4));
+
+    // Loss magnitude influences conviction but capped
+    let lossBonus = 0;
+    if (pattern.totalLoss > 20000) lossBonus = 12;
+    else if (pattern.totalLoss > 10000) lossBonus = 9;
+    else if (pattern.totalLoss > 5000) lossBonus = 6;
+    else if (pattern.totalLoss > 1000) lossBonus = 3;
+
+    // Specific pattern types that historically travel well
+    const patternTypeBonus = ['FALSE_BREAKOUT', 'LIQUIDATION_WICK'].includes(pattern.patternType) ? 4 : 0;
+
+    const raw = 40 + sourceBase + traderFactor + occurrenceFactor + performanceBonus + lossBonus + patternTypeBonus - recencyPenalty;
+    return Math.min(Math.max(Math.round(raw), 0), 100);
   }
 
   /**
@@ -507,6 +503,343 @@ class HybridEngine extends SelfImprovingEngine {
     if (patterns.length === 0) return 0;
     const sum = patterns.reduce((acc, p) => acc + p.confidence, 0);
     return (sum / patterns.length).toFixed(2);
+  }
+
+  /**
+   * TRADING LEVELS CALCULATION
+   * Calculate entry, stop loss, and take profit levels based on:
+   * - Risk level
+   * - Confidence score
+   * - Market volatility
+   * - Historical pattern performance
+   */
+  calculateTradingLevels(signal, currentPrice, marketData = {}) {
+    const direction = signal.direction;
+    const confidence = signal.confidence;
+    const riskLevel = signal.riskLevel;
+    
+    // Get ATR (Average True Range) for volatility-based calculations
+    const atr = marketData.atr || (currentPrice * 0.02); // Default 2% if no ATR
+    
+    // Calculate stop loss distance based on risk level
+    const stopLossMultiplier = this.getStopLossMultiplier(riskLevel, confidence);
+    const stopLossDistance = atr * stopLossMultiplier;
+    
+    // Calculate take profit distances based on confidence and risk/reward
+    const tp1Multiplier = this.getTakeProfitMultiplier(confidence, 1); // Conservative
+    const tp2Multiplier = this.getTakeProfitMultiplier(confidence, 2); // Aggressive
+    
+    const tp1Distance = atr * tp1Multiplier;
+    const tp2Distance = atr * tp2Multiplier;
+    
+    // Calculate actual levels based on direction
+    let levels;
+    if (direction === 'LONG') {
+      levels = {
+        averageEntryPrice: currentPrice,
+        stopLoss: currentPrice - stopLossDistance,
+        takeProfit1: currentPrice + tp1Distance,
+        takeProfit2: currentPrice + tp2Distance
+      };
+    } else { // SHORT
+      levels = {
+        averageEntryPrice: currentPrice,
+        stopLoss: currentPrice + stopLossDistance,
+        takeProfit1: currentPrice - tp1Distance,
+        takeProfit2: currentPrice - tp2Distance
+      };
+    }
+    
+    // Calculate risk/reward ratios
+    const riskAmount = Math.abs(levels.averageEntryPrice - levels.stopLoss);
+    const reward1 = Math.abs(levels.takeProfit1 - levels.averageEntryPrice);
+    const reward2 = Math.abs(levels.takeProfit2 - levels.averageEntryPrice);
+    
+    levels.riskRewardRatio1 = (reward1 / riskAmount).toFixed(2);
+    levels.riskRewardRatio2 = (reward2 / riskAmount).toFixed(2);
+    
+    // Add percentage distances for display
+    levels.stopLossPercent = ((Math.abs(levels.stopLoss - levels.averageEntryPrice) / levels.averageEntryPrice) * 100).toFixed(2);
+    levels.takeProfit1Percent = ((Math.abs(levels.takeProfit1 - levels.averageEntryPrice) / levels.averageEntryPrice) * 100).toFixed(2);
+    levels.takeProfit2Percent = ((Math.abs(levels.takeProfit2 - levels.averageEntryPrice) / levels.averageEntryPrice) * 100).toFixed(2);
+    
+    return levels;
+  }
+
+  /**
+   * Get stop loss multiplier based on risk level and confidence
+   */
+  getStopLossMultiplier(riskLevel, confidence) {
+    // Base multipliers by risk level
+    const baseMultipliers = {
+      'VERY_LOW': 1.5,  // Tighter stop for very low risk
+      'LOW': 2.0,       // Standard stop
+      'MEDIUM': 2.5,    // Wider stop for medium risk
+      'HIGH': 3.0       // Widest stop for high risk
+    };
+    
+    let multiplier = baseMultipliers[riskLevel] || 2.0;
+    
+    // Adjust based on confidence
+    // Higher confidence = can use tighter stops
+    if (confidence >= 90) {
+      multiplier *= 0.85;
+    } else if (confidence >= 80) {
+      multiplier *= 0.9;
+    } else if (confidence >= 70) {
+      multiplier *= 0.95;
+    } else if (confidence < 60) {
+      multiplier *= 1.1; // Lower confidence = wider stops
+    }
+    
+    return multiplier;
+  }
+
+  /**
+   * Get take profit multiplier based on confidence and target level
+   */
+  getTakeProfitMultiplier(confidence, targetLevel) {
+    // Base multipliers for TP1 (conservative) and TP2 (aggressive)
+    const baseMultipliers = {
+      1: 2.5,  // TP1: 2.5x ATR (conservative)
+      2: 4.5   // TP2: 4.5x ATR (aggressive)
+    };
+    
+    let multiplier = baseMultipliers[targetLevel] || 2.5;
+    
+    // Adjust based on confidence
+    // Higher confidence = can target larger profits
+    if (confidence >= 90) {
+      multiplier *= 1.3;
+    } else if (confidence >= 85) {
+      multiplier *= 1.2;
+    } else if (confidence >= 80) {
+      multiplier *= 1.15;
+    } else if (confidence >= 75) {
+      multiplier *= 1.1;
+    } else if (confidence < 65) {
+      multiplier *= 0.9; // Lower confidence = more conservative targets
+    }
+    
+    return multiplier;
+  }
+
+  /**
+   * Generate cache key for a symbol
+   */
+  getCacheKey(symbol) {
+    return `signal_${symbol}`;
+  }
+
+  /**
+   * Check if cached signal is still valid
+   */
+  isCacheValid(cachedSignal) {
+    if (!cachedSignal) return false;
+    
+    const now = Date.now();
+    const cacheAge = now - cachedSignal.cachedAt;
+    
+    return cacheAge < this.cacheTTL;
+  }
+
+  /**
+   * Calculate market condition similarity (0-1)
+   */
+  calculateSimilarity(current, cached) {
+    if (!cached || !current) return 0;
+    
+    // Compare key market conditions
+    const priceDiff = Math.abs(current.price - cached.price) / cached.price;
+    const rsiDiff = Math.abs(current.rsi - cached.rsi) / 100;
+    const volumeDiff = Math.abs(current.volume24h - cached.volume24h) / cached.volume24h;
+    
+    // Weight the differences
+    const similarity = 1 - (
+      (priceDiff * 0.4) +  // Price is most important
+      (rsiDiff * 0.3) +     // RSI is important
+      (volumeDiff * 0.3)    // Volume is important
+    );
+    
+    return Math.max(0, Math.min(1, similarity));
+  }
+
+  /**
+   * Get cached signal if valid and similar
+   */
+  getCachedSignal(symbol, currentConditions) {
+    const cacheKey = this.getCacheKey(symbol);
+    const cached = this.signalCache.get(cacheKey);
+    
+    if (!cached) {
+      return null;
+    }
+    
+    // Check if cache is still valid (time-based)
+    if (!this.isCacheValid(cached)) {
+      console.log(`   ⏰ Cache expired for ${symbol}`);
+      this.signalCache.delete(cacheKey);
+      return null;
+    }
+    
+    // Check if market conditions are similar
+    const similarity = this.calculateSimilarity(currentConditions, cached.conditions);
+    
+    if (similarity >= this.similarityThreshold) {
+      console.log(`   ♻️  Using cached signal for ${symbol} (${(similarity * 100).toFixed(1)}% similar)`);
+      return cached.signal;
+    } else {
+      console.log(`   🔄 Market changed for ${symbol} (${(similarity * 100).toFixed(1)}% similar, threshold ${(this.similarityThreshold * 100).toFixed(0)}%)`);
+      return null;
+    }
+  }
+
+  /**
+   * Cache a signal
+   */
+  cacheSignal(symbol, signal, conditions) {
+    const cacheKey = this.getCacheKey(symbol);
+    
+    this.signalCache.set(cacheKey, {
+      signal: signal,
+      conditions: conditions,
+      cachedAt: Date.now()
+    });
+    
+    console.log(`   💾 Cached signal for ${symbol} (TTL: ${this.cacheTTL / 1000 / 60} minutes)`);
+  }
+
+  /**
+   * Clear cache for a symbol
+   */
+  clearCache(symbol = null) {
+    if (symbol) {
+      const cacheKey = this.getCacheKey(symbol);
+      this.signalCache.delete(cacheKey);
+      console.log(`🗑️  Cleared cache for ${symbol}`);
+    } else {
+      this.signalCache.clear();
+      console.log('🗑️  Cleared all signal cache');
+    }
+  }
+
+  /**
+   * Get cache statistics
+   */
+  getCacheStats() {
+    const stats = {
+      cachedSignals: this.signalCache.size,
+      cacheTTL: this.cacheTTL,
+      similarityThreshold: this.similarityThreshold,
+      signals: []
+    };
+    
+    for (const [key, cached] of this.signalCache.entries()) {
+      const age = Date.now() - cached.cachedAt;
+      const remaining = this.cacheTTL - age;
+      
+      stats.signals.push({
+        symbol: cached.signal.symbol,
+        signalId: cached.signal.signalId,
+        cachedAt: new Date(cached.cachedAt),
+        expiresIn: Math.max(0, Math.floor(remaining / 1000 / 60)) + ' minutes',
+        valid: this.isCacheValid(cached)
+      });
+    }
+    
+    return stats;
+  }
+
+  /**
+   * Override generateSmartSignals to include caching and trading levels
+   */
+  async generateSmartSignals(symbols = ['BTCUSDT', 'ETHUSDT']) {
+    console.log('\n🎯 Generating smart signals with caching and trading levels...\n');
+    
+    const signals = [];
+    
+    for (const symbol of symbols) {
+      try {
+        // Get current market conditions
+        const current = await this.getCurrentMarketConditions(symbol);
+        
+        // Check cache first
+        const cachedSignal = this.getCachedSignal(symbol, current);
+        
+        if (cachedSignal) {
+          // Use cached signal
+          signals.push(cachedSignal);
+          console.log(`   ✅ Reusing cached signal for ${symbol}`);
+          continue;
+        }
+        
+        // No valid cache, generate new signal
+        console.log(`   🆕 Generating new signal for ${symbol}`);
+        
+        // Find matching patterns from database
+        const matches = this.findMatchingPatternsFromDB(symbol, current);
+        
+        if (matches.length > 0) {
+          console.log(`\n📍 ${symbol}: Found ${matches.length} matching patterns!`);
+          
+          for (const match of matches) {
+            const signal = this.generateSignalFromPattern(symbol, current, match);
+            
+            // Calculate trading levels
+            const tradingLevels = this.calculateTradingLevels(
+              signal,
+              current.price,
+              { atr: current.atr }
+            );
+            
+            // Add trading levels to signal
+            signal.averageEntryPrice = tradingLevels.averageEntryPrice;
+            signal.stopLoss = tradingLevels.stopLoss;
+            signal.takeProfit1 = tradingLevels.takeProfit1;
+            signal.takeProfit2 = tradingLevels.takeProfit2;
+            signal.riskRewardRatio1 = tradingLevels.riskRewardRatio1;
+            signal.riskRewardRatio2 = tradingLevels.riskRewardRatio2;
+            signal.stopLossPercent = tradingLevels.stopLossPercent;
+            signal.takeProfit1Percent = tradingLevels.takeProfit1Percent;
+            signal.takeProfit2Percent = tradingLevels.takeProfit2Percent;
+            
+            // Cache the signal
+            this.cacheSignal(symbol, signal, current);
+            
+            signals.push(signal);
+            
+            console.log(`   Signal: ${signal.direction} (Confidence: ${signal.confidence}%)`);
+            console.log(`   Entry: $${signal.averageEntryPrice.toFixed(2)}`);
+            console.log(`   Stop Loss: $${signal.stopLoss.toFixed(2)} (-${signal.stopLossPercent}%)`);
+            console.log(`   TP1: $${signal.takeProfit1.toFixed(2)} (+${signal.takeProfit1Percent}%) [R:R ${signal.riskRewardRatio1}]`);
+            console.log(`   TP2: $${signal.takeProfit2.toFixed(2)} (+${signal.takeProfit2Percent}%) [R:R ${signal.riskRewardRatio2}]`);
+            console.log(`   Pattern: ${match.traders.length} traders, ${match.occurrences} occurrences`);
+            
+            if (match.performance) {
+              const winRate = (match.performance.wins / (match.performance.wins + match.performance.losses) * 100).toFixed(0);
+              console.log(`   Historical Win Rate: ${winRate}%`);
+            }
+          }
+        }
+      } catch (error) {
+        console.error(`❌ Error generating signals for ${symbol}:`, error.message);
+      }
+    }
+    
+    console.log(`\n✅ Generated ${signals.length} smart signals (${this.signalCache.size} cached)`);
+    
+    // Track signals if tracker is available
+    if (this.signalTracker) {
+      for (const signal of signals) {
+        try {
+          this.signalTracker.registerSignal(signal);
+        } catch (error) {
+          console.error(`Failed to track signal ${signal.signalId}:`, error.message);
+        }
+      }
+    }
+    
+    return signals;
   }
 
   /**

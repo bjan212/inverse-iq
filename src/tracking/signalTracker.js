@@ -48,6 +48,12 @@ class SignalTracker {
       // Status
       status: 'active', // active, expired, closed
       
+      // Trading levels (NEW)
+      averageEntryPrice: signal.averageEntryPrice || null,
+      stopLoss: signal.stopLoss || null,
+      takeProfit1: signal.takeProfit1 || null,
+      takeProfit2: signal.takeProfit2 || null,
+      
       // Outcome (filled when feedback received)
       outcome: null, // win, loss
       entryPrice: null,
@@ -55,6 +61,11 @@ class SignalTracker {
       pnl: null,
       pnlPercentage: null,
       duration: null,
+      
+      // Notification tracking (NEW)
+      notificationsSent: [],
+      lastNotificationAt: null,
+      notificationCount: 0,
       
       // Full signal data for reference
       fullSignal: signal
@@ -321,6 +332,71 @@ class SignalTracker {
     }
 
     return signals;
+  }
+
+  /**
+   * Check if notification already sent for this signal
+   */
+  hasNotificationBeenSent(signalId) {
+    const signal = this.signals.get(signalId);
+    if (!signal) {
+      return false;
+    }
+    return signal.notificationCount > 0;
+  }
+
+  /**
+   * Record that a notification was sent for this signal
+   */
+  recordNotificationSent(signalId, channel = 'unknown') {
+    const signal = this.signals.get(signalId);
+    
+    if (!signal) {
+      throw new Error(`Signal not found: ${signalId}`);
+    }
+
+    const now = new Date();
+    
+    signal.notificationsSent.push({
+      channel: channel,
+      sentAt: now
+    });
+    signal.lastNotificationAt = now;
+    signal.notificationCount++;
+
+    this.signals.set(signalId, signal);
+    this.saveSignals();
+
+    console.log(`📬 Notification recorded for signal ${signalId} via ${channel}`);
+
+    return signal;
+  }
+
+  /**
+   * Get notification history for a signal
+   */
+  getNotificationHistory(signalId) {
+    const signal = this.signals.get(signalId);
+    
+    if (!signal) {
+      return null;
+    }
+
+    return {
+      signalId: signal.signalId,
+      notificationCount: signal.notificationCount,
+      lastNotificationAt: signal.lastNotificationAt,
+      notifications: signal.notificationsSent
+    };
+  }
+
+  /**
+   * Get signals that need notifications (not yet notified)
+   */
+  getSignalsNeedingNotification() {
+    return this.getAllSignals().filter(s => 
+      s.status === 'active' && s.notificationCount === 0
+    );
   }
 
   /**

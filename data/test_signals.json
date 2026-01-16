@@ -1,1 +1,95 @@
-[]
+[
+  {
+    "signalId": "TEST_001",
+    "symbol": "BTCUSDT",
+    "direction": "LONG",
+    "confidence": 85,
+    "patternKey": null,
+    "patternSource": null,
+    "generatedAt": "2026-01-11T13:49:47.934Z",
+    "expiresAt": "2026-01-11T17:49:47.934Z",
+    "closedAt": null,
+    "status": "active",
+    "averageEntryPrice": 50000,
+    "stopLoss": 49000,
+    "takeProfit1": 51000,
+    "takeProfit2": 52000,
+    "outcome": null,
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": null,
+    "pnlPercentage": null,
+    "duration": null,
+    "notificationsSent": [
+      {
+        "channel": "email",
+        "sentAt": "2026-01-11T13:49:47.935Z"
+      }
+    ],
+    "lastNotificationAt": "2026-01-11T13:49:47.935Z",
+    "notificationCount": 1,
+    "fullSignal": {
+      "signalId": "TEST_001",
+      "symbol": "BTCUSDT",
+      "direction": "LONG",
+      "confidence": 85,
+      "averageEntryPrice": 50000,
+      "stopLoss": 49000,
+      "takeProfit1": 51000,
+      "takeProfit2": 52000,
+      "generatedAt": "2026-01-11T13:49:47.934Z",
+      "expiresAt": "2026-01-11T17:49:47.934Z"
+    }
+  },
+  {
+    "signalId": "TEST_002",
+    "symbol": "ETHUSDT",
+    "direction": "SHORT",
+    "confidence": 90,
+    "patternKey": null,
+    "patternSource": null,
+    "generatedAt": "2026-01-11T13:49:47.936Z",
+    "expiresAt": "2026-01-11T17:49:47.936Z",
+    "closedAt": null,
+    "status": "active",
+    "averageEntryPrice": null,
+    "stopLoss": null,
+    "takeProfit1": null,
+    "takeProfit2": null,
+    "outcome": null,
+    "entryPrice": null,
+    "exitPrice": null,
+    "pnl": null,
+    "pnlPercentage": null,
+    "duration": null,
+    "notificationsSent": [
+      {
+        "channel": "batch",
+        "sentAt": "2026-01-11T13:49:47.937Z"
+      }
+    ],
+    "lastNotificationAt": "2026-01-11T13:49:47.937Z",
+    "notificationCount": 1,
+    "fullSignal": {
+      "signalId": "TEST_002",
+      "symbol": "ETHUSDT",
+      "direction": "SHORT",
+      "confidence": 90,
+      "pattern": {
+        "tradersAffected": 5,
+        "totalOccurrences": 10,
+        "totalLosses": 5000,
+        "avgLoss": 500
+      },
+      "currentConditions": {
+        "price": 3000,
+        "priceChange24h": -2.5,
+        "rsi": 70,
+        "marketSentiment": "bearish"
+      },
+      "riskLevel": "LOW",
+      "generatedAt": "2026-01-11T13:49:47.936Z",
+      "expiresAt": "2026-01-11T17:49:47.936Z"
+    }
+  }
+]

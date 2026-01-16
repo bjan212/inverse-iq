@@ -128,13 +128,29 @@ Your Telegram notifications are working correctly! You will receive alerts here 
     const confidenceEmoji = signal.confidence >= 85 ? '🔥' : signal.confidence >= 75 ? '⚡' : '💡';
     const riskEmoji = this.getRiskEmoji(signal.riskLevel);
     
+    // Trading levels section (NEW)
+    const tradingLevelsSection = signal.averageEntryPrice ? `
+━━━━━━━━━━━━━━━━━━━━
+
+💰 <b>Trading Levels</b>
+🎯 Entry: <b>$${signal.averageEntryPrice.toFixed(2)}</b>
+🛑 Stop Loss: <b>$${signal.stopLoss.toFixed(2)}</b> <code>(-${signal.stopLossPercent}%)</code>
+✅ TP1: <b>$${signal.takeProfit1.toFixed(2)}</b> <code>(+${signal.takeProfit1Percent}%)</code>
+🚀 TP2: <b>$${signal.takeProfit2.toFixed(2)}</b> <code>(+${signal.takeProfit2Percent}%)</code>
+📊 R:R: <b>1:${signal.riskRewardRatio1}</b> / <b>1:${signal.riskRewardRatio2}</b>
+` : '';
+
+    // Expiry section
+    const expirySection = signal.expiresAt ? `
+⏰ Expires: ${new Date(signal.expiresAt).toLocaleString()}` : '';
+    
     return `
 🧠 <b>Xrypt Signal Alert</b>
 
 ${directionEmoji} <b>${signal.symbol}</b> - <b>${signal.direction}</b>
 ${confidenceEmoji} Confidence: <b>${signal.confidence}%</b>
 ${riskEmoji} Risk: <b>${signal.riskLevel.replace('_', ' ')}</b>
-
+${tradingLevelsSection}
 ━━━━━━━━━━━━━━━━━━━━
 
 📊 <b>Pattern Intelligence</b>
@@ -159,8 +175,7 @@ ${signal.currentConditions.fundingRate ? `• Funding Rate: ${(signal.currentCon
 
 ━━━━━━━━━━━━━━━━━━━━
 
-🕐 Generated: ${new Date(signal.generatedAt).toLocaleString()}
-⏰ Expires: ${new Date(signal.expiresAt).toLocaleString()}
+🕐 Generated: ${new Date(signal.generatedAt).toLocaleString()}${expirySection}
     `.trim();
   }
 

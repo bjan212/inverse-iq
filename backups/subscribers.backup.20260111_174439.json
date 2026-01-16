@@ -1,0 +1,344 @@
+[
+  {
+    "id": "0863ff9ecc4f206f21780c4819da3095",
+    "email": "test@example.com",
+    "telegramChatId": null,
+    "preferences": {
+      "channels": {
+        "email": true
+      },
+      "minConfidence": 85,
+      "symbols": [
+        "BTCUSDT"
+      ],
+      "directions": [
+        "LONG",
+        "SHORT"
+      ],
+      "notifyOnHighConfidence": true,
+      "notifyOnCombinedPatterns": true
+    },
+    "createdAt": "2026-01-02T14:32:47.719Z",
+    "updatedAt": "2026-01-02T14:33:46.505Z",
+    "active": true,
+    "notificationCount": 8,
+    "lastNotificationAt": "2026-01-11T12:25:30.747Z"
+  },
+  {
+    "id": "eb4a23b226920b8538ce55640293933e",
+    "email": null,
+    "telegramChatId": "5881754625",
+    "preferences": {
+      "channels": {
+        "telegram": true
+      },
+      "minConfidence": 75,
+      "symbols": [
+        "BTCUSDT",
+        "ETHUSDT",
+        "BNBUSDT",
+        "SOLUSDT"
+      ],
+      "directions": [
+        "LONG",
+        "SHORT"
+      ],
+      "notifyOnHighConfidence": true,
+      "notifyOnCombinedPatterns": true
+    },
+    "createdAt": "2026-01-09T03:39:08.772Z",
+    "updatedAt": "2026-01-09T03:53:15.673Z",
+    "active": true,
+    "notificationCount": 13,
+    "lastNotificationAt": "2026-01-11T12:30:28.285Z"
+  },
+  {
+    "id": "ffe1680fc5a80f07dc337e0a5f197788",
+    "email": "newuser@example.com",
+    "telegramChatId": null,
+    "preferences": {
+      "channels": {
+        "email": true,
+        "telegram": false
+      },
+      "minConfidence": 75,
+      "symbols": [
+        "BTCUSDT",
+        "ETHUSDT"
+      ],
+      "directions": [
+        "LONG",
+        "SHORT"
+      ],
+      "notifyOnHighConfidence": true,
+      "notifyOnCombinedPatterns": true
+    },
+    "createdAt": "2026-01-10T12:37:13.105Z",
+    "updatedAt": "2026-01-10T12:37:13.105Z",
+    "active": true,
+    "notificationCount": 13,
+    "lastNotificationAt": "2026-01-11T12:30:32.313Z"
+  },
+  {
+    "id": "302a976bce8e81a4601c76289f32ed7d",
+    "email": "boundary50@example.com",
+    "telegramChatId": null,
+    "preferences": {
+      "channels": {
+        "email": true,
+        "telegram": false
+      },
+      "minConfidence": 50,
+      "symbols": [
+        "BTCUSDT"
+      ],
+      "directions": [
+        "LONG",
+        "SHORT"
+      ],
+      "notifyOnHighConfidence": true,
+      "notifyOnCombinedPatterns": true
+    },
+    "createdAt": "2026-01-10T12:52:15.702Z",
+    "updatedAt": "2026-01-10T12:52:15.702Z",
+    "active": true,
+    "notificationCount": 13,
+    "lastNotificationAt": "2026-01-11T12:30:30.280Z"
+  },
+  {
+    "id": "f528054166b20d4761c6b1e5fe33f6c7",
+    "email": "boundary95@example.com",
+    "telegramChatId": null,
+    "preferences": {
+      "channels": {
+        "email": true,
+        "telegram": false
+      },
+      "minConfidence": 95,
+      "symbols": [
+        "ETHUSDT"
+      ],
+      "directions": [
+        "LONG",
+        "SHORT"
+      ],
+      "notifyOnHighConfidence": true,
+      "notifyOnCombinedPatterns": true
+    },
+    "createdAt": "2026-01-10T12:52:23.454Z",
+    "updatedAt": "2026-01-10T12:52:23.454Z",
+    "active": true,
+    "notificationCount": 0,
+    "lastNotificationAt": null
+  },
+  {
+    "id": "94553a3251d3d96fd30b20a9cfa7c043",
+    "email": "multipairs@example.com",
+    "telegramChatId": null,
+    "preferences": {
+      "channels": {
+        "email": true,
+        "telegram": false
+      },
+      "minConfidence": 80,
+      "symbols": [
+        "BTCUSDT",
+        "ETHUSDT",
+        "BNBUSDT",
+        "SOLUSDT"
+      ],
+      "directions": [
+        "LONG",
+        "SHORT"
+      ],
+      "notifyOnHighConfidence": true,
+      "notifyOnCombinedPatterns": true
+    },
+    "createdAt": "2026-01-10T12:52:39.250Z",
+    "updatedAt": "2026-01-10T12:52:39.250Z",
+    "active": true,
+    "notificationCount": 8,
+    "lastNotificationAt": "2026-01-11T12:25:30.312Z"
+  },
+  {
+    "id": "f64a86e53f41814f82e9c089750c83df",
+    "email": "test-checkbox-only@example.com",
+    "telegramChatId": null,
+    "preferences": {
+      "channels": {
+        "email": true,
+        "telegram": false
+      },
+      "minConfidence": 70,
+      "symbols": [
+        "BTCUSDT",
+        "ETHUSDT"
+      ],
+      "directions": [
+        "LONG",
+        "SHORT"
+      ],
+      "notifyOnHighConfidence": true,
+      "notifyOnCombinedPatterns": true
+    },
+    "createdAt": "2026-01-10T13:11:28.012Z",
+    "updatedAt": "2026-01-10T13:11:28.012Z",
+    "active": true,
+    "notificationCount": 13,
+    "lastNotificationAt": "2026-01-11T12:30:32.531Z"
+  },
+  {
+    "id": "28c9b100ee9fca65083e8f0b9d2605c6",
+    "email": "test-dropdown-only@example.com",
+    "telegramChatId": null,
+    "preferences": {
+      "channels": {
+        "email": true,
+        "telegram": false
+      },
+      "minConfidence": 75,
+      "symbols": [
+        "DOGEUSDT",
+        "DOTUSDT",
+        "MATICUSDT"
+      ],
+      "directions": [
+        "LONG",
+        "SHORT"
+      ],
+      "notifyOnHighConfidence": true,
+      "notifyOnCombinedPatterns": true
+    },
+    "createdAt": "2026-01-10T13:11:28.015Z",
+    "updatedAt": "2026-01-10T13:11:28.015Z",
+    "active": true,
+    "notificationCount": 0,
+    "lastNotificationAt": null
+  },
+  {
+    "id": "b102332fe15fcbaa5ec793d3f276744a",
+    "email": "test-combined@example.com",
+    "telegramChatId": null,
+    "preferences": {
+      "channels": {
+        "email": true,
+        "telegram": false
+      },
+      "minConfidence": 80,
+      "symbols": [
+        "BTCUSDT",
+        "ETHUSDT",
+        "DOGEUSDT",
+        "AVAXUSDT",
+        "LINKUSDT"
+      ],
+      "directions": [
+        "LONG",
+        "SHORT"
+      ],
+      "notifyOnHighConfidence": true,
+      "notifyOnCombinedPatterns": true
+    },
+    "createdAt": "2026-01-10T13:11:28.017Z",
+    "updatedAt": "2026-01-10T13:11:28.017Z",
+    "active": true,
+    "notificationCount": 8,
+    "lastNotificationAt": "2026-01-11T12:25:34.473Z"
+  },
+  {
+    "id": "914b9df54fa2f02725450ddc9e4c271a",
+    "email": "test-many-pairs@example.com",
+    "telegramChatId": null,
+    "preferences": {
+      "channels": {
+        "email": true,
+        "telegram": false
+      },
+      "minConfidence": 85,
+      "symbols": [
+        "DOGEUSDT",
+        "DOTUSDT",
+        "MATICUSDT",
+        "AVAXUSDT",
+        "LINKUSDT",
+        "ATOMUSDT",
+        "NEARUSDT",
+        "APTUSDT",
+        "AAVEUSDT",
+        "SHIBUSDT"
+      ],
+      "directions": [
+        "LONG",
+        "SHORT"
+      ],
+      "notifyOnHighConfidence": true,
+      "notifyOnCombinedPatterns": true
+    },
+    "createdAt": "2026-01-10T13:11:28.018Z",
+    "updatedAt": "2026-01-10T13:11:28.018Z",
+    "active": true,
+    "notificationCount": 0,
+    "lastNotificationAt": null
+  },
+  {
+    "id": "69347dd65581a7c63cc776a26b67dacb",
+    "email": "test-duplicates@example.com",
+    "telegramChatId": null,
+    "preferences": {
+      "channels": {
+        "email": true,
+        "telegram": false
+      },
+      "minConfidence": 70,
+      "symbols": [
+        "BTCUSDT",
+        "ETHUSDT",
+        "BTCUSDT",
+        "DOGEUSDT",
+        "ETHUSDT"
+      ],
+      "directions": [
+        "LONG",
+        "SHORT"
+      ],
+      "notifyOnHighConfidence": true,
+      "notifyOnCombinedPatterns": true
+    },
+    "createdAt": "2026-01-10T13:11:28.020Z",
+    "updatedAt": "2026-01-10T13:11:28.020Z",
+    "active": true,
+    "notificationCount": 13,
+    "lastNotificationAt": "2026-01-11T12:30:32.042Z"
+  },
+  {
+    "id": "2fc3d80db32a804512680a702af3fe62",
+    "email": "test-all-categories@example.com",
+    "telegramChatId": null,
+    "preferences": {
+      "channels": {
+        "email": true,
+        "telegram": false
+      },
+      "minConfidence": 70,
+      "symbols": [
+        "DOGEUSDT",
+        "ATOMUSDT",
+        "AAVEUSDT",
+        "SHIBUSDT",
+        "SANDUSDT",
+        "LTCUSDT"
+      ],
+      "directions": [
+        "LONG",
+        "SHORT"
+      ],
+      "notifyOnHighConfidence": true,
+      "notifyOnCombinedPatterns": true
+    },
+    "createdAt": "2026-01-10T13:11:28.023Z",
+    "updatedAt": "2026-01-10T13:11:28.023Z",
+    "active": true,
+    "notificationCount": 0,
+    "lastNotificationAt": null
+  }
+]

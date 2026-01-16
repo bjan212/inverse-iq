@@ -187,6 +187,35 @@ class EmailService {
               </div>
             </div>
 
+            <!-- Trading Levels (NEW) -->
+            ${signal.averageEntryPrice ? `
+            <div style="background: rgba(74, 222, 128, 0.1); border: 2px solid #4ade80; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+              <h3 style="color: #4ade80; font-size: 14px; margin: 0 0 15px 0; text-transform: uppercase;">📊 Trading Levels</h3>
+              <table style="width: 100%; font-size: 14px;">
+                <tr>
+                  <td style="color: #888; padding: 8px 0; border-bottom: 1px solid #374151;">Entry Price:</td>
+                  <td style="color: #4ade80; font-weight: bold; text-align: right; padding: 8px 0; border-bottom: 1px solid #374151;">$${signal.averageEntryPrice.toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td style="color: #888; padding: 8px 0; border-bottom: 1px solid #374151;">Stop Loss:</td>
+                  <td style="color: #f87171; font-weight: bold; text-align: right; padding: 8px 0; border-bottom: 1px solid #374151;">$${signal.stopLoss.toFixed(2)} <span style="color: #888; font-size: 12px;">(${signal.stopLossPercent}%)</span></td>
+                </tr>
+                <tr>
+                  <td style="color: #888; padding: 8px 0; border-bottom: 1px solid #374151;">Take Profit 1:</td>
+                  <td style="color: #4ade80; font-weight: bold; text-align: right; padding: 8px 0; border-bottom: 1px solid #374151;">$${signal.takeProfit1.toFixed(2)} <span style="color: #888; font-size: 12px;">(+${signal.takeProfit1Percent}%)</span></td>
+                </tr>
+                <tr>
+                  <td style="color: #888; padding: 8px 0; border-bottom: 1px solid #374151;">Take Profit 2:</td>
+                  <td style="color: #4ade80; font-weight: bold; text-align: right; padding: 8px 0; border-bottom: 1px solid #374151;">$${signal.takeProfit2.toFixed(2)} <span style="color: #888; font-size: 12px;">(+${signal.takeProfit2Percent}%)</span></td>
+                </tr>
+                <tr>
+                  <td style="color: #888; padding: 8px 0;">Risk/Reward:</td>
+                  <td style="color: #fff; font-weight: bold; text-align: right; padding: 8px 0;">1:${signal.riskRewardRatio1} / 1:${signal.riskRewardRatio2}</td>
+                </tr>
+              </table>
+            </div>
+            ` : ''}
+
             <!-- Pattern Info -->
             <div style="background: rgba(3, 7, 18, 0.6); border: 1px solid #374151; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
               <h3 style="color: #888; font-size: 12px; margin: 0 0 10px 0; text-transform: uppercase;">Pattern Intelligence</h3>
@@ -244,9 +273,10 @@ class EmailService {
 
           </div>
 
-          <!-- Timestamp -->
+          <!-- Timestamp & Validity -->
           <div style="text-align: center; font-size: 12px; color: #666; margin-bottom: 20px;">
-            Generated: ${new Date(signal.generatedAt).toLocaleString()}
+            <div style="margin-bottom: 5px;">Generated: ${new Date(signal.generatedAt).toLocaleString()}</div>
+            ${signal.expiresAt ? `<div style="color: #f59e0b;">⏰ Expires: ${new Date(signal.expiresAt).toLocaleString()}</div>` : ''}
           </div>
 
           <!-- Footer -->
@@ -269,6 +299,20 @@ class EmailService {
    * Generate plain text email for signal
    */
   generateSignalEmailText(signal) {
+    const tradingLevelsText = signal.averageEntryPrice ? `
+TRADING LEVELS
+Entry Price: $${signal.averageEntryPrice.toFixed(2)}
+Stop Loss: $${signal.stopLoss.toFixed(2)} (-${signal.stopLossPercent}%)
+Take Profit 1: $${signal.takeProfit1.toFixed(2)} (+${signal.takeProfit1Percent}%)
+Take Profit 2: $${signal.takeProfit2.toFixed(2)} (+${signal.takeProfit2Percent}%)
+Risk/Reward: 1:${signal.riskRewardRatio1} / 1:${signal.riskRewardRatio2}
+
+` : '';
+
+    const expiryText = signal.expiresAt ? `
+Expires: ${new Date(signal.expiresAt).toLocaleString()}
+` : '';
+
     return `
 🧠 Xrypt - AI-Powered Inverse Signal
 
@@ -280,7 +324,7 @@ Direction: ${signal.direction}
 Confidence: ${signal.confidence}%
 Risk Level: ${signal.riskLevel.replace('_', ' ')}
 
-PATTERN INTELLIGENCE
+${tradingLevelsText}PATTERN INTELLIGENCE
 Traders Affected: ${signal.pattern.tradersAffected}
 Occurrences: ${signal.pattern.totalOccurrences}
 Total Losses: $${signal.pattern.totalLosses.toFixed(2)}
@@ -296,7 +340,7 @@ Sentiment: ${signal.currentConditions.marketSentiment}
 
 ═══════════════════════════════════════
 
-Generated: ${new Date(signal.generatedAt).toLocaleString()}
+Generated: ${new Date(signal.generatedAt).toLocaleString()}${expiryText}
 
 Xrypt - Learn from losses, profit from patterns
     `.trim();

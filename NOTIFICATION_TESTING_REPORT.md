@@ -44,7 +44,8 @@ Server running on port 3000
 **Verification:** 
 - ✅ Server started successfully
 - ✅ Notification manager initialized
-- ✅ Proper warnings for unconfigured services
+- ✅ Proper warnings for unconfigured servicesvpm start
+- 
 - ✅ No errors or crashes
 
 #### Test 1.2: Subscriber Database Creation
@@ -328,8 +329,8 @@ curl -X POST http://localhost:3000/api/notifications/subscribe \
 ```json
 {
   "success": false,
-  "error": "At least one contact method (email or telegramChatId) is required"
-}
+  "error": "At st one contact method (email or telegramChatId) is required"
+}lea
 ```
 
 **Verification:**

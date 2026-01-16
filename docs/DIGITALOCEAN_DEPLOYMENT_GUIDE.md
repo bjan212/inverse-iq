@@ -354,7 +354,8 @@ sudo nano /etc/nginx/sites-available/inverseiq
 ```nginx
 server {
     listen 80;
-    server_name your-domain.com www.your-domain.com;  # Replace with your domain or IP
+    server_name 146.190.233.46 www.xrypt.net;y
+      # Replace with your domain or IP
 
     # Frontend files
     location / {
