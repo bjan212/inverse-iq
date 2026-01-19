@@ -140,31 +140,42 @@ const helmetConfig = helmet({
  * CORS configuration
  */
 const getCorsOptions = () => {
-  const allowedOriginsRaw = process.env.ALLOWED_ORIGINS 
+  const defaultLocalOrigins = [
+    `http://localhost:${process.env.PORT || 3000}`,
+    `http://127.0.0.1:${process.env.PORT || 3000}`,
+    'http://localhost',
+    'http://127.0.0.1'
+  ];
+
+  const allowedOriginsRaw = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
-    : ['http://localhost:3000', 'http://localhost:3001'];
+    : defaultLocalOrigins;
+
+  if (process.env.SELF_ORIGIN) {
+    allowedOriginsRaw.push(process.env.SELF_ORIGIN.trim());
+  }
 
   // Normalize to be resilient to trailing slashes and casing
   const allowedOrigins = allowedOriginsRaw.map(o => o.toLowerCase().replace(/\/$/, ''));
+  const allowLocalDev = process.env.NODE_ENV === 'development';
   
   return {
     origin: (origin, callback) => {
-      // Allow requests with no origin (mobile apps, Postman, etc.)
-      if (!origin) return callback(null, true);
-
-      const normalizedOrigin = origin.toLowerCase().replace(/\/$/, '');
-      
-      // In development, allow all origins
-      if (process.env.NODE_ENV === 'development') {
+      // Allow requests with no origin (servers, curl, health checks)
+      if (!origin) {
         return callback(null, true);
       }
-      
-      // Check if origin is in allowed list
-      if (allowedOrigins.includes(normalizedOrigin) || allowedOrigins.includes('*')) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
+
+      const normalizedOrigin = origin.toLowerCase().replace(/\/$/, '');
+      const isExplicitlyAllowed = allowedOrigins.includes(normalizedOrigin);
+      const isDevLocalhost = allowLocalDev && normalizedOrigin.startsWith('http://localhost');
+
+      if (isExplicitlyAllowed || isDevLocalhost) {
+        return callback(null, true);
       }
+
+      console.warn(`CORS blocked origin: ${normalizedOrigin}`);
+      callback(null, false); // Respond without CORS headers instead of throwing 500
     },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],

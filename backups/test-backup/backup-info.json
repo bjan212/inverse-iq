@@ -1,0 +1,34 @@
+{
+  "timestamp": "2026-01-19T10:45:57.011Z",
+  "databases": [
+    {
+      "name": "hybrid_pattern_database.json",
+      "originalPath": "./data/hybrid_pattern_database.json",
+      "backupPath": "backups/test-backup/hybrid_pattern_database.json",
+      "size": 9044,
+      "sizeKB": "8.83"
+    },
+    {
+      "name": "continuous_learning_database.json",
+      "originalPath": "./data/continuous_learning_database.json",
+      "backupPath": "backups/test-backup/continuous_learning_database.json",
+      "size": 9277,
+      "sizeKB": "9.06"
+    },
+    {
+      "name": "active_signals.json",
+      "originalPath": "./data/active_signals.json",
+      "backupPath": "backups/test-backup/active_signals.json",
+      "size": 177918,
+      "sizeKB": "173.75"
+    },
+    {
+      "name": "subscribers.json",
+      "originalPath": "./data/subscribers.json",
+      "backupPath": "backups/test-backup/subscribers.json",
+      "size": 2706,
+      "sizeKB": "2.64"
+    }
+  ],
+  "totalSize": 198945
+}

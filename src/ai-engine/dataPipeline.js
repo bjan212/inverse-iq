@@ -18,7 +18,7 @@ class DataPipeline {
   }
 
   /**
-   * Process a single submission file
+   * Process a single submission file (async)
    */
   async processSubmissionFile(filename) {
     const filepath = path.join(this.submissionsDir, filename);
@@ -29,7 +29,7 @@ class DataPipeline {
     }
 
     try {
-      const data = JSON.parse(fs.readFileSync(filepath, 'utf8'));
+      const data = JSON.parse(await fs.promises.readFile(filepath, 'utf8'));
 
       if (!data.trades || !Array.isArray(data.trades)) {
         console.log(`⚠️  No trades found in ${filename}`);
@@ -65,7 +65,7 @@ class DataPipeline {
   }
 
   /**
-   * Process all new submissions
+   * Process all new submissions (async)
    */
   async processNewSubmissions() {
     if (!fs.existsSync(this.submissionsDir)) {
@@ -73,15 +73,14 @@ class DataPipeline {
       return [];
     }
 
-    const files = fs.readdirSync(this.submissionsDir)
-      .filter(f => f.endsWith('.json'))
-      .sort(); // Process in chronological order
+    const files = await fs.promises.readdir(this.submissionsDir)
+      .then(files => files.filter(f => f.endsWith('.json')).sort()); // Process in chronological order
 
     const results = [];
 
     for (const file of files) {
       const filepath = path.join(this.submissionsDir, file);
-      const data = JSON.parse(fs.readFileSync(filepath, 'utf8'));
+      const data = JSON.parse(await fs.promises.readFile(filepath, 'utf8'));
 
       // Skip already processed submissions
       if (this.processedSubmissions.has(data.submissionId)) {

@@ -17,9 +17,9 @@ class SubscriberDB {
   }
 
   /**
-   * Load subscribers from disk
+   * Load subscribers from disk (async)
    */
-  loadSubscribers() {
+  async loadSubscribers() {
     try {
       // Ensure data directory exists
       const dir = path.dirname(this.storagePath);
@@ -29,20 +29,20 @@ class SubscriberDB {
 
       // Load existing subscribers
       if (fs.existsSync(this.storagePath)) {
-        const data = fs.readFileSync(this.storagePath, 'utf8');
+        const data = await fs.promises.readFile(this.storagePath, 'utf8');
         const parsed = JSON.parse(data);
-        
+
         // Convert array to Map
         if (Array.isArray(parsed)) {
           parsed.forEach(sub => {
             this.subscribers.set(sub.id, sub);
           });
         }
-        
+
         console.log(`📚 Loaded ${this.subscribers.size} subscribers from database`);
       } else {
         console.log('📚 No existing subscriber database found, starting fresh');
-        this.saveSubscribers();
+        await this.saveSubscribers();
       }
     } catch (error) {
       console.error('Failed to load subscribers:', error.message);
@@ -51,12 +51,12 @@ class SubscriberDB {
   }
 
   /**
-   * Save subscribers to disk
+   * Save subscribers to disk (async)
    */
-  saveSubscribers() {
+  async saveSubscribers() {
     try {
       const data = Array.from(this.subscribers.values());
-      fs.writeFileSync(this.storagePath, JSON.stringify(data, null, 2));
+      await fs.promises.writeFile(this.storagePath, JSON.stringify(data, null, 2));
     } catch (error) {
       console.error('Failed to save subscribers:', error.message);
     }
@@ -70,9 +70,9 @@ class SubscriberDB {
   }
 
   /**
-   * Add new subscriber
+   * Add new subscriber (async)
    */
-  addSubscriber(subscriberData) {
+  async addSubscriber(subscriberData) {
     const { email, telegramChatId, preferences } = subscriberData;
 
     // Validate required fields
@@ -110,7 +110,7 @@ class SubscriberDB {
     };
 
     this.subscribers.set(subscriber.id, subscriber);
-    this.saveSubscribers();
+    await this.saveSubscribers();
 
     console.log(`✅ New subscriber added: ${subscriber.id}`);
     console.log(`   Email: ${subscriber.email || 'N/A'}`);
@@ -142,11 +142,11 @@ class SubscriberDB {
   }
 
   /**
-   * Update subscriber preferences
+   * Update subscriber preferences (async)
    */
-  updatePreferences(id, preferences) {
+  async updatePreferences(id, preferences) {
     const subscriber = this.subscribers.get(id);
-    
+
     if (!subscriber) {
       throw new Error(`Subscriber not found: ${id}`);
     }
@@ -156,11 +156,11 @@ class SubscriberDB {
       ...subscriber.preferences,
       ...preferences
     };
-    
+
     subscriber.updatedAt = new Date().toISOString();
-    
+
     this.subscribers.set(id, subscriber);
-    this.saveSubscribers();
+    await this.saveSubscribers();
 
     console.log(`✅ Updated preferences for subscriber: ${id}`);
 
@@ -168,11 +168,11 @@ class SubscriberDB {
   }
 
   /**
-   * Update subscriber contact information
+   * Update subscriber contact information (async)
    */
-  updateContact(id, contactData) {
+  async updateContact(id, contactData) {
     const subscriber = this.subscribers.get(id);
-    
+
     if (!subscriber) {
       throw new Error(`Subscriber not found: ${id}`);
     }
@@ -180,15 +180,15 @@ class SubscriberDB {
     if (contactData.email !== undefined) {
       subscriber.email = contactData.email;
     }
-    
+
     if (contactData.telegramChatId !== undefined) {
       subscriber.telegramChatId = contactData.telegramChatId;
     }
-    
+
     subscriber.updatedAt = new Date().toISOString();
-    
+
     this.subscribers.set(id, subscriber);
-    this.saveSubscribers();
+    await this.saveSubscribers();
 
     console.log(`✅ Updated contact info for subscriber: ${id}`);
 
@@ -196,20 +196,20 @@ class SubscriberDB {
   }
 
   /**
-   * Deactivate subscriber (soft delete)
+   * Deactivate subscriber (soft delete) (async)
    */
-  deactivateSubscriber(id) {
+  async deactivateSubscriber(id) {
     const subscriber = this.subscribers.get(id);
-    
+
     if (!subscriber) {
       throw new Error(`Subscriber not found: ${id}`);
     }
 
     subscriber.active = false;
     subscriber.updatedAt = new Date().toISOString();
-    
+
     this.subscribers.set(id, subscriber);
-    this.saveSubscribers();
+    await this.saveSubscribers();
 
     console.log(`✅ Deactivated subscriber: ${id}`);
 
@@ -217,20 +217,20 @@ class SubscriberDB {
   }
 
   /**
-   * Reactivate subscriber
+   * Reactivate subscriber (async)
    */
-  reactivateSubscriber(id) {
+  async reactivateSubscriber(id) {
     const subscriber = this.subscribers.get(id);
-    
+
     if (!subscriber) {
       throw new Error(`Subscriber not found: ${id}`);
     }
 
     subscriber.active = true;
     subscriber.updatedAt = new Date().toISOString();
-    
+
     this.subscribers.set(id, subscriber);
-    this.saveSubscribers();
+    await this.saveSubscribers();
 
     console.log(`✅ Reactivated subscriber: ${id}`);
 
@@ -238,17 +238,17 @@ class SubscriberDB {
   }
 
   /**
-   * Delete subscriber permanently
+   * Delete subscriber permanently (async)
    */
-  deleteSubscriber(id) {
+  async deleteSubscriber(id) {
     const subscriber = this.subscribers.get(id);
-    
+
     if (!subscriber) {
       throw new Error(`Subscriber not found: ${id}`);
     }
 
     this.subscribers.delete(id);
-    this.saveSubscribers();
+    await this.saveSubscribers();
 
     console.log(`✅ Deleted subscriber: ${id}`);
 
@@ -256,20 +256,20 @@ class SubscriberDB {
   }
 
   /**
-   * Record notification sent
+   * Record notification sent (async)
    */
-  recordNotification(id) {
+  async recordNotification(id) {
     const subscriber = this.subscribers.get(id);
-    
+
     if (!subscriber) {
       return;
     }
 
     subscriber.notificationCount++;
     subscriber.lastNotificationAt = new Date().toISOString();
-    
+
     this.subscribers.set(id, subscriber);
-    this.saveSubscribers();
+    await this.saveSubscribers();
   }
 
   /**

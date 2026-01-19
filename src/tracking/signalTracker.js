@@ -23,9 +23,9 @@ class SignalTracker {
   }
 
   /**
-   * Register a new signal
+   * Register a new signal (async)
    */
-  registerSignal(signal) {
+  async registerSignal(signal) {
     if (!signal.signalId) {
       throw new Error('Signal must have a signalId');
     }
@@ -35,25 +35,25 @@ class SignalTracker {
       symbol: signal.symbol,
       direction: signal.direction,
       confidence: signal.confidence,
-      
+
       // Pattern information
       patternKey: signal.pattern?.key || null,
       patternSource: signal.pattern?.source || null,
-      
+
       // Timestamps
       generatedAt: signal.generatedAt || new Date(),
       expiresAt: signal.expiresAt || null,
       closedAt: null,
-      
+
       // Status
       status: 'active', // active, expired, closed
-      
+
       // Trading levels (NEW)
       averageEntryPrice: signal.averageEntryPrice || null,
       stopLoss: signal.stopLoss || null,
       takeProfit1: signal.takeProfit1 || null,
       takeProfit2: signal.takeProfit2 || null,
-      
+
       // Outcome (filled when feedback received)
       outcome: null, // win, loss
       entryPrice: null,
@@ -61,18 +61,18 @@ class SignalTracker {
       pnl: null,
       pnlPercentage: null,
       duration: null,
-      
+
       // Notification tracking (NEW)
       notificationsSent: [],
       lastNotificationAt: null,
       notificationCount: 0,
-      
+
       // Full signal data for reference
       fullSignal: signal
     };
 
     this.signals.set(signal.signalId, trackedSignal);
-    this.saveSignals();
+    await this.saveSignals();
 
     console.log(`📍 Signal tracked: ${signal.signalId} (${signal.symbol} ${signal.direction})`);
 
@@ -94,11 +94,11 @@ class SignalTracker {
   }
 
   /**
-   * Update signal with outcome
+   * Update signal with outcome (async)
    */
-  updateSignalOutcome(signalId, outcome) {
+  async updateSignalOutcome(signalId, outcome) {
     const signal = this.signals.get(signalId);
-    
+
     if (!signal) {
       throw new Error(`Signal not found: ${signalId}`);
     }
@@ -123,7 +123,7 @@ class SignalTracker {
     signal.status = 'closed';
 
     this.signals.set(signalId, signal);
-    this.saveSignals();
+    await this.saveSignals();
 
     console.log(`✅ Signal outcome recorded: ${signalId} → ${outcome.outcome.toUpperCase()}`);
 
@@ -131,11 +131,11 @@ class SignalTracker {
   }
 
   /**
-   * Mark signal as expired
+   * Mark signal as expired (async)
    */
-  expireSignal(signalId) {
+  async expireSignal(signalId) {
     const signal = this.signals.get(signalId);
-    
+
     if (!signal) {
       return false;
     }
@@ -144,8 +144,8 @@ class SignalTracker {
       signal.status = 'expired';
       signal.closedAt = new Date();
       this.signals.set(signalId, signal);
-      this.saveSignals();
-      
+      await this.saveSignals();
+
       console.log(`⏰ Signal expired: ${signalId}`);
       return true;
     }
@@ -260,9 +260,9 @@ class SignalTracker {
   }
 
   /**
-   * Load signals from disk
+   * Load signals from disk (async)
    */
-  loadSignals() {
+  async loadSignals() {
     try {
       const dir = path.dirname(this.storagePath);
       if (!fs.existsSync(dir)) {
@@ -270,11 +270,11 @@ class SignalTracker {
       }
 
       if (fs.existsSync(this.storagePath)) {
-        const data = fs.readFileSync(this.storagePath, 'utf8');
+        const data = await fs.promises.readFile(this.storagePath, 'utf8');
         const signalsArray = JSON.parse(data);
-        
+
         this.signals = new Map(signalsArray.map(s => [s.signalId, s]));
-        
+
         console.log(`✅ Loaded ${this.signals.size} tracked signals`);
       } else {
         console.log('📝 No existing signal tracking data found');
@@ -286,9 +286,9 @@ class SignalTracker {
   }
 
   /**
-   * Save signals to disk
+   * Save signals to disk (async)
    */
-  saveSignals() {
+  async saveSignals() {
     try {
       const dir = path.dirname(this.storagePath);
       if (!fs.existsSync(dir)) {
@@ -296,8 +296,8 @@ class SignalTracker {
       }
 
       const signalsArray = Array.from(this.signals.values());
-      fs.writeFileSync(this.storagePath, JSON.stringify(signalsArray, null, 2));
-      
+      await fs.promises.writeFile(this.storagePath, JSON.stringify(signalsArray, null, 2));
+
       // Silent save - don't log every time
     } catch (error) {
       console.error('Failed to save signals:', error.message);
@@ -346,17 +346,17 @@ class SignalTracker {
   }
 
   /**
-   * Record that a notification was sent for this signal
+   * Record that a notification was sent for this signal (async)
    */
-  recordNotificationSent(signalId, channel = 'unknown') {
+  async recordNotificationSent(signalId, channel = 'unknown') {
     const signal = this.signals.get(signalId);
-    
+
     if (!signal) {
       throw new Error(`Signal not found: ${signalId}`);
     }
 
     const now = new Date();
-    
+
     signal.notificationsSent.push({
       channel: channel,
       sentAt: now
@@ -365,7 +365,7 @@ class SignalTracker {
     signal.notificationCount++;
 
     this.signals.set(signalId, signal);
-    this.saveSignals();
+    await this.saveSignals();
 
     console.log(`📬 Notification recorded for signal ${signalId} via ${channel}`);
 
@@ -400,11 +400,11 @@ class SignalTracker {
   }
 
   /**
-   * Clear all signals (use with caution!)
+   * Clear all signals (use with caution!) (async)
    */
-  clearAll() {
+  async clearAll() {
     this.signals.clear();
-    this.saveSignals();
+    await this.saveSignals();
     console.log('🗑️  All signals cleared');
   }
 }

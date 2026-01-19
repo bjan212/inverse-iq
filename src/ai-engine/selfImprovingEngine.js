@@ -21,7 +21,7 @@ const InverseSignalEngine = require('./inverseSignalEngine');
 class SelfImprovingEngine extends InverseSignalEngine {
   constructor(dbPath = './data/pattern_database.json') {
     super();
-    
+
     this.dbPath = dbPath;
     this.patternDatabase = {
       version: 1,
@@ -39,7 +39,12 @@ class SelfImprovingEngine extends InverseSignalEngine {
       },
       traderHistory: []
     };
-    
+
+    // In-memory cache for frequently accessed patterns
+    this.patternCache = new Map();
+    this.cacheSize = 1000; // Maximum cached patterns
+    this.cacheTTL = 30 * 60 * 1000; // 30 minutes TTL
+
     // Load existing database
     this.loadDatabase();
   }
@@ -140,14 +145,14 @@ class SelfImprovingEngine extends InverseSignalEngine {
     this.patternDatabase.lastUpdated = new Date();
     
     // Save to disk
-    this.saveDatabase();
-    
+    await this.saveDatabase();
+
     console.log(`\n✅ Incremental learning complete:`);
     console.log(`   Patterns added: ${patternsAdded}`);
     console.log(`   Patterns strengthened: ${patternsUpdated}`);
     console.log(`   Total patterns in database: ${this.patternDatabase.totalPatterns}`);
     console.log(`   Total traders: ${this.patternDatabase.totalTraders}`);
-    
+
     return {
       patternsAdded,
       patternsUpdated,
@@ -247,12 +252,13 @@ class SelfImprovingEngine extends InverseSignalEngine {
     
     // Update global performance
     this.patternDatabase.performance.totalSignals++;
-    this.patternDatabase.performance.accuracy = 
-      (this.patternDatabase.performance.successfulSignals / 
+    this.patternDatabase.performance.accuracy =
+      (this.patternDatabase.performance.successfulSignals /
        this.patternDatabase.performance.totalSignals * 100).toFixed(2);
-    
+
+
     this.patternDatabase.lastUpdated = new Date();
-    this.saveDatabase();
+    await this.saveDatabase();
     
     console.log(`✅ Pattern performance updated:`);
     console.log(`   Wins: ${pattern.performance.wins}`);
@@ -304,29 +310,80 @@ class SelfImprovingEngine extends InverseSignalEngine {
   }
 
   /**
-   * Find matching patterns from database
+   * Get cached pattern or fetch from database
+   */
+  getCachedPattern(patternKey) {
+    const cached = this.patternCache.get(patternKey);
+    if (cached && (Date.now() - cached.cachedAt) < this.cacheTTL) {
+      return cached.pattern;
+    }
+    return null;
+  }
+
+  /**
+   * Cache a pattern
+   */
+  cachePattern(pattern) {
+    // Implement LRU eviction if cache is full
+    if (this.patternCache.size >= this.cacheSize) {
+      const firstKey = this.patternCache.keys().next().value;
+      this.patternCache.delete(firstKey);
+    }
+
+    this.patternCache.set(pattern.key, {
+      pattern: pattern,
+      cachedAt: Date.now()
+    });
+  }
+
+  /**
+   * Clear expired cache entries
+   */
+  cleanCache() {
+    const now = Date.now();
+    for (const [key, cached] of this.patternCache.entries()) {
+      if ((now - cached.cachedAt) > this.cacheTTL) {
+        this.patternCache.delete(key);
+      }
+    }
+  }
+
+  /**
+   * Find matching patterns from database (with caching)
    */
   findMatchingPatternsFromDB(symbol, currentConditions) {
     const matches = [];
-    
+
+    // Clean expired cache entries periodically
+    if (Math.random() < 0.01) { // 1% chance to clean cache
+      this.cleanCache();
+    }
+
     for (const [key, pattern] of Object.entries(this.patternDatabase.patterns)) {
       if (pattern.symbol !== symbol) continue;
-      
+
+      // Try cache first
+      let cachedPattern = this.getCachedPattern(key);
+      if (!cachedPattern) {
+        cachedPattern = pattern;
+        this.cachePattern(pattern);
+      }
+
       // Calculate similarity
-      const similarity = this.calculateSimilarity(currentConditions, pattern.conditions);
-      
+      const similarity = this.calculateSimilarity(currentConditions, cachedPattern.conditions);
+
       // Match threshold: 70% similarity
       if (similarity >= 0.7) {
         matches.push({
-          ...pattern,
+          ...cachedPattern,
           similarity
         });
       }
     }
-    
+
     // Sort by confidence * similarity
     matches.sort((a, b) => (b.confidence * b.similarity) - (a.confidence * a.similarity));
-    
+
     return matches;
   }
 
@@ -504,17 +561,17 @@ class SelfImprovingEngine extends InverseSignalEngine {
   }
 
   /**
-   * Database persistence
+   * Database persistence (async)
    */
-  loadDatabase() {
+  async loadDatabase() {
     try {
       const dir = path.dirname(this.dbPath);
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
-      
+
       if (fs.existsSync(this.dbPath)) {
-        const data = fs.readFileSync(this.dbPath, 'utf8');
+        const data = await fs.promises.readFile(this.dbPath, 'utf8');
         this.patternDatabase = JSON.parse(data);
         console.log(`✅ Loaded pattern database: ${this.patternDatabase.totalPatterns} patterns from ${this.patternDatabase.totalTraders} traders`);
       } else {
@@ -525,14 +582,14 @@ class SelfImprovingEngine extends InverseSignalEngine {
     }
   }
 
-  saveDatabase() {
+  async saveDatabase() {
     try {
       const dir = path.dirname(this.dbPath);
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
-      
-      fs.writeFileSync(this.dbPath, JSON.stringify(this.patternDatabase, null, 2));
+
+      await fs.promises.writeFile(this.dbPath, JSON.stringify(this.patternDatabase, null, 2));
       console.log(`💾 Database saved: ${this.patternDatabase.totalPatterns} patterns`);
     } catch (error) {
       console.error('Failed to save database:', error.message);

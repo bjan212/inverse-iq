@@ -114,8 +114,7 @@
       "generatedAt": "2025-12-08T06:06:42.278Z",
       "expiresAt": "2025-12-08T10:06:42.278Z",
       "reason": "Manually registered for testing"
-    },
-    "processedForLearning": true
+    }
   },
   {
     "signalId": "ETHUSDT_1765174002_test2",
@@ -145,8 +144,7 @@
       "generatedAt": "2025-12-08T06:06:42.291Z",
       "expiresAt": "2025-12-08T10:06:42.291Z",
       "reason": "Manually registered for testing"
-    },
-    "processedForLearning": true
+    }
   },
   {
     "signalId": "BNBUSDT_1765174002_test3",
@@ -176,8 +174,7 @@
       "generatedAt": "2025-12-08T06:06:42.299Z",
       "expiresAt": "2025-12-08T10:06:42.299Z",
       "reason": "Manually registered for testing"
-    },
-    "processedForLearning": true
+    }
   },
   {
     "signalId": "SOLUSDT_1765174002_test4",
@@ -207,8 +204,7 @@
       "generatedAt": "2025-12-08T06:06:42.397Z",
       "expiresAt": "2025-12-08T10:06:42.397Z",
       "reason": "Manually registered for testing"
-    },
-    "processedForLearning": true
+    }
   },
   {
     "signalId": "ADAUSDT_1765174002_test5",
@@ -238,8 +234,7 @@
       "generatedAt": "2025-12-08T06:06:42.408Z",
       "expiresAt": "2025-12-08T10:06:42.408Z",
       "reason": "Manually registered for testing"
-    },
-    "processedForLearning": true
+    }
   },
   {
     "signalId": "BTCUSDT_1765174147_test1",
@@ -269,8 +264,7 @@
       "generatedAt": "2025-12-08T06:09:07.892Z",
       "expiresAt": "2025-12-08T10:09:07.892Z",
       "reason": "Manually registered for testing"
-    },
-    "processedForLearning": true
+    }
   },
   {
     "signalId": "ETHUSDT_1765174147_test2",
@@ -300,8 +294,7 @@
       "generatedAt": "2025-12-08T06:09:07.908Z",
       "expiresAt": "2025-12-08T10:09:07.908Z",
       "reason": "Manually registered for testing"
-    },
-    "processedForLearning": true
+    }
   },
   {
     "signalId": "BNBUSDT_1765174147_test3",
@@ -331,8 +324,7 @@
       "generatedAt": "2025-12-08T06:09:07.916Z",
       "expiresAt": "2025-12-08T10:09:07.916Z",
       "reason": "Manually registered for testing"
-    },
-    "processedForLearning": true
+    }
   },
   {
     "signalId": "SOLUSDT_1765174147_test4",
@@ -362,8 +354,7 @@
       "generatedAt": "2025-12-08T06:09:08.016Z",
       "expiresAt": "2025-12-08T10:09:08.016Z",
       "reason": "Manually registered for testing"
-    },
-    "processedForLearning": true
+    }
   },
   {
     "signalId": "ADAUSDT_1765174147_test5",
@@ -393,8 +384,7 @@
       "generatedAt": "2025-12-08T06:09:08.023Z",
       "expiresAt": "2025-12-08T10:09:08.023Z",
       "reason": "Manually registered for testing"
-    },
-    "processedForLearning": true
+    }
   },
   {
     "signalId": "BTCUSDT_1768047039792_e6jvtizpp",
@@ -5685,8 +5675,8 @@
     "patternSource": null,
     "generatedAt": "2026-01-16T07:15:24.759Z",
     "expiresAt": "2026-01-16T08:15:24.768Z",
-    "closedAt": "2026-01-19T12:41:21.533Z",
-    "status": "expired",
+    "closedAt": null,
+    "status": "active",
     "averageEntryPrice": 110000,
     "stopLoss": 105050,
     "takeProfit1": 116600,

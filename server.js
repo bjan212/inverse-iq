@@ -19,6 +19,7 @@ const SelfImprovingEngine = require('./src/ai-engine/selfImprovingEngine');
 const DataPipeline = require('./src/ai-engine/dataPipeline');
 const SignalTracker = require('./src/tracking/signalTracker');
 const NotificationManager = require('./src/notifications/notificationManager');
+const BackupManager = require('./src/utils/backupManager');
 
 // Security and validation middleware
 const {
@@ -1472,8 +1473,214 @@ app.get('/api/pipeline/stats', (req, res) => {
   }
 });
 
+// ============================================================================
+// BACKUP MANAGEMENT ENDPOINTS (Admin only)
+// ============================================================================
+
+/**
+ * Create a database backup
+ * POST /api/admin/backup/create
+ */
+app.post('/api/admin/backup/create', authenticateAdmin, async (req, res) => {
+  try {
+    const { name } = req.body;
+    const backupManager = new BackupManager();
+
+    const result = await backupManager.createBackup(name);
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: 'Backup created successfully',
+        backup: {
+          name: result.backupName,
+          path: result.path,
+          size: result.info.totalSizeKB + ' KB',
+          databases: result.info.databases.length
+        }
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error
+      });
+    }
+
+  } catch (error) {
+    console.error('Backup creation error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Restore from a backup
+ * POST /api/admin/backup/restore
+ */
+app.post('/api/admin/backup/restore', authenticateAdmin, async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    if (!name) {
+      return res.status(400).json({
+        success: false,
+        error: 'Backup name is required'
+      });
+    }
+
+    const backupManager = new BackupManager();
+    const result = await backupManager.restoreBackup(name);
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: 'Backup restored successfully',
+        restored: result.restored,
+        failed: result.failed
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error
+      });
+    }
+
+  } catch (error) {
+    console.error('Backup restore error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * List all backups
+ * GET /api/admin/backup/list
+ */
+app.get('/api/admin/backup/list', authenticateAdmin, async (req, res) => {
+  try {
+    const backupManager = new BackupManager();
+    const backups = await backupManager.listBackups();
+
+    res.json({
+      success: true,
+      count: backups.length,
+      backups: backups.map(backup => ({
+        name: backup.name,
+        created: backup.created,
+        size: backup.size,
+        databases: backup.metadata?.databases?.length || 0
+      }))
+    });
+
+  } catch (error) {
+    console.error('Backup list error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get backup statistics
+ * GET /api/admin/backup/stats
+ */
+app.get('/api/admin/backup/stats', authenticateAdmin, async (req, res) => {
+  try {
+    const backupManager = new BackupManager();
+    const stats = await backupManager.getStats();
+
+    res.json({
+      success: true,
+      stats
+    });
+
+  } catch (error) {
+    console.error('Backup stats error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Validate backup integrity
+ * POST /api/admin/backup/validate
+ */
+app.post('/api/admin/backup/validate', authenticateAdmin, async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    if (!name) {
+      return res.status(400).json({
+        success: false,
+        error: 'Backup name is required'
+      });
+    }
+
+    const backupManager = new BackupManager();
+    const result = await backupManager.validateBackup(name);
+
+    res.json({
+      success: true,
+      validation: result
+    });
+
+  } catch (error) {
+    console.error('Backup validation error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Delete a backup
+ * DELETE /api/admin/backup/delete
+ */
+app.delete('/api/admin/backup/delete', authenticateAdmin, async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    if (!name) {
+      return res.status(400).json({
+        success: false,
+        error: 'Backup name is required'
+      });
+    }
+
+    const backupManager = new BackupManager();
+    const result = await backupManager.deleteBackup(name);
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: 'Backup deleted successfully'
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error
+      });
+    }
+
+  } catch (error) {
+    console.error('Backup deletion error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // Start server
-const §PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {
   console.log(`\n╔════════════════════════════════════════════════════════════╗`);

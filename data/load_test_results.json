@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-01-19T11:23:30.010Z",
+  "duration": 39342,
+  "results": {
+    "concurrentRequests": {
+      "10": {
+        "totalRequests": 10,
+        "successful": 10,
+        "failed": 0,
+        "successRate": "100.00%",
+        "avgResponseTime": "139.10ms",
+        "totalTime": "1391ms"
+      },
+      "50": {
+        "totalRequests": 50,
+        "successful": 50,
+        "failed": 0,
+        "successRate": "100.00%",
+        "avgResponseTime": "27.76ms",
+        "totalTime": "1388ms"
+      },
+      "100": {
+        "totalRequests": 100,
+        "successful": 38,
+        "failed": 62,
+        "successRate": "38.00%",
+        "avgResponseTime": "14.74ms",
+        "totalTime": "1474ms"
+      },
+      "200": {
+        "totalRequests": 200,
+        "successful": 0,
+        "failed": 200,
+        "successRate": "0.00%",
+        "avgResponseTime": "0.30ms",
+        "totalTime": "60ms"
+      }
+    },
+    "sustainedLoad": {
+      "duration": "30000ms",
+      "totalRequests": 297,
+      "successful": 0,
+      "failed": 297,
+      "successRate": "0.00%",
+      "requestsPerSecond": "9.90",
+      "avgResponseTime": "0.00ms"
+    },
+    "memoryPressure": {},
+    "apiThrottling": {}
+  }
+}

@@ -18,6 +18,7 @@ const HybridEngine = require('./hybridEngine');
 const DataPipeline = require('./dataPipeline');
 const PublicDataAnalyzer = require('./publicDataAnalyzer');
 const BinancePublicCollector = require('../collectors/binancePublicCollector');
+const ConnectionPool = require('../utils/connectionPool');
 const fs = require('fs');
 const path = require('path');
 
@@ -25,17 +26,33 @@ class ContinuousLearningEngine extends HybridEngine {
   constructor(dbPath = './data/continuous_learning_database.json') {
     super(dbPath);
 
-    // Enhanced data sources
+    // Enhanced data sources with rate limiting
     this.dataSources = {
-      onlineSignals: { active: true, interval: 30000, lastUpdate: null },     // 30s
-      traderSubmissions: { active: true, interval: 60000, lastUpdate: null }, // 60s
-      publicMarketData: { active: true, interval: 300000, lastUpdate: null }, // 5min
-      socialTrading: { active: false, interval: 900000, lastUpdate: null },   // 15min
-      performanceFeedback: { active: true, interval: 120000, lastUpdate: null }, // 2min
-      marketSentiment: { active: false, interval: 600000, lastUpdate: null },  // 10min
-      onChainMetrics: { active: false, interval: 1800000, lastUpdate: null },  // 30min
-      economicIndicators: { active: false, interval: 3600000, lastUpdate: null } // 1hour
+      onlineSignals: { active: true, interval: 30000, lastUpdate: null, rateLimit: 10 },     // 30s, 10 calls/min
+      traderSubmissions: { active: true, interval: 60000, lastUpdate: null, rateLimit: 5 }, // 60s, 5 calls/min
+      publicMarketData: { active: true, interval: 300000, lastUpdate: null, rateLimit: 2 }, // 5min, 2 calls/min
+      socialTrading: { active: false, interval: 900000, lastUpdate: null, rateLimit: 1 },   // 15min, 1 call/min
+      performanceFeedback: { active: true, interval: 120000, lastUpdate: null, rateLimit: 3 }, // 2min, 3 calls/min
+      marketSentiment: { active: false, interval: 600000, lastUpdate: null, rateLimit: 2 },  // 10min, 2 calls/min
+      onChainMetrics: { active: false, interval: 1800000, lastUpdate: null, rateLimit: 1 },  // 30min, 1 call/min
+      economicIndicators: { active: false, interval: 3600000, lastUpdate: null, rateLimit: 1 } // 1hour, 1 call/min
     };
+
+    // Rate limiting tracking
+    this.rateLimiter = new Map();
+    this.maxConcurrentCalls = 3; // Maximum concurrent API calls
+    this.activeCalls = 0;
+
+    // Connection pool for external API calls
+    this.connectionPool = new ConnectionPool({
+      maxConnections: 10,
+      maxConnectionsPerHost: 3,
+      connectionTimeout: 30000,
+      keepAlive: true
+    });
+
+    // Prevent overlapping data collection
+    this.activeCollections = new Set(); // Track currently running collections
 
     // Learning metrics
     this.learningMetrics = {
@@ -106,9 +123,70 @@ class ContinuousLearningEngine extends HybridEngine {
   }
 
   /**
-   * Collect data from specific source
+   * Check if we can make an API call (rate limiting)
+   */
+  canMakeAPICall(sourceName) {
+    const config = this.dataSources[sourceName];
+    if (!config) return false;
+
+    // Check concurrent calls limit
+    if (this.activeCalls >= this.maxConcurrentCalls) {
+      console.log(`⏳ Too many concurrent calls (${this.activeCalls}/${this.maxConcurrentCalls}), skipping ${sourceName}`);
+      return false;
+    }
+
+    // Check rate limit
+    const now = Date.now();
+    const key = sourceName;
+    const calls = this.rateLimiter.get(key) || [];
+
+    // Remove calls older than 1 minute
+    const recentCalls = calls.filter(call => (now - call) < 60000);
+
+    if (recentCalls.length >= config.rateLimit) {
+      console.log(`⏳ Rate limit exceeded for ${sourceName} (${recentCalls.length}/${config.rateLimit} calls/min), skipping`);
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Record an API call for rate limiting
+   */
+  recordAPICall(sourceName) {
+    const key = sourceName;
+    const calls = this.rateLimiter.get(key) || [];
+    calls.push(Date.now());
+
+    // Keep only recent calls (last minute)
+    const now = Date.now();
+    const recentCalls = calls.filter(call => (now - call) < 60000);
+
+    this.rateLimiter.set(key, recentCalls);
+  }
+
+  /**
+   * Collect data from specific source with rate limiting and overlap prevention
    */
   async collectDataFromSource(sourceName) {
+    // Prevent overlapping collections
+    if (this.activeCollections.has(sourceName)) {
+      console.log(`⏳ Collection for ${sourceName} already in progress, skipping`);
+      return;
+    }
+
+    // Check rate limits before proceeding
+    if (!this.canMakeAPICall(sourceName)) {
+      return;
+    }
+
+    // Mark collection as active
+    this.activeCollections.add(sourceName);
+
+    this.activeCalls++;
+    this.recordAPICall(sourceName);
+
     const startTime = Date.now();
 
     try {
@@ -144,6 +222,10 @@ class ContinuousLearningEngine extends HybridEngine {
 
     } catch (error) {
       console.error(`❌ ${sourceName} collection failed:`, error.message);
+    } finally {
+      this.activeCalls--;
+      // Remove from active collections
+      this.activeCollections.delete(sourceName);
     }
   }
 

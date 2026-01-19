@@ -1,0 +1,34 @@
+{
+  "timestamp": "2026-01-19T14:24:19.698Z",
+  "databases": [
+    {
+      "name": "hybrid_pattern_database.json",
+      "originalPath": "./data/hybrid_pattern_database.json",
+      "backupPath": "backups/backup-2026-01-19T14-24-19-681Z/hybrid_pattern_database.json",
+      "size": 9044,
+      "sizeKB": "8.83"
+    },
+    {
+      "name": "continuous_learning_database.json",
+      "originalPath": "./data/continuous_learning_database.json",
+      "backupPath": "backups/backup-2026-01-19T14-24-19-681Z/continuous_learning_database.json",
+      "size": 9104,
+      "sizeKB": "8.89"
+    },
+    {
+      "name": "active_signals.json",
+      "originalPath": "./data/active_signals.json",
+      "backupPath": "backups/backup-2026-01-19T14-24-19-681Z/active_signals.json",
+      "size": 178281,
+      "sizeKB": "174.10"
+    },
+    {
+      "name": "subscribers.json",
+      "originalPath": "./data/subscribers.json",
+      "backupPath": "backups/backup-2026-01-19T14-24-19-681Z/subscribers.json",
+      "size": 2706,
+      "sizeKB": "2.64"
+    }
+  ],
+  "totalSize": 199135
+}
