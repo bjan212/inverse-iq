@@ -77,7 +77,8 @@ echo ""
 echo -e "${YELLOW}Step 5: DigitalOcean Deployment${NC}"
 echo ""
 
-read -p "Enter your DigitalOcean server IP (or press Enter to skip): " server_ip
+read -p "Enter project directory on server (default: /opt/trading-data-collection-service): " REMOTE_DIR
+REMOTE_DIR=${REMOTE_DIR:-/opt/trading-data-collection-service}
 
 if [ -z "$server_ip" ]; then
     echo ""
