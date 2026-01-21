@@ -9,10 +9,12 @@
 ssh root@your-droplet-ip
 
 # Navigate to your project directory
-cd /var/www/trading-data-collection-service
 
+
+ 
 # Backup the current validator
 cp src/validators/enhancedPayoutValidator.js src/validators/enhancedPayoutValidator.backup.js
+
 
 # Replace with halved version
 cp src/validators/enhancedPayoutValidator_halved.js src/validators/enhancedPayoutValidator.js
@@ -36,8 +38,8 @@ docker-compose restart
 
 # Verify it's running
 pm2 status
-# or
-sudo systemctl status trading-service
+# or=**********************************************************************************************
+sudo systemctl status trading-service z
 ```
 
 ### 3. Test the Deployment
@@ -48,21 +50,21 @@ node scripts/testEnhancedPayouts_halved.js
 
 # Check the logs
 pm2 logs trading-service --lines 50
-```
+```x                                                                                                                                                                                                                                                                                                                §
 
-### 4. Verify Payout Calculations
+### 4. Verify Payout Calculationsxxxxxxxxxx
 
 ```bash
 # Test with a sample submission (replace with actual data)
-curl -X POST http://your-domain.com/api/submit-data \
-  -H "Content-Type: application/json" \
-  -d '{
+curl -X POST http://your-domain.com/api/submit-data \QQQQ\=8
+  -H "Content-Type: application/json" \2222222222222222222 §§§§§§§§§§§§§§§§§§§§§§AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA§§§§§§§§§§§§§§QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS```````````````````````````````````````````````````
+  -d '{§§§§
     "submissionId": "TEST123",
-    "exchange": "binance",
+    "exchange": "binance",§§§§x
     "trades": [...]
   }'
 
-# Check the response - payouts should be halved
+# Check the response - payouts should be halved§
 ```
 
 ## Rollback Plan (If Needed)

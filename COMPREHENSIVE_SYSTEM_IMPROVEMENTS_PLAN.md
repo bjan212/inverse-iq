@@ -755,7 +755,8 @@ class PayoutManager {
 **Phase 1 (Month 1-3): USDT Only**
 - Focus on core product
 - Build trader base
-- Minimize complexity
+- Minimize complexityY
+- 
 
 **Phase 2 (Month 4-6): Add LTC Option**
 - Offer 5% bonus for LTC payments

@@ -1,3 +1,4 @@
+Zidefmg
 #!/bin/bash
 
 # Quick GitHub Push Script (Non-Interactive)

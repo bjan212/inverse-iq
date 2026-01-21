@@ -818,7 +818,7 @@ tail -f /var/log/mongodb/mongod.log
 - [ ] Application deployed
 - [ ] PM2 configured
 - [ ] Nginx setup
-- [ ] SSL certificate installed
+- [ ] SSL certificate installed                                                                                                                                                                                                                                                                                                                     
 - [ ] Firewall configured
 - [ ] Monitoring enabled
 

@@ -29,8 +29,8 @@ if [ -z "$SERVER_IP" ]; then
     exit 1
 fi
 
-SSH_USER="${2:-inverseiq}"
-PROJECT_DIR="${3:-~/xrypt-service}"
+SSH_USER="${2:-root}"
+PROJECT_DIR="${3:-/opt/trading-data-collection-service}"
 
 echo -e "${YELLOW}Connecting to $SSH_USER@$SERVER_IP...${NC}"
 echo ""
@@ -48,7 +48,7 @@ ssh -t "$SSH_USER@$SERVER_IP" "
     npm install --production
     
     echo '🔄 Restarting application...'
-    pm2 restart xrypt
+    pm2 restart server || pm2 start ecosystem.config.js --only server
     
     echo ''
     echo '✅ Deployment complete!'
@@ -58,7 +58,7 @@ ssh -t "$SSH_USER@$SERVER_IP" "
     
     echo ''
     echo '📝 Recent logs:'
-    pm2 logs xrypt --lines 10 --nostream
+    pm2 logs server --lines 10 --nostream
 " || {
     echo ""
     echo -e "${RED}Deployment failed!${NC}"
