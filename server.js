@@ -1474,6 +1474,376 @@ app.get('/api/pipeline/stats', (req, res) => {
 });
 
 // ============================================================================
+// DEX TRADING ENDPOINTS
+// ============================================================================
+
+// Import DEX trading integration
+const WalletTradingIntegration = require('./src/dex/walletTradingIntegration');
+
+// Initialize wallet trading integration
+const walletTrading = new WalletTradingIntegration();
+
+/**
+ * Get DEX network information
+ * GET /api/dex/network-info
+ */
+app.get('/api/dex/network-info', (req, res) => {
+  try {
+    const { chainId } = req.query;
+    
+    // This would normally connect to the network and get info
+    // For now, return static network info
+    const networks = {
+      1: { name: 'Ethereum', dex: 'uniswap', nativeCurrency: 'ETH' },
+      56: { name: 'BSC', dex: 'pancakeswap', nativeCurrency: 'BNB' },
+      42161: { name: 'Arbitrum', dex: 'uniswap', nativeCurrency: 'ETH' },
+      137: { name: 'Polygon', dex: 'quickswap', nativeCurrency: 'MATIC' }
+    };
+    
+    if (chainId) {
+      const network = networks[parseInt(chainId)];
+      if (network) {
+        res.json({
+          success: true,
+          network,
+          chainId: parseInt(chainId)
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          error: `Unsupported chain ID: ${chainId}`
+        });
+      }
+    } else {
+      res.json({
+        success: true,
+        networks: Object.entries(networks).map(([id, info]) => ({
+          chainId: parseInt(id),
+          ...info
+        }))
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get trade quote
+ * POST /api/dex/quote
+ */
+app.post('/api/dex/quote', async (req, res) => {
+  try {
+    const { tokenIn, tokenOut, amountIn, chainId, fee } = req.body;
+    
+    if (!tokenIn || !tokenOut || !amountIn) {
+      return res.status(400).json({
+        success: false,
+        error: 'tokenIn, tokenOut, and amountIn are required'
+      });
+    }
+    
+    // For now, return a mock quote
+    // In production, this would call the DEX connector
+    const mockQuote = {
+      amountIn,
+      amountOut: (parseFloat(amountIn) * 0.99).toString(), // 1% slippage
+      priceImpact: '0.5',
+      gasEstimate: '150000',
+      gasPriceGwei: '30',
+      route: [
+        { token: tokenIn, symbol: 'USDC' },
+        { token: tokenOut, symbol: 'WETH' }
+      ]
+    };
+    
+    res.json({
+      success: true,
+      quote: mockQuote,
+      timestamp: new Date()
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Execute signal trade
+ * POST /api/dex/execute-signal-trade
+ */
+app.post('/api/dex/execute-signal-trade', async (req, res) => {
+  try {
+    const { signalId, amount, walletAddress, chainId } = req.body;
+    
+    if (!signalId || !amount || !walletAddress) {
+      return res.status(400).json({
+        success: false,
+        error: 'signalId, amount, and walletAddress are required'
+      });
+    }
+    
+    // Get the signal from tracker
+    const signal = signalTracker.getSignal(signalId);
+    if (!signal) {
+      return res.status(404).json({
+        success: false,
+        error: `Signal not found: ${signalId}`
+      });
+    }
+    
+    console.log(`🎯 Executing DEX trade for signal: ${signalId}`);
+    console.log(`   Symbol: ${signal.symbol}, Direction: ${signal.direction}`);
+    console.log(`   Amount: ${amount}, Wallet: ${walletAddress.substring(0, 10)}...`);
+    
+    // In production, this would:
+    // 1. Connect to user's wallet (via signed message)
+    // 2. Get quote from DEX
+    // 3. Execute trade
+    // 4. Return transaction hash
+    
+    // For now, return a mock transaction
+    const mockTransaction = {
+      success: true,
+      transactionHash: `0x${Date.now().toString(16)}${Math.random().toString(16).substring(2)}`,
+      blockNumber: Math.floor(Math.random() * 1000000) + 18000000,
+      gasUsed: '150000',
+      gasPrice: '30000000000',
+      amountIn: amount,
+      amountOut: (parseFloat(amount) * 0.99).toString(),
+      timestamp: new Date(),
+      network: chainId ? `Chain ${chainId}` : 'Ethereum'
+    };
+    
+    // Record the trade in signal tracker
+    signalTracker.updateSignalOutcome(signalId, {
+      outcome: 'pending',
+      executedAt: new Date(),
+      transactionHash: mockTransaction.transactionHash,
+      amount: amount
+    });
+    
+    res.json({
+      success: true,
+      message: 'Trade executed successfully (simulated)',
+      transaction: mockTransaction,
+      signal: {
+        signalId: signal.signalId,
+        symbol: signal.symbol,
+        direction: signal.direction,
+        confidence: signal.confidence
+      }
+    });
+    
+  } catch (error) {
+    console.error('Trade execution error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get wallet connection status
+ * GET /api/dex/wallet/status
+ */
+app.get('/api/dex/wallet/status', (req, res) => {
+  try {
+    const { address } = req.query;
+    
+    if (!address) {
+      return res.status(400).json({
+        success: false,
+        error: 'Wallet address is required'
+      });
+    }
+    
+    // Check if address is valid
+    const isValidAddress = /^0x[a-fA-F0-9]{40}$/.test(address);
+    
+    if (!isValidAddress) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid Ethereum address format'
+      });
+    }
+    
+    // For now, return mock status
+    // In production, this would check actual connection and balances
+    res.json({
+      success: true,
+      connected: true,
+      address: address,
+      formattedAddress: `${address.substring(0, 6)}...${address.substring(38)}`,
+      networks: [
+        { chainId: 1, name: 'Ethereum', connected: true },
+        { chainId: 56, name: 'BSC', connected: false },
+        { chainId: 137, name: 'Polygon', connected: false }
+      ],
+      timestamp: new Date()
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Connect wallet (simulated for backend)
+ * POST /api/dex/wallet/connect
+ */
+app.post('/api/dex/wallet/connect', (req, res) => {
+  try {
+    const { address, signature, message } = req.body;
+    
+    if (!address) {
+      return res.status(400).json({
+        success: false,
+        error: 'Wallet address is required'
+      });
+    }
+    
+    // Validate address format
+    const isValidAddress = /^0x[a-fA-F0-9]{40}$/.test(address);
+    if (!isValidAddress) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid Ethereum address format'
+      });
+    }
+    
+    // In production, this would:
+    // 1. Verify signature against message
+    // 2. Create session/token for the wallet
+    // 3. Store connection state
+    
+    console.log(`✅ Wallet connected: ${address}`);
+    
+    res.json({
+      success: true,
+      message: 'Wallet connected successfully',
+      address: address,
+      formattedAddress: `${address.substring(0, 6)}...${address.substring(38)}`,
+      sessionId: `session_${Date.now()}_${Math.random().toString(36).substring(2)}`,
+      timestamp: new Date()
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get supported tokens for trading
+ * GET /api/dex/tokens
+ */
+app.get('/api/dex/tokens', (req, res) => {
+  try {
+    const { chainId } = req.query;
+    
+    // Common tokens for different networks
+    const tokensByChain = {
+      1: [ // Ethereum
+        { address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', symbol: 'WETH', name: 'Wrapped Ether', decimals: 18 },
+        { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', symbol: 'USDC', name: 'USD Coin', decimals: 6 },
+        { address: '0xdAC17F958D2ee523a2206206994597C13D831ec7', symbol: 'USDT', name: 'Tether USD', decimals: 6 },
+        { address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', symbol: 'WBTC', name: 'Wrapped Bitcoin', decimals: 8 }
+      ],
+      56: [ // BSC
+        { address: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', symbol: 'WBNB', name: 'Wrapped BNB', decimals: 18 },
+        { address: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', symbol: 'USDC', name: 'USD Coin', decimals: 18 },
+        { address: '0x55d398326f99059fF775485246999027B3197955', symbol: 'USDT', name: 'Tether USD', decimals: 18 }
+      ],
+      137: [ // Polygon
+        { address: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', symbol: 'WMATIC', name: 'Wrapped MATIC', decimals: 18 },
+        { address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', symbol: 'USDC', name: 'USD Coin', decimals: 6 },
+        { address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F', symbol: 'USDT', name: 'Tether USD', decimals: 6 }
+      ]
+    };
+    
+    if (chainId) {
+      const tokens = tokensByChain[parseInt(chainId)] || tokensByChain[1];
+      res.json({
+        success: true,
+        chainId: parseInt(chainId),
+        tokens
+      });
+    } else {
+      res.json({
+        success: true,
+        chains: Object.entries(tokensByChain).map(([id, tokens]) => ({
+          chainId: parseInt(id),
+          tokenCount: tokens.length
+        }))
+      });
+    }
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Test DEX connectivity
+ * GET /api/dex/test
+ */
+app.get('/api/dex/test', async (req, res) => {
+  try {
+    // Test DEX connector
+    const DEXConnector = require('./src/dex/dexConnector');
+    
+    // Use Ethereum RPC from environment
+    const rpcUrl = process.env.ETHEREUM_RPC_URL || 'https://eth.public-rpc.com';
+    
+    console.log(`Testing DEX connectivity with RPC: ${rpcUrl.substring(0, 30)}...`);
+    
+    // Create a read-only connector
+    const connector = new DEXConnector({
+      rpcUrl: rpcUrl,
+      network: 'ethereum'
+    });
+    
+    // Test basic connectivity
+    const blockNumber = await connector.getBlockNumber();
+    const gasPrice = await connector.getGasPriceGwei();
+    
+    res.json({
+      success: true,
+      message: 'DEX connectivity test passed',
+      rpcUrl: rpcUrl.substring(0, 50) + '...',
+      blockNumber,
+      gasPriceGwei: gasPrice,
+      timestamp: new Date()
+    });
+    
+  } catch (error) {
+    console.error('DEX test failed:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      message: 'DEX connectivity test failed. Check RPC URL in .env file.',
+      hint: 'Run: ./scripts/setupRPCConfig.sh to configure RPC endpoints'
+    });
+  }
+});
+
+// ============================================================================
 // BACKUP MANAGEMENT ENDPOINTS (Admin only)
 // ============================================================================
 

@@ -127,9 +127,22 @@ const helmetConfig = helmet({
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.ethers.io"],
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "wss:", "ws:"]
+      connectSrc: [
+        "'self'", 
+        "wss:", 
+        "ws:", 
+        "https:",
+        "https://*.infura.io",
+        "https://*.alchemy.com", 
+        "https://*.binance.org",
+        "https://*.arbitrum.io",
+        "https://polygon-rpc.com",
+        "https://eth.public-rpc.com",
+        "https://bsc.publicnode.com",
+        "https://arbitrum.public-rpc.com"
+      ]
     }
   },
   crossOriginEmbedderPolicy: false,

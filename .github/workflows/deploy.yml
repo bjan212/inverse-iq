@@ -9,13 +9,31 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Check secrets
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          if [ -z "$SSH_HOST" ]; then
+            echo "Error: SSH_HOST secret is not set"
+            exit 1
+          fi
+          if [ -z "$SSH_USER" ]; then
+            echo "Error: SSH_USER secret is not set"
+            exit 1
+          fi
+          if [ -z "$SSH_KEY" ]; then
+            echo "Error: SSH_KEY secret is not set"
+            exit 1
+          fi
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT || '22' }}
+          port: w
           script: |
             cd /opt/trading-data-collection-service
             chmod +x scripts/deploy.sh
