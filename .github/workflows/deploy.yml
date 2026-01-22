@@ -1,40 +1,59 @@
-name: Deploy to Production
+name: Deploy to DigitalOcean
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Check secrets
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-        run: |
-          if [ -z "$SSH_HOST" ]; then
-            echo "Error: SSH_HOST secret is not set"
-            exit 1
-          fi
-          if [ -z "$SSH_USER" ]; then
-            echo "Error: SSH_USER secret is not set"
-            exit 1
-          fi
-          if [ -z "$SSH_KEY" ]; then
-            echo "Error: SSH_KEY secret is not set"
-            exit 1
-          fi
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.2.0
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to DigitalOcean
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: w
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USERNAME }}
+          password: ${{ secrets.DO_PASSWORD }}
+          port: 22
           script: |
+            echo "🚀 Starting deployment..."
+            
+            # Navigate to project directory
             cd /opt/trading-data-collection-service
-            chmod +x scripts/deploy.sh
-            sudo ./scripts/deploy.sh main
+            
+            # Stash any local changes
+            git stash
+            
+            # Pull latest changes
+            echo "📥 Pulling latest code from GitHub..."
+            git pull origin main
+            
+            # Install dependencies
+            echo "📦 Installing dependencies..."
+            npm install --production
+            
+            # Restart PM2 process
+            echo "🔄 Restarting application..."
+            pm2 restart inverseiq
+            
+            # Save PM2 state
+            pm2 save
+            
+            # Show status
+            echo "✅ Deployment complete!"
+            pm2 status
+            pm2 logs inverseiq --lines 10 --nostream
+
+      - name: Deployment Status
+        if: success()
+        run: echo "✅ Deployment to DigitalOcean successful!"
+
+      - name: Deployment Failed
+        if: failure()
+        run: echo "❌ Deployment failed! Check logs for details."
