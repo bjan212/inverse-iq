@@ -241,7 +241,7 @@ class SignalTracker {
   /**
    * Check for expired signals and mark them
    */
-  checkExpiredSignals() {
+  async checkExpiredSignals() {
     const now = new Date();
     let expired = 0;
 
@@ -250,7 +250,7 @@ class SignalTracker {
         const expiryDate = new Date(signal.expiresAt);
         
         if (now > expiryDate) {
-          this.expireSignal(signalId);
+          await this.expireSignal(signalId);
           expired++;
         }
       }

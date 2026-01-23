@@ -12,7 +12,7 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
-const { WebSocketServer } = require('ws');
+const { WebSocketServer, WebSocket } = require('ws');
 const http = require('http');
 const AutomatedSubmissionHandler = require('./scripts/automatedSubmissionHandler');
 const SelfImprovingEngine = require('./src/ai-engine/selfImprovingEngine');
@@ -141,8 +141,8 @@ if (process.env.NODE_ENV === 'test') {
 dataPipeline.startMonitoring(60000); // Check every minute
 
 // Periodic cleanup of expired signals (every hour)
-setInterval(() => {
-  const expired = signalTracker.checkExpiredSignals();
+setInterval(async () => {
+  const expired = await signalTracker.checkExpiredSignals();
   if (expired > 0) {
     console.log(`⏰ Marked ${expired} signals as expired`);
   }
@@ -170,7 +170,7 @@ wss.on('connection', (ws) => {
 // Send update to specific connection
 function sendUpdate(connectionId, update) {
   const ws = connections.get(connectionId);
-  if (ws && ws.readyState === 1) { // OPEN
+  if (ws && ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify(update));
   }
 }
@@ -192,12 +192,12 @@ app.get('/api/health', (req, res) => {
 app.post('/api/submit', submissionLimiter, validateSubmission, async (req, res) => {
   const { exchange, apiKey, apiSecret, walletAddress, network, connectionId } = req.body;
   
+  // Override console.log to send updates via WebSocket
+  const originalLog = console.log;
   try {
     // Create handler with WebSocket updates
     const handler = new AutomatedSubmissionHandler();
     
-    // Override console.log to send updates via WebSocket
-    const originalLog = console.log;
     console.log = (...args) => {
       originalLog(...args);
       if (connectionId) {
@@ -227,9 +227,6 @@ app.post('/api/submit', submissionLimiter, validateSubmission, async (req, res) 
       walletAddress,
       network: network || 'TRC20'
     });
-
-    // Restore console.log
-    console.log = originalLog;
 
     // Trigger AI engine update asynchronously (don't block response)
     if (result.status === 'completed') {
@@ -294,6 +291,9 @@ app.post('/api/submit', submissionLimiter, validateSubmission, async (req, res) 
       success: false,
       error: error.message
     });
+  } finally {
+    // Always restore console.log, even if an error occurred
+    console.log = originalLog;
   }
 });
 
