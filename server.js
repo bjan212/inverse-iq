@@ -141,7 +141,7 @@ if (process.env.NODE_ENV === 'test') {
 dataPipeline.startMonitoring(60000); // Check every minute
 
 // Periodic cleanup of expired signals (every hour)
-setInterval(async () => {
+const cleanupInterval = setInterval(async () => {
   const expired = await signalTracker.checkExpiredSignals();
   if (expired > 0) {
     console.log(`⏰ Marked ${expired} signals as expired`);
@@ -2062,6 +2062,60 @@ server.listen(PORT, () => {
   console.log(`  🌍 Web: http://localhost:${PORT}`);
   console.log(`  ⚙️ Admin: http://localhost:${PORT}/admin.html`);
   console.log(`\n  Ready to accept submissions!\n`);
+});
+
+// Graceful shutdown handler
+let isShuttingDown = false;
+
+async function gracefulShutdown(signal) {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+
+  console.log(`\n🛑 Received ${signal}, starting graceful shutdown...`);
+
+  // Clear cleanup interval
+  if (cleanupInterval) {
+    clearInterval(cleanupInterval);
+    console.log('✅ Cleared cleanup interval');
+  }
+
+  // Stop data pipeline monitoring
+  if (dataPipeline && dataPipeline.monitorInterval) {
+    clearInterval(dataPipeline.monitorInterval);
+    console.log('✅ Stopped data pipeline monitoring');
+  }
+
+  // Close WebSocket server
+  wss.close(() => {
+    console.log('✅ WebSocket server closed');
+  });
+
+  // Close HTTP server
+  server.close((err) => {
+    if (err) {
+      console.error('❌ Error closing server:', err);
+      process.exit(1);
+    }
+    console.log('✅ HTTP server closed');
+    console.log('👋 Shutdown complete');
+    process.exit(0);
+  });
+
+  // Force shutdown after 10 seconds
+  setTimeout(() => {
+    console.error('⚠️  Forced shutdown after timeout');
+    process.exit(1);
+  }, 10000);
+}
+
+// Register signal handlers
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('❌ Uncaught exception:', err);
+  gracefulShutdown('uncaughtException');
 });
 
 module.exports = { app, server };
