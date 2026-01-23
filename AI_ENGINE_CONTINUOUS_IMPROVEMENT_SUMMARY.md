@@ -183,7 +183,7 @@ The engine includes intelligent rate limiting to prevent API overload:
 - **Max concurrent API calls**: 3
 - **Rate limits per source**: 1-10 calls/minute
 - **Overlap prevention**: Won't start new collection if previous still running
-- **Connection pooling**: Efficient API connection management
+- **Connection pooling**: Efficient API connection management§
 
 ---
 
