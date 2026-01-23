@@ -79,17 +79,28 @@ class DataPipeline {
     const results = [];
 
     for (const file of files) {
-      const filepath = path.join(this.submissionsDir, file);
-      const data = JSON.parse(await fs.promises.readFile(filepath, 'utf8'));
+      try {
+        const filepath = path.join(this.submissionsDir, file);
+        const content = await fs.promises.readFile(filepath, 'utf8');
+        const data = JSON.parse(content);
 
-      // Skip already processed submissions
-      if (this.processedSubmissions.has(data.submissionId)) {
-        continue;
-      }
+        // Skip already processed submissions
+        if (!data.submissionId) {
+          console.warn(`⚠️  Skipping ${file}: missing submissionId`);
+          continue;
+        }
 
-      const result = await this.processSubmissionFile(file);
-      if (result) {
-        results.push(result);
+        if (this.processedSubmissions.has(data.submissionId)) {
+          continue;
+        }
+
+        const result = await this.processSubmissionFile(file);
+        if (result) {
+          results.push(result);
+        }
+      } catch (error) {
+        console.error(`❌ Error processing submission file ${file}:`, error.message);
+        // Continue processing other files
       }
     }
 

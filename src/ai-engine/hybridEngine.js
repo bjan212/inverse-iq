@@ -44,9 +44,17 @@ class HybridEngine extends SelfImprovingEngine {
    * Import online_signals.json as trader data (auto-load on startup)
    */
   async importOnlineSignals() {
-    const fs = require('fs');
+    const fs = require('fs').promises;
     try {
-      const onlineData = JSON.parse(fs.readFileSync('data/online_signals.json', 'utf8'));
+      let onlineData;
+      try {
+        const content = await fs.readFile('data/online_signals.json', 'utf8');
+        onlineData = JSON.parse(content);
+      } catch (error) {
+        console.log('No online signals file found or invalid JSON:', error.message);
+        return;
+      }
+
       if (!Array.isArray(onlineData) || onlineData.length === 0) {
         console.log('No online signals to import.');
         return;

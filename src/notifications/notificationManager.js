@@ -167,7 +167,7 @@ class NotificationManager {
 
       // Mark notification as sent in signal tracker
       if (this.signalTracker) {
-        this.signalTracker.recordNotificationSent(signal.signalId, 'batch');
+        await this.signalTracker.recordNotificationSent(signal.signalId, 'batch');
       }
 
       return {

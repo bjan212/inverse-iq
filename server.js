@@ -12,7 +12,7 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
-const { WebSocketServer } = require('ws');
+const { WebSocketServer, WebSocket } = require('ws');
 const http = require('http');
 const AutomatedSubmissionHandler = require('./scripts/automatedSubmissionHandler');
 const SelfImprovingEngine = require('./src/ai-engine/selfImprovingEngine');
@@ -141,8 +141,8 @@ if (process.env.NODE_ENV === 'test') {
 dataPipeline.startMonitoring(60000); // Check every minute
 
 // Periodic cleanup of expired signals (every hour)
-setInterval(() => {
-  const expired = signalTracker.checkExpiredSignals();
+const cleanupInterval = setInterval(async () => {
+  const expired = await signalTracker.checkExpiredSignals();
   if (expired > 0) {
     console.log(`⏰ Marked ${expired} signals as expired`);
   }
@@ -170,7 +170,7 @@ wss.on('connection', (ws) => {
 // Send update to specific connection
 function sendUpdate(connectionId, update) {
   const ws = connections.get(connectionId);
-  if (ws && ws.readyState === 1) { // OPEN
+  if (ws && ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify(update));
   }
 }
@@ -192,12 +192,12 @@ app.get('/api/health', (req, res) => {
 app.post('/api/submit', submissionLimiter, validateSubmission, async (req, res) => {
   const { exchange, apiKey, apiSecret, walletAddress, network, connectionId } = req.body;
   
+  // Override console.log to send updates via WebSocket
+  const originalLog = console.log;
   try {
     // Create handler with WebSocket updates
     const handler = new AutomatedSubmissionHandler();
     
-    // Override console.log to send updates via WebSocket
-    const originalLog = console.log;
     console.log = (...args) => {
       originalLog(...args);
       if (connectionId) {
@@ -227,9 +227,6 @@ app.post('/api/submit', submissionLimiter, validateSubmission, async (req, res) 
       walletAddress,
       network: network || 'TRC20'
     });
-
-    // Restore console.log
-    console.log = originalLog;
 
     // Trigger AI engine update asynchronously (don't block response)
     if (result.status === 'completed') {
@@ -294,6 +291,9 @@ app.post('/api/submit', submissionLimiter, validateSubmission, async (req, res) 
       success: false,
       error: error.message
     });
+  } finally {
+    // Always restore console.log, even if an error occurred
+    console.log = originalLog;
   }
 });
 
@@ -2062,6 +2062,60 @@ server.listen(PORT, () => {
   console.log(`  🌍 Web: http://localhost:${PORT}`);
   console.log(`  ⚙️ Admin: http://localhost:${PORT}/admin.html`);
   console.log(`\n  Ready to accept submissions!\n`);
+});
+
+// Graceful shutdown handler
+let isShuttingDown = false;
+
+async function gracefulShutdown(signal) {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+
+  console.log(`\n🛑 Received ${signal}, starting graceful shutdown...`);
+
+  // Clear cleanup interval
+  if (cleanupInterval) {
+    clearInterval(cleanupInterval);
+    console.log('✅ Cleared cleanup interval');
+  }
+
+  // Stop data pipeline monitoring
+  if (dataPipeline && dataPipeline.monitorInterval) {
+    clearInterval(dataPipeline.monitorInterval);
+    console.log('✅ Stopped data pipeline monitoring');
+  }
+
+  // Close WebSocket server
+  wss.close(() => {
+    console.log('✅ WebSocket server closed');
+  });
+
+  // Close HTTP server
+  server.close((err) => {
+    if (err) {
+      console.error('❌ Error closing server:', err);
+      process.exit(1);
+    }
+    console.log('✅ HTTP server closed');
+    console.log('👋 Shutdown complete');
+    process.exit(0);
+  });
+
+  // Force shutdown after 10 seconds
+  setTimeout(() => {
+    console.error('⚠️  Forced shutdown after timeout');
+    process.exit(1);
+  }, 10000);
+}
+
+// Register signal handlers
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('❌ Uncaught exception:', err);
+  gracefulShutdown('uncaughtException');
 });
 
 module.exports = { app, server };
