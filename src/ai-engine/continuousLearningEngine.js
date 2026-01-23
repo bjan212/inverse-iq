@@ -236,11 +236,21 @@ class ContinuousLearningEngine extends HybridEngine {
     try {
       const onlineSignalsPath = path.join(__dirname, '../../data/online_signals.json');
 
-      if (!fs.existsSync(onlineSignalsPath)) {
+      // Use async file system operations
+      try {
+        await fs.promises.access(onlineSignalsPath);
+      } catch {
         return; // No online signals file yet
       }
 
-      const onlineData = JSON.parse(fs.readFileSync(onlineSignalsPath, 'utf8'));
+      let onlineData;
+      try {
+        const content = await fs.promises.readFile(onlineSignalsPath, 'utf8');
+        onlineData = JSON.parse(content);
+      } catch (error) {
+        console.error('❌ Error parsing online signals:', error.message);
+        return;
+      }
 
       if (!Array.isArray(onlineData) || onlineData.length === 0) {
         return;

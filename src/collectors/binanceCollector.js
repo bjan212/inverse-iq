@@ -300,7 +300,8 @@ class BinanceCollector {
           if (batch.length === 0) {
             hasMore = false;
           } else {
-            symbolTrades = symbolTrades.concat(batch);
+            // Use push with spread to mutate in-place instead of creating new array
+            symbolTrades.push(...batch);
             startTime = batch[batch.length - 1].time + 1;
             
             // If we got less than 1000, no more data
