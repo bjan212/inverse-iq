@@ -13,6 +13,7 @@ const HybridEngine = require('./hybridEngine');
 const RiskMetrics = require('../analytics/riskMetrics');
 const AdvancedPatternDetector = require('../analytics/advancedPatterns');
 const DEXManager = require('../dex/dexManager');
+const MarketEventDetector = require('./marketEventDetector');
 
 class EnhancedHybridEngine extends HybridEngine {
   constructor(dbPath = './data/enhanced_hybrid_database.json') {
@@ -21,6 +22,9 @@ class EnhancedHybridEngine extends HybridEngine {
     // Initialize advanced analytics
     this.riskMetrics = new RiskMetrics();
     this.patternDetector = new AdvancedPatternDetector();
+    
+    // Initialize Market Event Detector
+    this.eventDetector = new MarketEventDetector();
     
     // Initialize DEX Manager
     this.dexManager = new DEXManager({
@@ -42,18 +46,18 @@ class EnhancedHybridEngine extends HybridEngine {
       }
     });
     
-    console.log('✅ Enhanced Hybrid Engine initialized with DEX support');
+    console.log('✅ Enhanced Hybrid Engine initialized with DEX support and Event Detection');
   }
 
   /**
-   * Generate unified signals (CEX + DEX + Advanced Analytics)
+   * Generate unified signals (CEX + DEX + Advanced Analytics + Market Events)
    * @param {Array} symbols - Trading symbols
    * @param {object} options - Generation options
    * @returns {Promise<Array>} Enhanced signals
    */
   async generateUnifiedSignals(symbols = ['BTCUSDT', 'ETHUSDT'], options = {}) {
     console.log('\n╔════════════════════════════════════════════════════════════╗');
-    console.log('║      GENERATING UNIFIED CEX + DEX SIGNALS                  ║');
+    console.log('║   GENERATING UNIFIED CEX + DEX + EVENT SIGNALS             ║');
     console.log('╚════════════════════════════════════════════════════════════╝\n');
     
     const allSignals = [];
@@ -74,7 +78,14 @@ class EnhancedHybridEngine extends HybridEngine {
         const signalsWithRisk = this.addRiskMetrics(enhancedSignals);
         console.log(`   📈 Risk Metrics Added: ${signalsWithRisk.length}`);
         
-        // 4. Generate DEX signals (if enabled)
+        // 4. Detect market events (if enabled)
+        if (options.includeEvents !== false) {
+          const eventSignals = await this.generateEventBasedSignals(symbol);
+          console.log(`   🎪 Event Signals: ${eventSignals.length}`);
+          allSignals.push(...eventSignals);
+        }
+        
+        // 5. Generate DEX signals (if enabled)
         if (options.includeDEX !== false) {
           const dexSignals = await this.generateDEXSignals(symbol);
           console.log(`   🔗 DEX Signals: ${dexSignals.length}`);
@@ -88,14 +99,108 @@ class EnhancedHybridEngine extends HybridEngine {
       }
     }
     
-    // 5. Rank all signals by quality
+    // 6. Rank all signals by quality
     const rankedSignals = this.rankSignalsByQuality(allSignals);
     
     console.log(`\n✅ Generated ${rankedSignals.length} unified signals`);
-    console.log(`   CEX Signals: ${rankedSignals.filter(s => s.source !== 'dex').length}`);
+    console.log(`   CEX Signals: ${rankedSignals.filter(s => s.source !== 'dex' && s.source !== 'event').length}`);
+    console.log(`   Event Signals: ${rankedSignals.filter(s => s.source === 'event').length}`);
     console.log(`   DEX Signals: ${rankedSignals.filter(s => s.source === 'dex').length}`);
     
     return rankedSignals;
+  }
+
+  /**
+   * Generate event-based trading signals
+   * @param {string} symbol - Trading symbol
+   * @returns {Promise<Array>} Event-based signals
+   */
+  async generateEventBasedSignals(symbol) {
+    const signals = [];
+    
+    try {
+      // Detect market events
+      const eventData = await this.eventDetector.detectMarketEvents(symbol, 90);
+      
+      if (!eventData.detectedEvents || eventData.detectedEvents.length === 0) {
+        return signals;
+      }
+      
+      // Convert detected events to trading signals
+      for (const event of eventData.detectedEvents) {
+        const signal = {
+          signalId: `EVENT_${event.eventType}_${symbol}_${Date.now()}`,
+          type: 'event-based',
+          symbol: symbol,
+          direction: event.tradingSignal.direction,
+          confidence: event.confidence,
+          source: 'event',
+          eventType: event.eventType,
+          eventPhase: event.phase,
+          prediction: event.prediction,
+          tradingSignal: event.tradingSignal,
+          indicators: event.indicators,
+          historicalAccuracy: event.historicalAccuracy,
+          generatedAt: new Date(),
+          expiresAt: new Date(Date.now() + this.getEventSignalTTL(event.eventType)),
+          priority: this.calculateEventPriority(event),
+          riskLevel: event.tradingSignal.riskLevel
+        };
+        
+        signals.push(signal);
+      }
+      
+    } catch (error) {
+      console.error(`Event signal generation failed for ${symbol}:`, error.message);
+    }
+    
+    return signals;
+  }
+
+  /**
+   * Calculate event signal priority
+   * @param {object} event - Detected event
+   * @returns {string} Priority level
+   */
+  calculateEventPriority(event) {
+    // High priority events
+    if (event.eventType === 'INFLUENCER_CAMPAIGN' && event.confidence >= 80) {
+      return 'CRITICAL';
+    }
+    if (event.eventType === 'TEAM_IDENTITY_REVEAL' && event.confidence >= 75) {
+      return 'CRITICAL';
+    }
+    
+    // Medium priority events
+    if (event.eventType === 'EXCHANGE_LISTING' && event.confidence >= 80) {
+      return 'HIGH';
+    }
+    if (event.eventType === 'TOKEN_UNLOCK' && event.confidence >= 75) {
+      return 'HIGH';
+    }
+    
+    // Lower priority
+    if (event.confidence >= 70) {
+      return 'MEDIUM';
+    }
+    
+    return 'LOW';
+  }
+
+  /**
+   * Get TTL for event signals (in milliseconds)
+   * @param {string} eventType - Type of event
+   * @returns {number} TTL in milliseconds
+   */
+  getEventSignalTTL(eventType) {
+    const ttlMap = {
+      'TOKEN_UNLOCK': 7 * 24 * 60 * 60 * 1000,        // 7 days
+      'EXCHANGE_LISTING': 3 * 24 * 60 * 60 * 1000,    // 3 days
+      'TEAM_IDENTITY_REVEAL': 2 * 24 * 60 * 60 * 1000, // 2 days
+      'INFLUENCER_CAMPAIGN': 24 * 60 * 60 * 1000      // 1 day
+    };
+    
+    return ttlMap[eventType] || 24 * 60 * 60 * 1000; // Default 1 day
   }
 
   /**
@@ -304,19 +409,24 @@ class EnhancedHybridEngine extends HybridEngine {
   }
 
   /**
-   * Rank signals by quality (confidence, source, patterns)
+   * Rank signals by quality (confidence, source, patterns, events)
    * @param {Array} signals - All signals
    * @returns {Array} Ranked signals
    */
   rankSignalsByQuality(signals) {
     return signals.sort((a, b) => {
-      // 1. Prioritize by confidence
+      // 1. Prioritize critical event signals
+      if (a.priority === 'CRITICAL' && b.priority !== 'CRITICAL') return -1;
+      if (b.priority === 'CRITICAL' && a.priority !== 'CRITICAL') return 1;
+      
+      // 2. Then by confidence
       if (b.confidence !== a.confidence) {
         return b.confidence - a.confidence;
       }
       
-      // 2. Then by source quality
+      // 3. Then by source quality
       const sourceRank = {
+        'event': 6,      // Event signals are high priority
         'combined': 5,
         'trader': 4,
         'public': 3,
@@ -330,7 +440,7 @@ class EnhancedHybridEngine extends HybridEngine {
         return rankB - rankA;
       }
       
-      // 3. Then by pattern confirmation
+      // 4. Then by pattern confirmation
       const confirmA = a.patternConfirmation || 0;
       const confirmB = b.patternConfirmation || 0;
       
@@ -487,16 +597,39 @@ class EnhancedHybridEngine extends HybridEngine {
   getEnhancedStatistics() {
     const baseStats = this.getHybridStatistics();
     const dexStats = this.dexManager.getStatistics();
+    const eventStats = this.eventDetector.getStatistics();
     
     return {
       ...baseStats,
       dex: dexStats,
+      events: eventStats,
       analytics: {
         riskMetricsEnabled: true,
         advancedPatternsEnabled: true,
-        dexIntegrationEnabled: dexStats.totalDEXs > 0
+        dexIntegrationEnabled: dexStats.totalDEXs > 0,
+        eventDetectionEnabled: true
       }
     };
+  }
+
+  /**
+   * Detect all market events for a symbol
+   * @param {string} symbol - Trading symbol
+   * @param {number} days - Historical days to analyze
+   * @returns {Promise<object>} Detected events
+   */
+  async detectMarketEvents(symbol, days = 90) {
+    return await this.eventDetector.detectMarketEvents(symbol, days);
+  }
+
+  /**
+   * Batch detect events for multiple symbols
+   * @param {Array} symbols - Trading symbols
+   * @param {number} days - Historical days to analyze
+   * @returns {Promise<Array>} All detected events
+   */
+  async batchDetectEvents(symbols, days = 90) {
+    return await this.eventDetector.detectEventsForMultipleSymbols(symbols, days);
   }
 }
 

@@ -1,0 +1,62 @@
+{
+  "timestamp": "2026-01-27T06:09:29.336Z",
+  "symbols": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "BNBUSDT",
+    "SOLUSDT",
+    "ARBUSDT",
+    "OPUSDT"
+  ],
+  "results": [
+    {
+      "symbol": "BTCUSDT",
+      "timestamp": "2026-01-27T06:08:57.723Z",
+      "detectedEvents": []
+    },
+    {
+      "symbol": "ETHUSDT",
+      "timestamp": "2026-01-27T06:09:02.174Z",
+      "detectedEvents": []
+    },
+    {
+      "symbol": "BNBUSDT",
+      "timestamp": "2026-01-27T06:09:06.188Z",
+      "detectedEvents": []
+    },
+    {
+      "symbol": "SOLUSDT",
+      "timestamp": "2026-01-27T06:09:10.198Z",
+      "detectedEvents": []
+    },
+    {
+      "symbol": "ARBUSDT",
+      "timestamp": "2026-01-27T06:09:14.225Z",
+      "detectedEvents": []
+    },
+    {
+      "symbol": "OPUSDT",
+      "timestamp": "2026-01-27T06:09:18.396Z",
+      "detectedEvents": []
+    }
+  ],
+  "statistics": {
+    "totalDetections": 0,
+    "tokenUnlockDetections": 0,
+    "listingDetections": 0,
+    "teamRevealDetections": 0,
+    "influencerCampaignDetections": 0,
+    "accuracy": {
+      "tokenUnlock": 0,
+      "listing": 0,
+      "teamReveal": 0,
+      "influencerCampaign": 0
+    },
+    "totalPatterns": 0
+  },
+  "summary": {
+    "totalSymbols": 6,
+    "totalEvents": 0,
+    "successRate": "100.00%"
+  }
+}

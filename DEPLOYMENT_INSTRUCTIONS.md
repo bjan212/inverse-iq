@@ -21,6 +21,7 @@ Since your code is already on GitHub, the easiest method is to pull the latest c
 2. **Navigate to your application directory:**
    ```bash
    cd /home/inverseiq/trading-data-collection-service
+
    ```
 
 3. **Pull the latest code from GitHub:**
