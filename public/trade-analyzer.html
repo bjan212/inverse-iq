@@ -438,6 +438,45 @@
             margin: 8px 0;
         }
         
+        /* Exchange Branding */
+        .exchange-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        
+        .exchange-badge.binance {
+            background: rgba(243, 186, 47, 0.15);
+            border: 1px solid #f3ba2f;
+            color: #f3ba2f;
+        }
+        
+        .exchange-badge.bybit {
+            background: rgba(249, 182, 53, 0.15);
+            border: 1px solid #f9b635;
+            color: #f9b635;
+        }
+        
+        .exchange-badge.okx {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #ffffff;
+            color: #ffffff;
+        }
+        
+        .exchange-badge.mexc {
+            background: rgba(0, 180, 240, 0.15);
+            border: 1px solid #00b4f0;
+            color: #00b4f0;
+        }
+        
+        .exchange-icon {
+            font-size: 16px;
+        }
+        
         /* Signal Verification */
         .verification-container {
             background: rgba(3, 7, 18, 0.6);
@@ -796,6 +835,23 @@
         const refreshHistoryBtn = document.getElementById('refreshHistoryBtn');
         const historyContainer = document.getElementById('historyContainer');
         
+        // Helper function to get exchange icon and badge
+        function getExchangeBadge(exchange) {
+            const icons = {
+                'binance': '🟡',
+                'bybit': '🟠',
+                'okx': '⚫',
+                'mexc': '🔵'
+            };
+            
+            const icon = icons[exchange.toLowerCase()] || '🔷';
+            
+            return `<span class="exchange-badge ${exchange.toLowerCase()}">
+                <span class="exchange-icon">${icon}</span>
+                ${exchange.charAt(0).toUpperCase() + exchange.slice(1)}
+            </span>`;
+        }
+        
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             // Load user ID from local storage
@@ -1071,12 +1127,10 @@
                             const exchangeItem = document.createElement('div');
                             exchangeItem.className = 'py-4 flex justify-between items-center';
                             
-                            const exchangeName = exchange.charAt(0).toUpperCase() + exchange.slice(1);
-                            
                             exchangeItem.innerHTML = `
                                 <div>
-                                    <h4 class="font-semibold">${exchangeName}</h4>
-                                    <p class="text-gray-400 text-sm">Connected</p>
+                                    ${getExchangeBadge(exchange)}
+                                    <p class="text-gray-400 text-sm mt-2">✅ Connected</p>
                                 </div>
                                 <div>
                                     <button class="btn-danger text-sm remove-exchange" data-exchange="${exchange}">
@@ -1218,7 +1272,7 @@
                             positionsCard.className = 'card mb-6';
                             
                             let positionsHtml = `
-                                <h3 class="text-lg font-semibold mb-4">${exchange.charAt(0).toUpperCase() + exchange.slice(1)}</h3>
+                                <div class="mb-4">${getExchangeBadge(exchange)}</div>
                                 <div class="overflow-x-auto">
                                     <table class="w-full">
                                         <thead>
