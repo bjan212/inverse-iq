@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xrypt - Signal Performance Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(to bottom right, #030712, #1f2937, #111827);
+            color: #f3f4f6;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+        
+        /* Grid Pattern Overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(74, 222, 128, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(74, 222, 128, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Terminal Window */
+        .terminal-window {
+            margin: 0 auto 30px;
+            background: rgba(3, 7, 18, 0.8);
+            border: 1px solid #374151;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        
+        .terminal-header {
+            background: #1f2937;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #374151;
+        }
+        
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .terminal-dot.red { background: #ef4444; }
+        .terminal-dot.yellow { background: #eab308; }
+        .terminal-dot.green { background: #22c55e; }
+        
+        .terminal-title {
+            margin-left: 12px;
+            font-size: 13px;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+        
+        .terminal-content {
+            padding: 30px;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(74, 222, 128, 0.2);
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #4ade80;
+            text-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+        }
+        
+        .logo::before {
+            content: '> ';
+            color: #22c55e;
+        }
+        
+        .header-subtitle {
+            font-size: 16px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .header-btn {
+            padding: 10px 20px;
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid #4ade80;
+            border-radius: 8px;
+            color: #4ade80;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .header-btn:hover {
+            background: rgba(74, 222, 128, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .info-card {
+            background: rgba(3, 7, 18, 0.6);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+        }
+        
+        .info-card-title {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        
+        .info-card-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .info-card-subtitle {
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .info-card.green .info-card-value {
+            color: #4ade80;
+        }
+        
+        .info-card.blue .info-card-value {
+            color: #22c55e;
+        }
+        
+        .info-card.purple .info-card-value {
+            color: #16a34a;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(74, 222, 128, 0.2);
+            padding-bottom: 10px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: rgba(3, 7, 18, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .tab:hover {
+            background: rgba(74, 222, 128, 0.1);
+            color: #4ade80;
+        }
+        
+        .tab.active {
+            background: rgba(74, 222, 128, 0.1);
+            border-color: #4ade80;
+            color: #4ade80;
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Charts */
+        .chart-container {
+            background: rgba(3, 7, 18, 0.6);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #f3f4f6;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+        
+        /* Tables */
+        .table-container {
+            background: rgba(3, 7, 18, 0.6);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+        
+        .table-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #f3f4f6;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        th {
+            background: rgba(0, 0, 0, 0.2);
+            color: #888;
+            font-weight: 500;
+        }
+        
+        tr:hover {
+            background: rgba(74, 222, 128, 0.05);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .badge.win {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+        }
+        
+        .badge.loss {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        .badge.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+        
+        /* Signal Verification */
+        .verification-container {
+            background: rgba(3, 7, 18, 0.6);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .verification-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #f3f4f6;
+        }
+        
+        .verification-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .verification-input {
+            flex: 1;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #f3f4f6;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .verification-input:focus {
+            outline: none;
+            border-color: #4ade80;
+        }
+        
+        .verification-btn {
+            padding: 12px 20px;
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid #4ade80;
+            border-radius: 8px;
+            color: #4ade80;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .verification-btn:hover {
+            background: rgba(74, 222, 128, 0.2);
+        }
+        
+        .verification-result {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(74, 222, 128, 0.2);
+            border-top-color: #4ade80;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Terminal Window -->
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <div class="terminal-dot red"></div>
+                <div class="terminal-dot yellow"></div>
+                <div class="terminal-dot green"></div>
+                <div class="terminal-title">xrypt:~/performance-dashboard</div>
+            </div>
+            <div class="terminal-content">
+                <!-- Header -->
+                <div class="header">
+                    <div>
+                        <div class="logo">Xrypt</div>
+                        <div class="header-subtitle">Signal Performance & Accountability Dashboard</div>
+                    </div>
+                    <div class="header-actions">
+                        <button class="header-btn" onclick="window.location.href='signals.html'">View Signals</button>
+                        <button class="header-btn" onclick="window.location.href='index.html'">Home</button>
+                    </div>
+                </div>
+                
+                <!-- Dashboard Cards -->
+                <div class="dashboard-grid">
+                    <div class="info-card green">
+                        <div class="info-card-title">Win Rate</div>
+                        <div class="info-card-value" id="winRate">-</div>
+                        <div class="info-card-subtitle">Overall signal accuracy</div>
+                    </div>
+                    <div class="info-card blue">
+                        <div class="info-card-title">Total Signals</div>
+                        <div class="info-card-value" id="totalSignals">-</div>
+                        <div class="info-card-subtitle">Generated & tracked</div>
+                    </div>
+                    <div class="info-card purple">
+                        <div class="info-card-title">Avg. PnL</div>
+                        <div class="info-card-value" id="avgPnl">-</div>
+                        <div class="info-card-subtitle">Per closed signal</div>
+                    </div>
+                </div>
+                
+                <!-- Tabs -->
+                <div class="tabs">
+                    <div class="tab active" data-tab="overview">Overview</div>
+                    <div class="tab" data-tab="patterns">Pattern Performance</div>
+                    <div class="tab" data-tab="signals">Recent Signals</div>
+                    <div class="tab" data-tab="verify">Verify Signal</div>
+                </div>
+                
+                <!-- Overview Tab -->
+                <div class="tab-content active" id="overview-tab">
+                    <!-- Performance Chart -->
+                    <div class="chart-container">
+                        <div class="chart-title">Performance Over Time</div>
+                        <div class="chart-wrapper">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Win Rate Chart -->
+                    <div class="chart-container">
+                        <div class="chart-title">Win Rate by Symbol</div>
+                        <div class="chart-wrapper">
+                            <canvas id="symbolWinRateChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Best Trades Table -->
+                    <div class="table-container">
+                        <div class="table-title">Best Performing Signals</div>
+                        <table id="bestTradesTable">
+                            <thead>
+                                <tr>
+                                    <th>Symbol</th>
+                                    <th>Direction</th>
+                                    <th>PnL</th>
+                                    <th>PnL %</th>
+                                    <th>Date</th>
+                                    <th>Verification</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="6" class="loading-row">Loading data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Patterns Tab -->
+                <div class="tab-content" id="patterns-tab">
+                    <!-- Pattern Performance Chart -->
+                    <div class="chart-container">
+                        <div class="chart-title">Pattern Win Rates</div>
+                        <div class="chart-wrapper">
+                            <canvas id="patternWinRateChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Pattern Performance Table -->
+                    <div class="table-container">
+                        <div class="chart-title">Pattern Performance Details</div>
+                        <table id="patternTable">
+                            <thead>
+                                <tr>
+                                    <th>Pattern</th>
+                                    <th>Signals</th>
+                                    <th>Win Rate</th>
+                                    <th>Avg PnL</th>
+                                    <th>Total PnL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" class="loading-row">Loading data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Signals Tab -->
+                <div class="tab-content" id="signals-tab">
+                    <!-- Recent Signals Table -->
+                    <div class="table-container">
+                        <div class="chart-title">Recent Signal Performance</div>
+                        <table id="signalsTable">
+                            <thead>
+                                <tr>
+                                    <th>Symbol</th>
+                                    <th>Direction</th>
+                                    <th>Confidence</th>
+                                    <th>Status</th>
+                                    <th>Outcome</th>
+                                    <th>PnL</th>
+                                    <th>Date</th>
+                                    <th>Verify</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="8" class="loading-row">Loading data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Verify Tab -->
+                <div class="tab-content" id="verify-tab">
+                    <div class="verification-container">
+                        <div class="verification-title">Verify Signal Performance</div>
+                        <p style="margin-bottom: 20px; color: #888;">
+                            Enter a signal verification ID to check its real-time performance and outcome.
+                            Each signal has a unique verification ID that can be used to independently verify its performance.
+                        </p>
+                        <div class="verification-form">
+                            <input type="text" class="verification-input" id="verificationInput" placeholder="Enter verification ID (e.g., verify_1234567890_abc123)">
+                            <button class="verification-btn" onclick="verifySignal()">Verify</button>
+                        </div>
+                        <div class="verification-result" id="verificationResult">
+                            <!-- Verification result will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize charts and data
+        let performanceChart, symbolWinRateChart, patternWinRateChart;
+        let performanceData = null;
+        
+        // Initialize
+        async function init() {
+            setupTabs();
+            await loadPerformanceData();
+            initCharts();
+            updateDashboard();
+            updateTables();
+        }
+        
+        // Setup tabs
+        function setupTabs() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    document.getElementById(`${tab.dataset.tab}-tab`).classList.add('active');
+                });
+            });
+        }
+        
+        // Load performance data from API
+        async function loadPerformanceData() {
+            try {
+                // In production, this would call a real API
+                // For now, use mock data
+                performanceData = {
+                    overall: {
+                        totalSignals: 156,
+                        activeSignals: 12,
+                        closedSignals: 144,
+                        winCount: 112,
+                        lossCount: 32,
+                        winRate: 77.78,
+                        totalPnl: 15420.50,
+                        avgPnl: 107.09,
+                        bestTrade: {
+                            signalId: 'BTCUSDT_1234567890_abc123',
+                            symbol: 'BTCUSDT',
+                            direction: 'LONG',
+                            pnl: 1250.75,
+                            pnlPercent: 2.5,
+                            date: '2023-11-15T10:30:00Z',
+                            verificationId: 'verify_1234567890_abc123'
+                        },
+                        worstTrade: {
+                            signalId: 'ETHUSDT_0987654321_xyz789',
+                            symbol: 'ETHUSDT',
+                            direction: 'SHORT',
+                            pnl: -320.45,
+                            pnlPercent: -1.8,
+                            date: '2023-11-10T14:45:00Z',
+                            verificationId: 'verify_0987654321_xyz789'
+                        }
+                    },
+                    timeframe: [
+                        { date: '2023-11-01', signals: 5, wins: 4, losses: 1, winRate: 80, pnl: 450.25 },
+                        { date: '2023-11-02', signals: 7, wins: 5, losses: 2, winRate: 71.43, pnl: 320.10 },
+                        { date: '2023-11-03', signals: 4, wins: 3, losses: 1, winRate: 75, pnl: 280.50 },
+                        { date: '2023-11-04', signals: 6, wins: 5, losses: 1, winRate: 83.33, pnl: 520.75 },
+                        { date: '2023-11-05', signals: 8, wins: 6, losses: 2, winRate: 75, pnl: 480.30 },
+                        { date: '2023-11-06', signals: 5, wins: 4, losses: 1, winRate: 80, pnl: 390.60 },
+                        { date: '2023-11-07', signals: 7, wins: 5, losses: 2, winRate: 71.43, pnl: 410.20 },
+                        { date: '2023-11-08', signals: 9, wins: 7, losses: 2, winRate: 77.78, pnl: 560.40 },
+                        { date: '2023-11-09', signals: 6, wins: 4, losses: 2, winRate: 66.67, pnl: 320.80 },
+                        { date: '2023-11-10', signals: 8, wins: 6, losses: 2, winRate: 75, pnl: 450.90 },
+                        { date: '2023-11-11', signals: 7, wins: 6, losses: 1, winRate: 85.71, pnl: 580.25 },
+                        { date: '2023-11-12', signals: 5, wins: 4, losses: 1, winRate: 80, pnl: 420.60 },
+                        { date: '2023-11-13', signals: 8, wins: 6, losses: 2, winRate: 75, pnl: 490.30 },
+                        { date: '2023-11-14', signals: 6, wins: 5, losses: 1, winRate: 83.33, pnl: 530.45 },
+                        { date: '2023-11-15', signals: 9, wins: 7, losses: 2, winRate: 77.78, pnl: 610.20 }
+                    ],
+                    symbols: {
+                        'BTCUSDT': { symbol: 'BTCUSDT', totalSignals: 45, winRate: 82.5, avgPnl: 125.40 },
+                        'ETHUSDT': { symbol: 'ETHUSDT', totalSignals: 38, winRate: 78.9, avgPnl: 98.75 },
+                        'BNBUSDT': { symbol: 'BNBUSDT', totalSignals: 32, winRate: 75.0, avgPnl: 85.30 },
+                        'SOLUSDT': { symbol: 'SOLUSDT', totalSignals: 25, winRate: 72.0, avgPnl: 76.50 },
+                        'DOGEUSDT': { symbol: 'DOGEUSDT', totalSignals: 16, winRate: 68.8, avgPnl: 65.20 }
+                    },
+                    patterns: {
+                        'FALSE_BREAKOUT': { key: 'FALSE_BREAKOUT', totalSignals: 42, winRate: 85.7, avgPnl: 135.60 },
+                        'LIQUIDITY_GRAB': { key: 'LIQUIDITY_GRAB', totalSignals: 38, winRate: 81.6, avgPnl: 120.30 },
+                        'WYCKOFF_SPRING': { key: 'WYCKOFF_SPRING', totalSignals: 35, winRate: 77.1, avgPnl: 105.80 },
+                        'ORDERBLOCK_RETEST': { key: 'ORDERBLOCK_RETEST', totalSignals: 30, winRate: 73.3, avgPnl: 95.40 },
+                        'SUPPLY_DEMAND_ZONE': { key: 'SUPPLY_DEMAND_ZONE', totalSignals: 25, winRate: 68.0, avgPnl: 85.20 }
+                    },
+                    recentSignals: [
+                        {
+                            signalId: 'BTCUSDT_1234567890_abc123',
+                            symbol: 'BTCUSDT',
+                            direction: 'LONG',
+                            confidence: 92,
+                            status: 'closed',
+                            outcome: 'win',
+                            pnl: 1250.75,
+                            pnlPercent: 2.5,
+                            date: '2023-11-15T10:30:00Z',
+                            verificationId: 'verify_1234567890_abc123'
+                        },
+                        {
+                            signalId: 'ETHUSDT_2345678901_def456',
+                            symbol: 'ETHUSDT',
+                            direction: 'LONG',
+                            confidence: 88,
+                            status: 'closed',
+                            outcome: 'win',
+                            pnl: 850.30,
+                            pnlPercent: 1.8,
+                            date: '2023-11-14T15:45:00Z',
+                            verificationId: 'verify_2345678901_def456'
+                        },
+                        {
+                            signalId: 'BNBUSDT_3456789012_ghi789',
+                            symbol: 'BNBUSDT',
+                            direction: 'SHORT',
+                            confidence: 85,
+                            status: 'closed',
+                            outcome: 'win',
+                            pnl: 620.45,
+                            pnlPercent: 1.5,
+                            date: '2023-11-13T09:15:00Z',
+                            verificationId: 'verify_3456789012_ghi789'
+                        },
+                        {
+                            signalId: 'SOLUSDT_4567890123_jkl012',
+                            symbol: 'SOLUSDT',
+                            direction: 'SHORT',
+                            confidence: 78,
+                            status: 'closed',
+                            outcome: 'loss',
+                            pnl: -280.60,
+                            pnlPercent: -1.2,
+                            date: '2023-11-12T14:30:00Z',
+                            verificationId: 'verify_4567890123_jkl012'
+                        },
+                        {
+                            signalId: 'BTCUSDT_5678901234_mno345',
+                            symbol: 'BTCUSDT',
+                            direction: 'LONG',
+                            confidence: 90,
+                            status: 'active',
+                            outcome: null,
+                            pnl: 420.25,
+                            pnlPercent: 0.8,
+                            date: '2023-11-15T16:00:00Z',
+                            verificationId: 'verify_5678901234_mno345'
+                        }
+                    ]
+                };
+            } catch (error) {
+                console.error('Failed to load performance data:', error);
+            }
+        }
+        
+        // Initialize charts
+        function initCharts() {
+            // Performance Chart
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            performanceChart = new Chart(performanceCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Win Rate (%)',
+                            data: [],
+                            borderColor: '#4ade80',
+                            backgroundColor: 'rgba(74, 222, 128, 0.1)',
+                            tension: 0.4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'PnL ($)',
+                            data: [],
+                            borderColor: '#22c55e',
+                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#888'
+                            }
+                        },
+                        y: {
+                            position: 'left',
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#888'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Win Rate (%)',
+                                color: '#888'
+                            }
+                        },
+                        y1: {
+                            position: 'right',
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#888'
+                            },
+                            title: {
+                                display: true,
+                                text: 'PnL ($)',
+                                color: '#888'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#f3f4f6'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Symbol Win Rate Chart
+            const symbolWinRateCtx = document.getElementById('symbolWinRateChart').getContext('2d');
+            symbolWinRateChart = new Chart(symbolWinRateCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Win Rate (%)',
+                            data: [],
+                            backgroundColor: 'rgba(74, 222, 128, 0.6)',
+                            borderColor: '#4ade80',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#888'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#888'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Win Rate (%)',
+                                color: '#888'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#f3f4f6'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Pattern Win Rate Chart
+            const patternWinRateCtx = document.getElementById('patternWinRateChart').getContext('2d');
+            patternWinRateChart = new Chart(patternWinRateCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Win Rate (%)',
+                            data: [],
+                            backgroundColor: 'rgba(34, 197, 94, 0.6)',
+                            borderColor: '#22c55e',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#888'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#888'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Win Rate (%)',
+                                color: '#888'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#f3f4f6'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Update dashboard with performance data
+        function updateDashboard() {
+            if (!performanceData) return;
+            
+            // Update dashboard cards
+            document.getElementById('winRate').textContent = performanceData.overall.winRate.toFixed(2) + '%';
+            document.getElementById('totalSignals').textContent = performanceData.overall.totalSignals;
+            document.getElementById('avgPnl').textContent = '$' + performanceData.overall.avgPnl.toFixed(2);
+            
+            // Update performance chart
+            const dates = performanceData.timeframe.map(d => d.date);
+            const winRates = performanceData.timeframe.map(d => d.winRate);
+            const pnls = performanceData.timeframe.map(d => d.pnl);
+            
+            performanceChart.data.labels = dates;
+            performanceChart.data.datasets[0].data = winRates;
+            performanceChart.data.datasets[1].data = pnls;
+            performanceChart.update();
+            
+            // Update symbol win rate chart
+            const symbols = Object.values(performanceData.symbols).map(s => s.symbol);
+            const symbolWinRates = Object.values(performanceData.symbols).map(s => s.winRate);
+            
+            symbolWinRateChart.data.labels = symbols;
+            symbolWinRateChart.data.datasets[0].data = symbolWinRates;
+            symbolWinRateChart.update();
+            
+            // Update pattern win rate chart
+            const patterns = Object.values(performanceData.patterns).map(p => p.key);
+            const patternWinRates = Object.values(performanceData.patterns).map(p => p.winRate);
+            
+            patternWinRateChart.data.labels = patterns;
+            patternWinRateChart.data.datasets[0].data = patternWinRates;
+            patternWinRateChart.update();
+        }
+        
+        // Update tables with performance data
+        function updateTables() {
+            if (!performanceData) return;
+            
+            // Update best trades table
+            const bestTradesTable = document.getElementById('bestTradesTable').querySelector('tbody');
+            bestTradesTable.innerHTML = '';
+            
+            // Sort recent signals by PnL (highest first)
+            const sortedSignals = [...performanceData.recentSignals].sort((a, b) => b.pnl - a.pnl).slice(0, 5);
+            
+            sortedSignals.forEach(signal => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${signal.symbol}</td>
+                    <td>${signal.direction}</td>
+                    <td>$${signal.pnl.toFixed(2)}</td>
+                    <td>${signal.pnlPercent.toFixed(2)}%</td>
+                    <td>${new Date(signal.date).toLocaleDateString()}</td>
+                    <td><a href="#verify-tab" onclick="setVerificationId('${signal.verificationId}')">Verify</a></td>
+                `;
+                bestTradesTable.appendChild(row);
+            });
+            
+            // Update pattern table
+            const patternTable = document.getElementById('patternTable').querySelector('tbody');
+            patternTable.innerHTML = '';
+            
+            Object.values(performanceData.patterns).forEach(pattern => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${pattern.key}</td>
+                    <td>${pattern.totalSignals}</td>
+                    <td>${pattern.winRate.toFixed(2)}%</td>
+                    <td>$${pattern.avgPnl.toFixed(2)}</td>
+                    <td>$${(pattern.avgPnl * pattern.totalSignals).toFixed(2)}</td>
+                `;
+                patternTable.appendChild(row);
+            });
+            
+            // Update signals table
+            const signalsTable = document.getElementById('signalsTable').querySelector('tbody');
+            signalsTable.innerHTML = '';
+            
+            performanceData.recentSignals.forEach(signal => {
+                const statusClass = signal.status === 'active' ? 'active' : '';
+                const outcomeClass = signal.outcome === 'win' ? 'win' : signal.outcome === 'loss' ? 'loss' : '';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${signal.symbol}</td>
+                    <td>${signal.direction}</td>
+                    <td>${signal.confidence}%</td>
+                    <td><span class="badge ${statusClass}">${signal.status}</span></td>
+                    <td>${signal.outcome ? `<span class="badge ${outcomeClass}">${signal.outcome}</span>` : '-'}</td>
+                    <td>${signal.pnl ? (signal.pnl >= 0 ? '+' : '') + '$' + signal.pnl.toFixed(2) : '-'}</td>
+                    <td>${new Date(signal.date).toLocaleDateString()}</td>
+                    <td><a href="#verify-tab" onclick="setVerificationId('${signal.verificationId}')">Verify</a></td>
+                `;
+                signalsTable.appendChild(row);
+            });
+        }
+        
+        // Set verification ID in input and switch to verify tab
+        function setVerificationId(id) {
+            document.getElementById('verificationInput').value = id;
+            
+            // Switch to verify tab
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            document.querySelector('.tab[data-tab="verify"]').classList.add('active');
+            document.getElementById('verify-tab').classList.add('active');
+            
+            // Trigger verification
+            verifySignal();
+        }
+        
+        // Verify signal
+        function verifySignal() {
+            const verificationId = document.getElementById('verificationInput').value.trim();
+            
+            if (!verificationId) {
+                alert('Please enter a verification ID');
+                return;
+            }
+            
+            // In production, this would call a real API
+            // For now, use mock data
+            const signal = performanceData.recentSignals.find(s => s.verificationId === verificationId);
+            
+            const resultDiv = document.getElementById('verificationResult');
+            
+            if (signal) {
+                // Show verification result
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
+                    <div style="background: rgba(3, 7, 18, 0.6); border: 1px solid rgba(74, 222, 128, 0.2); border-radius: 12px; padding: 20px;">
+                        <h3 style="font-size: 20px; margin-bottom: 15px; color: #4ade80;">✅ Signal Verified</h3>
+                        
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                            <div style="font-size: 24px; font-weight: bold;">${signal.symbol}</div>
+                            <div style="padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: bold; background: ${signal.direction === 'LONG' ? 'rgba(76, 175, 80, 0.2)' : 'rgba(244, 67, 54, 0.2)'}; color: ${signal.direction === 'LONG' ? '#4caf50' : '#f44336'}; border: 1px solid ${signal.direction === 'LONG' ? '#4caf50' : '#f44336'};">
+                                ${signal.direction}
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="color: #888;">Confidence Score</span>
+                                <span style="color: #4ade80; font-weight: bold;">${signal.confidence}%</span>
+                            </div>
+                            <div style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden;">
+                                <div style="height: 100%; width: ${signal.confidence}%; background: linear-gradient(90deg, #4ade80, #22c55e); border-radius: 10px;"></div>
+                            </div>
+                        </div>
+                        
+                        <div style="background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                            <div style="font-size: 14px; color: #888; margin-bottom: 10px;">Performance</div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <div style="color: #888; font-size: 13px;">Status</div>
+                                    <div style="font-weight: bold; color: ${signal.status === 'active' ? '#3b82f6' : '#f3f4f6'};">
+                                        ${signal.status.toUpperCase()}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="color: #888; font-size: 13px;">Outcome</div>
+                                    <div style="font-weight: bold; color: ${signal.outcome === 'win' ? '#4ade80' : signal.outcome === 'loss' ? '#ef4444' : '#f3f4f6'};">
+                                        ${signal.outcome ? signal.outcome.toUpperCase() : 'PENDING'}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="color: #888; font-size: 13px;">PnL</div>
+                                    <div style="font-weight: bold; color: ${signal.pnl >= 0 ? '#4ade80' : '#ef4444'};">
+                                        ${signal.pnl >= 0 ? '+' : ''}$${signal.pnl.toFixed(2)} (${signal.pnl >= 0 ? '+' : ''}${signal.pnlPercent.toFixed(2)}%)
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="color: #888; font-size: 13px;">Generated</div>
+                                    <div style="font-weight: bold;">
+                                        ${new Date(signal.date).toLocaleString()}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; font-size: 12px; color: #888;">
+                            Verification ID: ${signal.verificationId}
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Show error
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
+                    <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 20px; text-align: center;">
+                        <h3 style="font-size: 20px; margin-bottom: 15px; color: #ef4444;">❌ Signal Not Found</h3>
+                        <p style="color: #888;">The verification ID you entered was not found. Please check and try again.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Initialize on page load
+        init();
+    </script>
+</body>
+</html>

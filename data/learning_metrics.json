@@ -1,5 +1,5 @@
 {
-  "totalDataPoints": 2550,
+  "totalDataPoints": 2978,
   "patternsLearned": 0,
   "accuracyImprovements": [
     {
@@ -34,12 +34,12 @@
     }
   ],
   "dataSourceContributions": {
-    "onlineSignals": 1387,
-    "traderSubmissions": 689,
-    "performanceFeedback": 340,
-    "publicMarketData": 134
+    "onlineSignals": 1619,
+    "traderSubmissions": 805,
+    "performanceFeedback": 398,
+    "publicMarketData": 156
   },
   "learningRate": 10,
   "lastAccuracyCheck": 0,
-  "startTime": 1769489836503
+  "startTime": 1769766337801
 }

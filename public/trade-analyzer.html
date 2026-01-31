@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Analyzer | Advanced Trading Recommendations</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(to bottom right, #030712, #1f2937, #111827);
+            color: #f3f4f6;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+        
+        /* Grid Pattern Overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(74, 222, 128, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(74, 222, 128, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Terminal Window */
+        .terminal-window {
+            margin: 0 auto 30px;
+            background: rgba(3, 7, 18, 0.8);
+            border: 1px solid #374151;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        
+        .terminal-header {
+            background: #1f2937;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #374151;
+        }
+        
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .terminal-dot.red { background: #ef4444; }
+        .terminal-dot.yellow { background: #eab308; }
+        .terminal-dot.green { background: #22c55e; }
+        
+        .terminal-title {
+            margin-left: 12px;
+            font-size: 13px;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+        
+        .terminal-content {
+            padding: 30px;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(74, 222, 128, 0.2);
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #4ade80;
+            text-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+        }
+        
+        .logo::before {
+            content: '> ';
+            color: #22c55e;
+        }
+        
+        .header-subtitle {
+            font-size: 16px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .header-btn {
+            padding: 10px 20px;
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid #4ade80;
+            border-radius: 8px;
+            color: #4ade80;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .header-btn:hover {
+            background: rgba(74, 222, 128, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .info-card {
+            background: rgba(3, 7, 18, 0.6);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+        }
+        
+        .info-card-title {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        
+        .info-card-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .info-card-subtitle {
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .info-card.green .info-card-value {
+            color: #4ade80;
+        }
+        
+        .info-card.blue .info-card-value {
+            color: #22c55e;
+        }
+        
+        .info-card.purple .info-card-value {
+            color: #16a34a;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(74, 222, 128, 0.2);
+            padding-bottom: 10px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: rgba(3, 7, 18, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .tab:hover {
+            background: rgba(74, 222, 128, 0.1);
+            color: #4ade80;
+        }
+        
+        .tab.active {
+            background: rgba(74, 222, 128, 0.1);
+            border-color: #4ade80;
+            color: #4ade80;
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Charts */
+        .chart-container {
+            background: rgba(3, 7, 18, 0.6);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #f3f4f6;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+        
+        /* Tables */
+        .table-container {
+            background: rgba(3, 7, 18, 0.6);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+        
+        .table-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #f3f4f6;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        th {
+            background: rgba(0, 0, 0, 0.2);
+            color: #888;
+            font-weight: 500;
+        }
+        
+        tr:hover {
+            background: rgba(74, 222, 128, 0.05);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .badge.win {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+        }
+        
+        .badge.loss {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        .badge.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+        
+        /* Signal Verification */
+        .verification-container {
+            background: rgba(3, 7, 18, 0.6);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .verification-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #f3f4f6;
+        }
+        
+        .verification-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .verification-input {
+            flex: 1;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #f3f4f6;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .verification-input:focus {
+            outline: none;
+            border-color: #4ade80;
+        }
+        
+        .verification-btn {
+            padding: 12px 20px;
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid #4ade80;
+            border-radius: 8px;
+            color: #4ade80;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .verification-btn:hover {
+            background: rgba(74, 222, 128, 0.2);
+        }
+        
+        .verification-result {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(74, 222, 128, 0.2);
+            border-top-color: #4ade80;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+</head>
+<body class="min-h-screen">
+    <header class="bg-dark border-b border-dark py-4">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-white">Trade Analyzer</h1>
+                <div class="flex items-center space-x-4">
+                    <span id="userDisplay" class="text-gray-300">User ID: <span id="currentUserId">guest</span></span>
+                    <button id="changeUserBtn" class="btn-secondary text-sm">Change User</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="bg-dark border-b border-dark">
+        <div class="container mx-auto px-4">
+            <div class="flex space-x-4">
+                <div class="tab active" data-tab="dashboard">Dashboard</div>
+                <div class="tab" data-tab="exchanges">Exchange Connections</div>
+                <div class="tab" data-tab="positions">Open Positions</div>
+                <div class="tab" data-tab="analysis">Trade Analysis</div>
+                <div class="tab" data-tab="history">Analysis History</div>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="container mx-auto px-4 py-8">
+        <!-- Dashboard Tab -->
+        <div id="dashboard-tab" class="tab-content active">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">Connected Exchanges</h3>
+                    <div class="text-4xl font-bold mb-2" id="exchangeCount">0</div>
+                    <p class="text-gray-400">Exchanges with API keys</p>
+                </div>
+                
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">Open Positions</h3>
+                    <div class="text-4xl font-bold mb-2" id="positionCount">0</div>
+                    <p class="text-gray-400">Active trading positions</p>
+                </div>
+                
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">Risk Level</h3>
+                    <div class="text-4xl font-bold mb-2" id="riskLevel">--</div>
+                    <p class="text-gray-400">Overall portfolio risk</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">Latest Recommendation</h3>
+                    <div id="latestRecommendation" class="text-gray-300">
+                        No recommendations available. Connect an exchange and analyze your trades.
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4">Quick Actions</h3>
+                    <div class="flex flex-col space-y-4">
+                        <button id="connectExchangeBtn" class="btn-primary">
+                            <i class="fas fa-plus-circle mr-2"></i> Connect Exchange
+                        </button>
+                        <button id="analyzeTradesBtn" class="btn-primary">
+                            <i class="fas fa-chart-line mr-2"></i> Analyze Open Trades
+                        </button>
+                        <button id="viewPositionsBtn" class="btn-secondary">
+                            <i class="fas fa-list mr-2"></i> View Open Positions
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Exchanges Tab -->
+        <div id="exchanges-tab" class="tab-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">Exchange Connections</h2>
+                <button id="addExchangeBtn" class="btn-primary">
+                    <i class="fas fa-plus-circle mr-2"></i> Add Exchange
+                </button>
+            </div>
+            
+            <div class="card mb-6">
+                <div id="exchangesList" class="divide-y divide-gray-700">
+                    <div class="text-center py-8 text-gray-400">
+                        No exchanges connected. Add an exchange to get started.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Add Exchange Form (Hidden by default) -->
+            <div id="addExchangeForm" class="card hidden">
+                <h3 class="text-lg font-semibold mb-4">Add Exchange</h3>
+                <form id="apiKeyForm" class="space-y-4">
+                    <div>
+                        <label for="exchangeSelect" class="block mb-2">Exchange</label>
+                        <select id="exchangeSelect" class="form-select">
+                            <option value="binance">Binance</option>
+                            <option value="bybit">Bybit</option>
+                            <option value="okx">OKX</option>
+                            <option value="mexc">MEXC</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="apiKeyInput" class="block mb-2">API Key</label>
+                        <input type="text" id="apiKeyInput" class="form-input" placeholder="Enter your API key">
+                    </div>
+                    
+                    <div>
+                        <label for="apiSecretInput" class="block mb-2">API Secret</label>
+                        <input type="password" id="apiSecretInput" class="form-input" placeholder="Enter your API secret">
+                    </div>
+                    
+                    <div id="passphraseContainer" class="hidden">
+                        <label for="passphraseInput" class="block mb-2">Passphrase (OKX only)</label>
+                        <input type="password" id="passphraseInput" class="form-input" placeholder="Enter your passphrase">
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button type="submit" class="btn-primary">Save</button>
+                        <button type="button" id="cancelAddExchange" class="btn-secondary">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Positions Tab -->
+        <div id="positions-tab" class="tab-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">Open Positions</h2>
+                <button id="refreshPositionsBtn" class="btn-secondary">
+                    <i class="fas fa-sync-alt mr-2"></i> Refresh
+                </button>
+            </div>
+            
+            <div id="positionsContainer">
+                <div class="text-center py-8 text-gray-400">
+                    Loading positions...
+                </div>
+            </div>
+        </div>
+        
+        <!-- Analysis Tab -->
+        <div id="analysis-tab" class="tab-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">Trade Analysis</h2>
+                <button id="runAnalysisBtn" class="btn-primary">
+                    <i class="fas fa-chart-line mr-2"></i> Run Analysis
+                </button>
+            </div>
+            
+            <div id="analysisContainer">
+                <div class="text-center py-8 text-gray-400">
+                    Click "Run Analysis" to analyze your open trades.
+                </div>
+            </div>
+        </div>
+        
+        <!-- History Tab -->
+        <div id="history-tab" class="tab-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">Analysis History</h2>
+                <button id="refreshHistoryBtn" class="btn-secondary">
+                    <i class="fas fa-sync-alt mr-2"></i> Refresh
+                </button>
+            </div>
+            
+            <div id="historyContainer">
+                <div class="text-center py-8 text-gray-400">
+                    Loading analysis history...
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- User ID Modal -->
+    <div id="userIdModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-dark p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h3 class="text-lg font-semibold mb-4">Enter User ID</h3>
+            <p class="text-gray-300 mb-4">Enter your user ID to access your exchange connections and analysis history.</p>
+            
+            <div class="mb-4">
+                <input type="text" id="userIdInput" class="form-input" placeholder="Enter user ID">
+            </div>
+            
+            <div class="flex justify-end space-x-4">
+                <button id="cancelUserIdBtn" class="btn-secondary">Cancel</button>
+                <button id="saveUserIdBtn" class="btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Global variables
+        let currentUserId = 'guest';
+        let exchanges = [];
+        let positions = {};
+        let analysisData = null;
+        let analysisHistory = [];
+        
+        // DOM Elements
+        const userIdDisplay = document.getElementById('currentUserId');
+        const changeUserBtn = document.getElementById('changeUserBtn');
+        const userIdModal = document.getElementById('userIdModal');
+        const userIdInput = document.getElementById('userIdInput');
+        const saveUserIdBtn = document.getElementById('saveUserIdBtn');
+        const cancelUserIdBtn = document.getElementById('cancelUserIdBtn');
+        
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        const exchangeCount = document.getElementById('exchangeCount');
+        const positionCount = document.getElementById('positionCount');
+        const riskLevel = document.getElementById('riskLevel');
+        const latestRecommendation = document.getElementById('latestRecommendation');
+        
+        const connectExchangeBtn = document.getElementById('connectExchangeBtn');
+        const analyzeTradesBtn = document.getElementById('analyzeTradesBtn');
+        const viewPositionsBtn = document.getElementById('viewPositionsBtn');
+        
+        const addExchangeBtn = document.getElementById('addExchangeBtn');
+        const addExchangeForm = document.getElementById('addExchangeForm');
+        const apiKeyForm = document.getElementById('apiKeyForm');
+        const exchangeSelect = document.getElementById('exchangeSelect');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const apiSecretInput = document.getElementById('apiSecretInput');
+        const passphraseContainer = document.getElementById('passphraseContainer');
+        const passphraseInput = document.getElementById('passphraseInput');
+        const cancelAddExchange = document.getElementById('cancelAddExchange');
+        
+        const exchangesList = document.getElementById('exchangesList');
+        
+        const refreshPositionsBtn = document.getElementById('refreshPositionsBtn');
+        const positionsContainer = document.getElementById('positionsContainer');
+        
+        const runAnalysisBtn = document.getElementById('runAnalysisBtn');
+        const analysisContainer = document.getElementById('analysisContainer');
+        
+        const refreshHistoryBtn = document.getElementById('refreshHistoryBtn');
+        const historyContainer = document.getElementById('historyContainer');
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load user ID from local storage
+            const savedUserId = localStorage.getItem('tradeAnalyzerUserId');
+            if (savedUserId) {
+                currentUserId = savedUserId;
+                userIdDisplay.textContent = currentUserId;
+            }
+            
+            // Initialize tabs
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(`${tab.dataset.tab}-tab`).classList.add('active');
+                    
+                    // Load data for the selected tab
+                    if (tab.dataset.tab === 'exchanges') {
+                        loadExchanges();
+                    } else if (tab.dataset.tab === 'positions') {
+                        loadPositions();
+                    } else if (tab.dataset.tab === 'history') {
+                        loadAnalysisHistory();
+                    }
+                });
+            });
+            
+            // Initialize user ID modal
+            changeUserBtn.addEventListener('click', () => {
+                userIdInput.value = currentUserId;
+                userIdModal.classList.remove('hidden');
+            });
+            
+            saveUserIdBtn.addEventListener('click', saveUserId);
+            
+            // Allow Enter key to save user ID
+            userIdInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    saveUserId();
+                }
+            });
+            
+            function saveUserId() {
+                const newUserId = userIdInput.value.trim();
+                if (newUserId) {
+                    currentUserId = newUserId;
+                    userIdDisplay.textContent = currentUserId;
+                    localStorage.setItem('tradeAnalyzerUserId', currentUserId);
+                    userIdModal.classList.add('hidden');
+                    
+                    // Reload data for the current user
+                    loadDashboardData();
+                    loadExchanges();
+                } else {
+                    alert('Please enter a valid user ID');
+                }
+            }
+            
+            cancelUserIdBtn.addEventListener('click', () => {
+                userIdModal.classList.add('hidden');
+            });
+            
+            // Close modal when clicking outside
+            userIdModal.addEventListener('click', (e) => {
+                if (e.target === userIdModal) {
+                    userIdModal.classList.add('hidden');
+                }
+            });
+            
+            // Initialize quick action buttons
+            connectExchangeBtn.addEventListener('click', () => {
+                // Switch to exchanges tab
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                document.querySelector('.tab[data-tab="exchanges"]').classList.add('active');
+                document.getElementById('exchanges-tab').classList.add('active');
+                
+                // Show add exchange form
+                addExchangeForm.classList.remove('hidden');
+                
+                // Load exchanges
+                loadExchanges();
+            });
+            
+            analyzeTradesBtn.addEventListener('click', () => {
+                // Switch to analysis tab
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                document.querySelector('.tab[data-tab="analysis"]').classList.add('active');
+                document.getElementById('analysis-tab').classList.add('active');
+                
+                // Run analysis
+                runAnalysis();
+            });
+            
+            viewPositionsBtn.addEventListener('click', () => {
+                // Switch to positions tab
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                document.querySelector('.tab[data-tab="positions"]').classList.add('active');
+                document.getElementById('positions-tab').classList.add('active');
+                
+                // Load positions
+                loadPositions();
+            });
+            
+            // Initialize exchange form
+            addExchangeBtn.addEventListener('click', () => {
+                addExchangeForm.classList.remove('hidden');
+                apiKeyInput.value = '';
+                apiSecretInput.value = '';
+                passphraseInput.value = '';
+            });
+            
+            cancelAddExchange.addEventListener('click', () => {
+                addExchangeForm.classList.add('hidden');
+            });
+            
+            exchangeSelect.addEventListener('change', () => {
+                if (exchangeSelect.value === 'okx') {
+                    passphraseContainer.classList.remove('hidden');
+                } else {
+                    passphraseContainer.classList.add('hidden');
+                }
+            });
+            
+            apiKeyForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const exchange = exchangeSelect.value;
+                const apiKey = apiKeyInput.value.trim();
+                const apiSecret = apiSecretInput.value.trim();
+                
+                if (!exchange || !apiKey || !apiSecret) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+                
+                const options = {};
+                if (exchange === 'okx') {
+                    options.passphrase = passphraseInput.value.trim();
+                    if (!options.passphrase) {
+                        alert('Passphrase is required for OKX');
+                        return;
+                    }
+                }
+                
+                saveApiKeys(exchange, apiKey, apiSecret, options);
+            });
+            
+            // Initialize refresh buttons
+            refreshPositionsBtn.addEventListener('click', loadPositions);
+            runAnalysisBtn.addEventListener('click', runAnalysis);
+            refreshHistoryBtn.addEventListener('click', loadAnalysisHistory);
+            
+            // Load initial data
+            loadDashboardData();
+        });
+        
+        // API Functions
+        async function loadDashboardData() {
+            try {
+                // Load exchanges
+                const exchangesResponse = await fetch(`/api/trade-analyzer/exchanges/${currentUserId}`);
+                const exchangesData = await exchangesResponse.json();
+                
+                if (exchangesData.success) {
+                    exchanges = exchangesData.exchanges || [];
+                    exchangeCount.textContent = exchanges.length;
+                    
+                    // If exchanges are connected, load positions
+                    if (exchanges.length > 0) {
+                        // Load positions
+                        const positionsResponse = await fetch(`/api/trade-analyzer/positions/${currentUserId}`);
+                        const positionsData = await positionsResponse.json();
+                        
+                        if (positionsData.success) {
+                            positions = positionsData.positions || {};
+                            
+                            // Count open positions
+                            let count = 0;
+                            for (const exchange in positions) {
+                                const exchangePositions = positions[exchange];
+                                if (Array.isArray(exchangePositions)) {
+                                    count += exchangePositions.length;
+                                }
+                            }
+                            
+                            positionCount.textContent = count;
+                            
+                            // If positions exist, load latest analysis
+                            if (count > 0) {
+                                // Load analysis history
+                                const historyResponse = await fetch(`/api/trade-analyzer/history/${currentUserId}?limit=1`);
+                                const historyData = await historyResponse.json();
+                                
+                                if (historyData.success && historyData.history.length > 0) {
+                                    const latestAnalysis = historyData.history[0];
+                                    
+                                    // Update risk level
+                                    const riskScore = latestAnalysis.riskAssessment.riskScore;
+                                    let riskText = 'Low';
+                                    let riskClass = 'risk-low';
+                                    
+                                    if (riskScore > 80) {
+                                        riskText = 'Critical';
+                                        riskClass = 'risk-critical';
+                                    } else if (riskScore > 60) {
+                                        riskText = 'High';
+                                        riskClass = 'risk-high';
+                                    } else if (riskScore > 40) {
+                                        riskText = 'Medium';
+                                        riskClass = 'risk-medium';
+                                    }
+                                    
+                                    riskLevel.textContent = riskText;
+                                    riskLevel.className = riskLevel.className.replace(/risk-\w+/, riskClass);
+                                    
+                                    // Update latest recommendation
+                                    latestRecommendation.textContent = latestAnalysis.overallRecommendation;
+                                } else {
+                                    riskLevel.textContent = '--';
+                                    latestRecommendation.textContent = 'No analysis available. Run an analysis to get recommendations.';
+                                }
+                            } else {
+                                riskLevel.textContent = '--';
+                                latestRecommendation.textContent = 'No open positions found. Open positions to get recommendations.';
+                            }
+                        } else {
+                            positionCount.textContent = '0';
+                            riskLevel.textContent = '--';
+                            latestRecommendation.textContent = 'Error loading positions. Please try again.';
+                        }
+                    } else {
+                        positionCount.textContent = '0';
+                        riskLevel.textContent = '--';
+                        latestRecommendation.textContent = 'No exchanges connected. Connect an exchange to get started.';
+                    }
+                } else {
+                    exchangeCount.textContent = '0';
+                    positionCount.textContent = '0';
+                    riskLevel.textContent = '--';
+                    latestRecommendation.textContent = 'Error loading exchanges. Please try again.';
+                }
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                latestRecommendation.textContent = 'Error loading data. Please try again.';
+            }
+        }
+        
+        async function loadExchanges() {
+            try {
+                exchangesList.innerHTML = '<div class="text-center py-4"><div class="loader mx-auto"></div></div>';
+                
+                const response = await fetch(`/api/trade-analyzer/exchanges/${currentUserId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    exchanges = data.exchanges || [];
+                    
+                    if (exchanges.length === 0) {
+                        exchangesList.innerHTML = '<div class="text-center py-8 text-gray-400">No exchanges connected. Add an exchange to get started.</div>';
+                    } else {
+                        exchangesList.innerHTML = '';
+                        
+                        exchanges.forEach(exchange => {
+                            const exchangeItem = document.createElement('div');
+                            exchangeItem.className = 'py-4 flex justify-between items-center';
+                            
+                            const exchangeName = exchange.charAt(0).toUpperCase() + exchange.slice(1);
+                            
+                            exchangeItem.innerHTML = `
+                                <div>
+                                    <h4 class="font-semibold">${exchangeName}</h4>
+                                    <p class="text-gray-400 text-sm">Connected</p>
+                                </div>
+                                <div>
+                                    <button class="btn-danger text-sm remove-exchange" data-exchange="${exchange}">
+                                        <i class="fas fa-trash-alt mr-1"></i> Remove
+                                    </button>
+                                </div>
+                            `;
+                            
+                            exchangesList.appendChild(exchangeItem);
+                        });
+                        
+                        // Add event listeners to remove buttons
+                        document.querySelectorAll('.remove-exchange').forEach(button => {
+                            button.addEventListener('click', () => {
+                                const exchange = button.dataset.exchange;
+                                if (confirm(`Are you sure you want to remove ${exchange}?`)) {
+                                    // In a real implementation, you would call an API to remove the exchange
+                                    // For now, just reload the exchanges
+                                    loadExchanges();
+                                }
+                            });
+                        });
+                    }
+                } else {
+                    exchangesList.innerHTML = '<div class="text-center py-8 text-gray-400">Error loading exchanges. Please try again.</div>';
+                }
+            } catch (error) {
+                console.error('Error loading exchanges:', error);
+                exchangesList.innerHTML = '<div class="text-center py-8 text-gray-400">Error loading exchanges. Please try again.</div>';
+            }
+        }
+        
+        async function saveApiKeys(exchange, apiKey, apiSecret, options = {}) {
+            try {
+                // Show loading state
+                const submitBtn = apiKeyForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<div class="loader"></div>';
+                
+                const response = await fetch('/api/trade-analyzer/api-keys', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: currentUserId,
+                        exchange,
+                        apiKey,
+                        apiSecret,
+                        options
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Restore button state
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                
+                if (data.success) {
+                    alert(`API keys for ${exchange.toUpperCase()} saved successfully!`);
+                    
+                    // Clear form
+                    apiKeyInput.value = '';
+                    apiSecretInput.value = '';
+                    passphraseInput.value = '';
+                    
+                    // Hide form
+                    addExchangeForm.classList.add('hidden');
+                    
+                    // Reload exchanges and dashboard
+                    await loadExchanges();
+                    await loadDashboardData();
+                } else {
+                    alert(`Error saving API keys: ${data.error || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error('Error saving API keys:', error);
+                alert(`Error saving API keys: ${error.message}. Please check your network connection and try again.`);
+                
+                // Restore button state
+                const submitBtn = apiKeyForm.querySelector('button[type="submit"]');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Save';
+            }
+        }
+        
+        async function loadPositions() {
+            try {
+                positionsContainer.innerHTML = '<div class="text-center py-4"><div class="loader mx-auto"></div></div>';
+                
+                const response = await fetch(`/api/trade-analyzer/positions/${currentUserId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    positions = data.positions || {};
+                    
+                    let hasPositions = false;
+                    for (const exchange in positions) {
+                        const exchangePositions = positions[exchange];
+                        if (!exchangePositions.error && Array.isArray(exchangePositions) && exchangePositions.length > 0) {
+                            hasPositions = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!hasPositions) {
+                        positionsContainer.innerHTML = '<div class="text-center py-8 text-gray-400">No open positions found.</div>';
+                    } else {
+                        positionsContainer.innerHTML = '';
+                        
+                        for (const exchange in positions) {
+                            const exchangePositions = positions[exchange];
+                            
+                            if (exchangePositions.error) {
+                                const errorCard = document.createElement('div');
+                                errorCard.className = 'card mb-6';
+                                errorCard.innerHTML = `
+                                    <h3 class="text-lg font-semibold mb-4">${exchange.charAt(0).toUpperCase() + exchange.slice(1)}</h3>
+                                    <div class="text-danger">Error: ${exchangePositions.error}</div>
+                                `;
+                                positionsContainer.appendChild(errorCard);
+                                continue;
+                            }
+                            
+                            if (!Array.isArray(exchangePositions) || exchangePositions.length === 0) {
+                                const emptyCard = document.createElement('div');
+                                emptyCard.className = 'card mb-6';
+                                emptyCard.innerHTML = `
+                                    <h3 class="text-lg font-semibold mb-4">${exchange.charAt(0).toUpperCase() + exchange.slice(1)}</h3>
+                                    <div class="text-gray-400">No open positions found.</div>
+                                `;
+                                positionsContainer.appendChild(emptyCard);
+                                continue;
+                            }
+                            
+                            const positionsCard = document.createElement('div');
+                            positionsCard.className = 'card mb-6';
+                            
+                            let positionsHtml = `
+                                <h3 class="text-lg font-semibold mb-4">${exchange.charAt(0).toUpperCase() + exchange.slice(1)}</h3>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full">
+                                        <thead>
+                                            <tr class="text-left text-gray-400 border-b border-gray-700">
+                                                <th class="pb-2">Symbol</th>
+                                                <th class="pb-2">Direction</th>
+                                                <th class="pb-2">Size</th>
+                                                <th class="pb-2">Entry Price</th>
+                                                <th class="pb-2">Leverage</th>
+                                                <th class="pb-2">PnL</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                            `;
+                            
+                            exchangePositions.forEach(position => {
+                                const direction = position.direction.toLowerCase();
+                                const directionClass = direction === 'long' ? 'text-success' : 'text-danger';
+                                
+                                positionsHtml += `
+                                    <tr class="border-b border-gray-700">
+                                        <td class="py-3">${position.symbol}</td>
+                                        <td class="py-3 ${directionClass}">${direction.toUpperCase()}</td>
+                                        <td class="py-3">${position.size}</td>
+                                        <td class="py-3">${position.entryPrice}</td>
+                                        <td class="py-3">${position.leverage || '1'}x</td>
+                                        <td class="py-3 ${position.unrealizedPnl >= 0 ? 'text-success' : 'text-danger'}">
+                                            ${position.unrealizedPnl >= 0 ? '+' : ''}${position.unrealizedPnl || '0.00'}
+                                        </td>
+                                    </tr>
+                                `;
+                            });
+                            
+                            positionsHtml += `
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `;
+                            
+                            positionsCard.innerHTML = positionsHtml;
+                            positionsContainer.appendChild(positionsCard);
+                        }
+                    }
+                } else {
+                    positionsContainer.innerHTML = '<div class="text-center py-8 text-gray-400">Error loading positions. Please try again.</div>';
+                }
+            } catch (error) {
+                console.error('Error loading positions:', error);
+                positionsContainer.innerHTML = '<div class="text-center py-8 text-gray-400">Error loading positions. Please try again.</div>';
+            }
+        }
+        
+        async function runAnalysis() {
+            try {
+                analysisContainer.innerHTML = '<div class="text-center py-4"><div class="loader mx-auto"></div></div>';
+                
+                const response = await fetch(`/api/trade-analyzer/analyze/${currentUserId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    analysisData = data.analysis;
+                    
+                    if (!analysisData) {
+                        analysisContainer.innerHTML = '<div class="text-center py-8 text-gray-400">No analysis data available. Please try again.</div>';
+                        return;
+                    }
+                    
+                    // Render analysis
+                    let analysisHtml = '';
+                    
+                    // Overall recommendation
+                    analysisHtml += `
+                        <div class="card mb-6">
+                            <h3 class="text-lg font-semibold mb-4">Overall Recommendation</h3>
+                            <p class="text-gray-300">${analysisData.overallRecommendation}</p>
+                        </div>
+                    `;
+                    
+                    // Risk assessment
+                    const riskScore = analysisData.riskAssessment.riskScore;
+                    let riskClass = 'risk-low';
+                    
+                    if (riskScore > 80) {
+                        riskClass = 'risk-critical';
+                    } else if (riskScore > 60) {
+                        riskClass = 'risk-high';
+                    } else if (riskScore > 40) {
+                        riskClass = 'risk-medium';
+                    }
+                    
+                    analysisHtml += `
+                        <div class="card mb-6">
+                            <h3 class="text-lg font-semibold mb-4">Risk Assessment</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                <div>
+                                    <div class="text-gray-400 mb-1">Risk Score</div>
+                                    <div class="text-2xl font-bold ${riskClass}">${riskScore.toFixed(0)}/100</div>
+                                </div>
+                                <div>
+                                    <div class="text-gray-400 mb-1">Total Risk</div>
+                                    <div class="text-2xl font-bold">${(analysisData.riskAssessment.totalRisk * 100).toFixed(2)}%</div>
+                                </div>
+                                <div>
+                                    <div class="text-gray-400 mb-1">Max Drawdown</div>
+                                    <div class="text-2xl font-bold">${analysisData.riskAssessment.maxDrawdown.toFixed(2)}%</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Exchange-specific analysis
+                    for (const exchange in analysisData.exchanges) {
+                        const exchangeData = analysisData.exchanges[exchange];
+                        
+                        if (exchangeData.error) {
+                            analysisHtml += `
+                                <div class="card mb-6">
+                                    <h3 class="text-lg font-semibold mb-4">${exchange.charAt(0).toUpperCase() + exchange.slice(1)}</h3>
+                                    <div class="text-danger">Error: ${exchangeData.error}</div>
+                                </div>
+                            `;
+                            continue;
+                        }
+                        
+                        if (!exchangeData.positions || exchangeData.positions.length === 0) {
+                            analysisHtml += `
+                                <div class="card mb-6">
+                                    <h3 class="text-lg font-semibold mb-4">${exchange.charAt(0).toUpperCase() + exchange.slice(1)}</h3>
+                                    <div class="text-gray-400">No open positions found.</div>
+                                </div>
+                            `;
+                            continue;
+                        }
+                        
+                        analysisHtml += `
+                            <div class="card mb-6">
+                                <h3 class="text-lg font-semibold mb-4">${exchange.charAt(0).toUpperCase() + exchange.slice(1)}</h3>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                    <div>
+                                        <div class="text-gray-400 mb-1">Balance</div>
+                                        <div class="text-2xl font-bold">$${exchangeData.balance.toFixed(2)}</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-400 mb-1">Position Value</div>
+                                        <div class="text-2xl font-bold">$${exchangeData.totalPositionValue.toFixed(2)}</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-400 mb-1">Risk Level</div>
+                                        <div class="text-2xl font-bold risk-${exchangeData.riskLevel}">${exchangeData.riskLevel.toUpperCase()}</div>
+                                    </div>
+                                </div>
+                                
+                                <h4 class="font-semibold mb-2">Recommendations</h4>
+                                <ul class="list-disc list-inside mb-4">
+                        `;
+                        
+                        exchangeData.recommendations.forEach(recommendation => {
+                            analysisHtml += `<li class="text-gray-300 mb-1">${recommendation}</li>`;
+                        });
+                        
+                        analysisHtml += `
+                                </ul>
+                                
+                                <h4 class="font-semibold mb-2">Position Analysis</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full">
+                                        <thead>
+                                            <tr class="text-left text-gray-400 border-b border-gray-700">
+                                                <th class="pb-2">Symbol</th>
+                                                <th class="pb-2">Direction</th>
+                                                <th class="pb-2">Risk Level</th>
+                                                <th class="pb-2">Recommendation</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                        `;
+                        
+                        exchangeData.positions.forEach(position => {
+                            const direction = position.direction.toLowerCase();
+                            const directionClass = direction === 'long' ? 'text-success' : 'text-danger';
+                            
+                            analysisHtml += `
+                                <tr class="border-b border-gray-700">
+                                    <td class="py-3">${position.symbol}</td>
+                                    <td class="py-3 ${directionClass}">${direction.toUpperCase()}</td>
+                                    <td class="py-3 risk-${position.riskLevel}">${position.riskLevel.toUpperCase()}</td>
+                                    <td class="py-3">${position.recommendation || 'No specific recommendation'}</td>
+                                </tr>
+                            `;
+                        });
+                        
+                        analysisHtml += `
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    analysisContainer.innerHTML = analysisHtml;
+                } else {
+                    analysisContainer.innerHTML = `<div class="text-center py-8 text-gray-400">Error: ${data.error || 'Unknown error'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error running analysis:', error);
+                analysisContainer.innerHTML = '<div class="text-center py-8 text-gray-400">Error running analysis. Please try again.</div>';
+            }
+        }
+        
+        async function loadAnalysisHistory() {
+            try {
+                historyContainer.innerHTML = '<div class="text-center py-4"><div class="loader mx-auto"></div></div>';
+                
+                const response = await fetch(`/api/trade-analyzer/history/${currentUserId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    analysisHistory = data.history || [];
+                    
+                    if (analysisHistory.length === 0) {
+                        historyContainer.innerHTML = '<div class="text-center py-8 text-gray-400">No analysis history found. Run an analysis to get started.</div>';
+                    } else {
+                        historyContainer.innerHTML = '';
+                        
+                        analysisHistory.forEach(analysis => {
+                            const date = new Date(analysis.timestamp);
+                            const formattedDate = date.toLocaleString();
+                            
+                            const riskScore = analysis.riskAssessment.riskScore;
+                            let riskClass = 'risk-low';
+                            let riskText = 'Low';
+                            
+                            if (riskScore > 80) {
+                                riskClass = 'risk-critical';
+                                riskText = 'Critical';
+                            } else if (riskScore > 60) {
+                                riskClass = 'risk-high';
+                                riskText = 'High';
+                            } else if (riskScore > 40) {
+                                riskClass = 'risk-medium';
+                                riskText = 'Medium';
+                            }
+                            
+                            const historyCard = document.createElement('div');
+                            historyCard.className = 'card mb-6';
+                            
+                            historyCard.innerHTML = `
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-lg font-semibold">Analysis from ${formattedDate}</h3>
+                                    <div class="px-3 py-1 rounded-full ${riskClass} text-sm font-semibold">
+                                        ${riskText} Risk
+                                    </div>
+                                </div>
+                                
+                                <p class="text-gray-300 mb-4">${analysis.overallRecommendation}</p>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <div class="text-gray-400 mb-1">Risk Score</div>
+                                        <div class="text-xl font-bold ${riskClass}">${riskScore.toFixed(0)}/100</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-400 mb-1">Total Risk</div>
+                                        <div class="text-xl font-bold">${(analysis.riskAssessment.totalRisk * 100).toFixed(2)}%</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-400 mb-1">Max Drawdown</div>
+                                        <div class="text-xl font-bold">${analysis.riskAssessment.maxDrawdown.toFixed(2)}%</div>
+                                    </div>
+                                </div>
+                            `;
+                            
+                            historyContainer.appendChild(historyCard);
+                        });
+                    }
+                } else {
+                    historyContainer.innerHTML = `<div class="text-center py-8 text-gray-400">Error: ${data.error || 'Unknown error'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error loading analysis history:', error);
+                historyContainer.innerHTML = '<div class="text-center py-8 text-gray-400">Error loading analysis history. Please try again.</div>';
+            }
+        }
+    </script>
+</body>
+</html>

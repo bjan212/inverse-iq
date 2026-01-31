@@ -775,6 +775,448 @@ app.get('/api/ai/data-sources', (req, res) => {
   }
 });
 
+// ============================================================================
+// TRADE ANALYZER ENDPOINTS
+// ============================================================================
+
+/**
+ * Initialize Trade Analyzer
+ */
+const TradeAnalyzer = require('./src/analytics/tradeAnalyzer');
+const tradeAnalyzer = new TradeAnalyzer();
+
+/**
+ * Set API keys for an exchange
+ * POST /api/trade-analyzer/api-keys
+ */
+app.post('/api/trade-analyzer/api-keys', async (req, res) => {
+  try {
+    const { userId, exchange, apiKey, apiSecret, options } = req.body;
+    
+    if (!userId || !exchange || !apiKey || !apiSecret) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required parameters'
+      });
+    }
+    
+    const result = tradeAnalyzer.setApiKeys(userId, exchange, apiKey, apiSecret, options || {});
+    
+    res.json({
+      success: true,
+      message: `API keys for ${exchange} saved successfully`
+    });
+  } catch (error) {
+    console.error('Error saving API keys:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get connected exchanges for a user
+ * GET /api/trade-analyzer/exchanges/:userId
+ */
+app.get('/api/trade-analyzer/exchanges/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        error: 'User ID is required'
+      });
+    }
+    
+    const apiKeys = tradeAnalyzer.apiKeys[userId] || {};
+    const exchanges = Object.keys(apiKeys);
+    
+    res.json({
+      success: true,
+      exchanges
+    });
+  } catch (error) {
+    console.error('Error getting exchanges:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get open positions for a user
+ * GET /api/trade-analyzer/positions/:userId
+ */
+app.get('/api/trade-analyzer/positions/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        error: 'User ID is required'
+      });
+    }
+    
+    const positions = await tradeAnalyzer.getOpenPositions(userId);
+    
+    res.json({
+      success: true,
+      positions
+    });
+  } catch (error) {
+    console.error('Error getting open positions:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get account information for a user
+ * GET /api/trade-analyzer/account/:userId
+ */
+app.get('/api/trade-analyzer/account/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        error: 'User ID is required'
+      });
+    }
+    
+    const accountInfo = await tradeAnalyzer.getAccountInfo(userId);
+    
+    res.json({
+      success: true,
+      accountInfo
+    });
+  } catch (error) {
+    console.error('Error getting account info:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Analyze open trades for a user
+ * GET /api/trade-analyzer/analyze/:userId
+ */
+app.get('/api/trade-analyzer/analyze/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        error: 'User ID is required'
+      });
+    }
+    
+    // Get SignalPerformanceTracker for additional context
+    const performanceTracker = global.signalPerformanceTracker;
+    
+    const analysis = await tradeAnalyzer.analyzeOpenTrades(userId, { performanceTracker });
+    
+    res.json({
+      success: true,
+      analysis
+    });
+  } catch (error) {
+    console.error('Error analyzing open trades:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get analysis history for a user
+ * GET /api/trade-analyzer/history/:userId
+ */
+app.get('/api/trade-analyzer/history/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { limit } = req.query;
+    
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        error: 'User ID is required'
+      });
+    }
+    
+    const history = tradeAnalyzer.getAnalysisHistory(userId, limit ? parseInt(limit) : 10);
+    
+    res.json({
+      success: true,
+      history
+    });
+  } catch (error) {
+    console.error('Error getting analysis history:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// ============================================================================
+// SIGNAL PERFORMANCE & ACCOUNTABILITY ENDPOINTS
+// ============================================================================
+
+/**
+ * Get signal performance statistics
+ * GET /api/performance/stats
+ */
+app.get('/api/performance/stats', async (req, res) => {
+  try {
+    const { timeframe, symbol, pattern, limit } = req.query;
+    
+    // Initialize SignalPerformanceTracker if not already done
+    if (!global.signalPerformanceTracker) {
+      const SignalPerformanceTracker = require('./src/tracking/signalPerformanceTracker');
+      global.signalPerformanceTracker = new SignalPerformanceTracker();
+    }
+    
+    const stats = global.signalPerformanceTracker.getStatistics({
+      timeframe,
+      symbol,
+      pattern,
+      limit: limit ? parseInt(limit) : undefined
+    });
+    
+    res.json({
+      success: true,
+      stats
+    });
+  } catch (error) {
+    console.error('Performance stats error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get signal performance history
+ * GET /api/performance/history
+ */
+app.get('/api/performance/history', async (req, res) => {
+  try {
+    const { symbol, status, limit } = req.query;
+    
+    // Initialize SignalPerformanceTracker if not already done
+    if (!global.signalPerformanceTracker) {
+      const SignalPerformanceTracker = require('./src/tracking/signalPerformanceTracker');
+      global.signalPerformanceTracker = new SignalPerformanceTracker();
+    }
+    
+    // Get all signals and filter
+    let signals = Object.values(global.signalPerformanceTracker.performance.signals);
+    
+    // Filter by symbol
+    if (symbol) {
+      signals = signals.filter(s => s.symbol === symbol);
+    }
+    
+    // Filter by status
+    if (status) {
+      signals = signals.filter(s => s.status === status);
+    }
+    
+    // Sort by date (newest first)
+    signals.sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt));
+    
+    // Limit results
+    if (limit) {
+      signals = signals.slice(0, parseInt(limit));
+    }
+    
+    res.json({
+      success: true,
+      count: signals.length,
+      signals
+    });
+  } catch (error) {
+    console.error('Performance history error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get pattern performance
+ * GET /api/performance/patterns
+ */
+app.get('/api/performance/patterns', async (req, res) => {
+  try {
+    // Initialize SignalPerformanceTracker if not already done
+    if (!global.signalPerformanceTracker) {
+      const SignalPerformanceTracker = require('./src/tracking/signalPerformanceTracker');
+      global.signalPerformanceTracker = new SignalPerformanceTracker();
+    }
+    
+    const patterns = Object.values(global.signalPerformanceTracker.performance.patterns);
+    
+    // Sort by win rate (highest first)
+    patterns.sort((a, b) => b.winRate - a.winRate);
+    
+    res.json({
+      success: true,
+      count: patterns.length,
+      patterns
+    });
+  } catch (error) {
+    console.error('Pattern performance error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Get symbol performance
+ * GET /api/performance/symbols
+ */
+app.get('/api/performance/symbols', async (req, res) => {
+  try {
+    // Initialize SignalPerformanceTracker if not already done
+    if (!global.signalPerformanceTracker) {
+      const SignalPerformanceTracker = require('./src/tracking/signalPerformanceTracker');
+      global.signalPerformanceTracker = new SignalPerformanceTracker();
+    }
+    
+    const symbols = Object.values(global.signalPerformanceTracker.performance.symbols);
+    
+    // Sort by win rate (highest first)
+    symbols.sort((a, b) => b.winRate - a.winRate);
+    
+    res.json({
+      success: true,
+      count: symbols.length,
+      symbols
+    });
+  } catch (error) {
+    console.error('Symbol performance error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Verify signal by verification ID
+ * GET /api/performance/verify/:verificationId
+ */
+app.get('/api/performance/verify/:verificationId', async (req, res) => {
+  try {
+    const { verificationId } = req.params;
+    
+    if (!verificationId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Verification ID is required'
+      });
+    }
+    
+    // Initialize SignalPerformanceTracker if not already done
+    if (!global.signalPerformanceTracker) {
+      const SignalPerformanceTracker = require('./src/tracking/signalPerformanceTracker');
+      global.signalPerformanceTracker = new SignalPerformanceTracker();
+    }
+    
+    const verificationData = global.signalPerformanceTracker.getVerificationData(verificationId);
+    
+    if (!verificationData) {
+      return res.status(404).json({
+        success: false,
+        error: 'Signal not found'
+      });
+    }
+    
+    res.json({
+      success: true,
+      signal: verificationData
+    });
+  } catch (error) {
+    console.error('Signal verification error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Start tracking a signal
+ * POST /api/performance/track
+ */
+app.post('/api/performance/track', async (req, res) => {
+  try {
+    const { signalId } = req.body;
+    
+    if (!signalId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Signal ID is required'
+      });
+    }
+    
+    // Get signal from tracker
+    const signal = signalTracker.getSignal(signalId);
+    
+    if (!signal) {
+      return res.status(404).json({
+        success: false,
+        error: 'Signal not found'
+      });
+    }
+    
+    // Initialize SignalPerformanceTracker if not already done
+    if (!global.signalPerformanceTracker) {
+      const SignalPerformanceTracker = require('./src/tracking/signalPerformanceTracker');
+      global.signalPerformanceTracker = new SignalPerformanceTracker();
+    }
+    
+    // Start tracking
+    const result = await global.signalPerformanceTracker.startTracking(signal, signalTracker);
+    
+    if (result) {
+      res.json({
+        success: true,
+        message: 'Signal tracking started',
+        verificationId: global.signalPerformanceTracker.performance.signals[signalId].publicVerificationId
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to start tracking'
+      });
+    }
+  } catch (error) {
+    console.error('Signal tracking error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // Get signal cache statistics
 app.get('/api/ai/cache', (req, res) => {
   try {

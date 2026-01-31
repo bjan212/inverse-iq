@@ -1,0 +1,16 @@
+{
+  "test_user": {
+    "binance": {
+      "apiKey": "test_key",
+      "apiSecret": "test_secret",
+      "options": {}
+    }
+  },
+  "boo": {
+    "binance": {
+      "apiKey": "uENv5Mxm8lIIYiEFfw1i2cXmvk9xaQIG37rzcH57zcuE7D7qsvuFmS5s9L3I32JH",
+      "apiSecret": "b9AWf3fqnHX2t6pviAhYCb7OJpAjrgLjs85eXlnSjGwy3S6MebSaW9xUVPt2SCLw",
+      "options": {}
+    }
+  }
+}

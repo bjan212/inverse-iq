@@ -1,0 +1,570 @@
+{
+  "version": 1,
+  "lastUpdated": "2026-01-29T18:02:58.583Z",
+  "signals": {
+    "TEST_SOLUSDT_1769709778562_0": {
+      "signalId": "TEST_SOLUSDT_1769709778562_0",
+      "symbol": "SOLUSDT",
+      "direction": "SHORT",
+      "confidence": 85,
+      "patternKey": null,
+      "entryPrice": 100,
+      "stopLoss": 103.6,
+      "takeProfit1": 94,
+      "takeProfit2": 89.2,
+      "startPrice": 101.52567010847982,
+      "currentPrice": 101.52567010847982,
+      "highestPrice": 101.52567010847982,
+      "lowestPrice": 101.52567010847982,
+      "currentPnl": -1.5256701084798152,
+      "currentPnlPercent": -1.5256701084798152,
+      "maxPnl": 0,
+      "maxPnlPercent": 0,
+      "maxDrawdown": 1.5256701084798152,
+      "maxDrawdownPercent": 1.5256701084798152,
+      "status": "closed",
+      "hitStopLoss": false,
+      "hitTakeProfit1": false,
+      "hitTakeProfit2": false,
+      "startedAt": "2026-01-29T18:02:58.569Z",
+      "lastUpdatedAt": "2026-01-29T18:02:58.573Z",
+      "closedAt": "2026-01-29T18:02:58.576Z",
+      "priceHistory": [
+        {
+          "timestamp": "2026-01-29T18:02:58.569Z",
+          "price": 101.52567010847982,
+          "pnl": 0,
+          "pnlPercent": 0
+        },
+        {
+          "timestamp": "2026-01-29T18:02:58.573Z",
+          "price": 101.52567010847982,
+          "pnl": -1.5256701084798152,
+          "pnlPercent": -1.5256701084798152
+        }
+      ],
+      "outcome": "win",
+      "finalPnl": 6,
+      "finalPnlPercent": 6,
+      "verificationUrl": null,
+      "publicVerificationId": "verify_1769709778569_ftththyq"
+    },
+    "TEST_ETHUSDT_1769709778565_1": {
+      "signalId": "TEST_ETHUSDT_1769709778565_1",
+      "symbol": "ETHUSDT",
+      "direction": "LONG",
+      "confidence": 74,
+      "patternKey": null,
+      "entryPrice": 3000,
+      "stopLoss": 2886,
+      "takeProfit1": 3150,
+      "takeProfit2": 3270,
+      "startPrice": 3002.3216649729343,
+      "currentPrice": 3002.3216649729343,
+      "highestPrice": 3002.3216649729343,
+      "lowestPrice": 3002.3216649729343,
+      "currentPnl": 2.321664972934286,
+      "currentPnlPercent": 0.07738883243114288,
+      "maxPnl": 2.321664972934286,
+      "maxPnlPercent": 0.07738883243114288,
+      "maxDrawdown": 0,
+      "maxDrawdownPercent": 0,
+      "status": "closed",
+      "hitStopLoss": false,
+      "hitTakeProfit1": false,
+      "hitTakeProfit2": false,
+      "startedAt": "2026-01-29T18:02:58.569Z",
+      "lastUpdatedAt": "2026-01-29T18:02:58.573Z",
+      "closedAt": "2026-01-29T18:02:58.577Z",
+      "priceHistory": [
+        {
+          "timestamp": "2026-01-29T18:02:58.569Z",
+          "price": 3002.3216649729343,
+          "pnl": 0,
+          "pnlPercent": 0
+        },
+        {
+          "timestamp": "2026-01-29T18:02:58.573Z",
+          "price": 3002.3216649729343,
+          "pnl": 2.321664972934286,
+          "pnlPercent": 0.07738883243114288
+        }
+      ],
+      "outcome": "win",
+      "finalPnl": 150,
+      "finalPnlPercent": 5,
+      "verificationUrl": null,
+      "publicVerificationId": "verify_1769709778569_91u6g86e"
+    },
+    "TEST_ETHUSDT_1769709778565_2": {
+      "signalId": "TEST_ETHUSDT_1769709778565_2",
+      "symbol": "ETHUSDT",
+      "direction": "LONG",
+      "confidence": 94,
+      "patternKey": null,
+      "entryPrice": 3000,
+      "stopLoss": 2898,
+      "takeProfit1": 3195,
+      "takeProfit2": 3351,
+      "startPrice": 3002.3216649729343,
+      "currentPrice": 3002.3216649729343,
+      "highestPrice": 3002.3216649729343,
+      "lowestPrice": 3002.3216649729343,
+      "currentPnl": 2.321664972934286,
+      "currentPnlPercent": 0.07738883243114288,
+      "maxPnl": 2.321664972934286,
+      "maxPnlPercent": 0.07738883243114288,
+      "maxDrawdown": 0,
+      "maxDrawdownPercent": 0,
+      "status": "closed",
+      "hitStopLoss": false,
+      "hitTakeProfit1": false,
+      "hitTakeProfit2": false,
+      "startedAt": "2026-01-29T18:02:58.570Z",
+      "lastUpdatedAt": "2026-01-29T18:02:58.573Z",
+      "closedAt": "2026-01-29T18:02:58.578Z",
+      "priceHistory": [
+        {
+          "timestamp": "2026-01-29T18:02:58.570Z",
+          "price": 3002.3216649729343,
+          "pnl": 0,
+          "pnlPercent": 0
+        },
+        {
+          "timestamp": "2026-01-29T18:02:58.573Z",
+          "price": 3002.3216649729343,
+          "pnl": 2.321664972934286,
+          "pnlPercent": 0.07738883243114288
+        }
+      ],
+      "outcome": "win",
+      "finalPnl": 195,
+      "finalPnlPercent": 6.5,
+      "verificationUrl": null,
+      "publicVerificationId": "verify_1769709778570_q4duhgg4"
+    },
+    "TEST_ETHUSDT_1769709778566_3": {
+      "signalId": "TEST_ETHUSDT_1769709778566_3",
+      "symbol": "ETHUSDT",
+      "direction": "LONG",
+      "confidence": 81,
+      "patternKey": null,
+      "entryPrice": 3000,
+      "stopLoss": 2892,
+      "takeProfit1": 3172.5,
+      "takeProfit2": 3310.5,
+      "startPrice": 3002.3216649729343,
+      "currentPrice": 3002.3216649729343,
+      "highestPrice": 3002.3216649729343,
+      "lowestPrice": 3002.3216649729343,
+      "currentPnl": 2.321664972934286,
+      "currentPnlPercent": 0.07738883243114288,
+      "maxPnl": 2.321664972934286,
+      "maxPnlPercent": 0.07738883243114288,
+      "maxDrawdown": 0,
+      "maxDrawdownPercent": 0,
+      "status": "closed",
+      "hitStopLoss": false,
+      "hitTakeProfit1": false,
+      "hitTakeProfit2": false,
+      "startedAt": "2026-01-29T18:02:58.570Z",
+      "lastUpdatedAt": "2026-01-29T18:02:58.574Z",
+      "closedAt": "2026-01-29T18:02:58.578Z",
+      "priceHistory": [
+        {
+          "timestamp": "2026-01-29T18:02:58.570Z",
+          "price": 3002.3216649729343,
+          "pnl": 0,
+          "pnlPercent": 0
+        },
+        {
+          "timestamp": "2026-01-29T18:02:58.574Z",
+          "price": 3002.3216649729343,
+          "pnl": 2.321664972934286,
+          "pnlPercent": 0.07738883243114288
+        }
+      ],
+      "outcome": "win",
+      "finalPnl": 172.5,
+      "finalPnlPercent": 5.75,
+      "verificationUrl": null,
+      "publicVerificationId": "verify_1769709778570_ib8mz8so"
+    },
+    "TEST_ETHUSDT_1769709778566_4": {
+      "signalId": "TEST_ETHUSDT_1769709778566_4",
+      "symbol": "ETHUSDT",
+      "direction": "LONG",
+      "confidence": 73,
+      "patternKey": null,
+      "entryPrice": 3000,
+      "stopLoss": 2886,
+      "takeProfit1": 3150,
+      "takeProfit2": 3270,
+      "startPrice": 3002.3216649729343,
+      "currentPrice": 3002.3216649729343,
+      "highestPrice": 3002.3216649729343,
+      "lowestPrice": 3002.3216649729343,
+      "currentPnl": 2.321664972934286,
+      "currentPnlPercent": 0.07738883243114288,
+      "maxPnl": 2.321664972934286,
+      "maxPnlPercent": 0.07738883243114288,
+      "maxDrawdown": 0,
+      "maxDrawdownPercent": 0,
+      "status": "closed",
+      "hitStopLoss": false,
+      "hitTakeProfit1": false,
+      "hitTakeProfit2": false,
+      "startedAt": "2026-01-29T18:02:58.570Z",
+      "lastUpdatedAt": "2026-01-29T18:02:58.574Z",
+      "closedAt": "2026-01-29T18:02:58.579Z",
+      "priceHistory": [
+        {
+          "timestamp": "2026-01-29T18:02:58.570Z",
+          "price": 3002.3216649729343,
+          "pnl": 0,
+          "pnlPercent": 0
+        },
+        {
+          "timestamp": "2026-01-29T18:02:58.574Z",
+          "price": 3002.3216649729343,
+          "pnl": 2.321664972934286,
+          "pnlPercent": 0.07738883243114288
+        }
+      ],
+      "outcome": "win",
+      "finalPnl": 150,
+      "finalPnlPercent": 5,
+      "verificationUrl": null,
+      "publicVerificationId": "verify_1769709778570_30ukqsue"
+    },
+    "TEST_ETHUSDT_1769709778567_5": {
+      "signalId": "TEST_ETHUSDT_1769709778567_5",
+      "symbol": "ETHUSDT",
+      "direction": "SHORT",
+      "confidence": 85,
+      "patternKey": null,
+      "entryPrice": 3000,
+      "stopLoss": 3108,
+      "takeProfit1": 2820,
+      "takeProfit2": 2676,
+      "startPrice": 3002.3216649729343,
+      "currentPrice": 3002.3216649729343,
+      "highestPrice": 3002.3216649729343,
+      "lowestPrice": 3002.3216649729343,
+      "currentPnl": -2.321664972934286,
+      "currentPnlPercent": -0.07738883243114288,
+      "maxPnl": 0,
+      "maxPnlPercent": 0,
+      "maxDrawdown": 2.321664972934286,
+      "maxDrawdownPercent": 0.07738883243114288,
+      "status": "closed",
+      "hitStopLoss": false,
+      "hitTakeProfit1": false,
+      "hitTakeProfit2": false,
+      "startedAt": "2026-01-29T18:02:58.571Z",
+      "lastUpdatedAt": "2026-01-29T18:02:58.575Z",
+      "closedAt": "2026-01-29T18:02:58.580Z",
+      "priceHistory": [
+        {
+          "timestamp": "2026-01-29T18:02:58.571Z",
+          "price": 3002.3216649729343,
+          "pnl": 0,
+          "pnlPercent": 0
+        },
+        {
+          "timestamp": "2026-01-29T18:02:58.575Z",
+          "price": 3002.3216649729343,
+          "pnl": -2.321664972934286,
+          "pnlPercent": -0.07738883243114288
+        }
+      ],
+      "outcome": "loss",
+      "finalPnl": -108,
+      "finalPnlPercent": -3.5999999999999996,
+      "verificationUrl": null,
+      "publicVerificationId": "verify_1769709778571_nk3gbndf"
+    },
+    "TEST_BTCUSDT_1769709778567_6": {
+      "signalId": "TEST_BTCUSDT_1769709778567_6",
+      "symbol": "BTCUSDT",
+      "direction": "SHORT",
+      "confidence": 92,
+      "patternKey": null,
+      "entryPrice": 50000,
+      "stopLoss": 51700,
+      "takeProfit1": 46750,
+      "takeProfit2": 44150,
+      "startPrice": 49139.22260381996,
+      "currentPrice": 49139.22260381996,
+      "highestPrice": 49139.22260381996,
+      "lowestPrice": 49139.22260381996,
+      "currentPnl": 860.7773961800413,
+      "currentPnlPercent": 1.7215547923600825,
+      "maxPnl": 860.7773961800413,
+      "maxPnlPercent": 1.7215547923600825,
+      "maxDrawdown": 0,
+      "maxDrawdownPercent": 0,
+      "status": "closed",
+      "hitStopLoss": false,
+      "hitTakeProfit1": false,
+      "hitTakeProfit2": false,
+      "startedAt": "2026-01-29T18:02:58.571Z",
+      "lastUpdatedAt": "2026-01-29T18:02:58.575Z",
+      "closedAt": "2026-01-29T18:02:58.580Z",
+      "priceHistory": [
+        {
+          "timestamp": "2026-01-29T18:02:58.571Z",
+          "price": 49139.22260381996,
+          "pnl": 0,
+          "pnlPercent": 0
+        },
+        {
+          "timestamp": "2026-01-29T18:02:58.575Z",
+          "price": 49139.22260381996,
+          "pnl": 860.7773961800413,
+          "pnlPercent": 1.7215547923600825
+        }
+      ],
+      "outcome": "loss",
+      "finalPnl": -1700,
+      "finalPnlPercent": -3.4000000000000004,
+      "verificationUrl": null,
+      "publicVerificationId": "verify_1769709778571_criya8zj"
+    },
+    "TEST_SOLUSDT_1769709778567_7": {
+      "signalId": "TEST_SOLUSDT_1769709778567_7",
+      "symbol": "SOLUSDT",
+      "direction": "SHORT",
+      "confidence": 78,
+      "patternKey": null,
+      "entryPrice": 100,
+      "stopLoss": 103.8,
+      "takeProfit1": 94.5,
+      "takeProfit2": 90.1,
+      "startPrice": 101.52567010847982,
+      "currentPrice": 101.52567010847982,
+      "highestPrice": 101.52567010847982,
+      "lowestPrice": 101.52567010847982,
+      "currentPnl": -1.5256701084798152,
+      "currentPnlPercent": -1.5256701084798152,
+      "maxPnl": 0,
+      "maxPnlPercent": 0,
+      "maxDrawdown": 1.5256701084798152,
+      "maxDrawdownPercent": 1.5256701084798152,
+      "status": "closed",
+      "hitStopLoss": false,
+      "hitTakeProfit1": false,
+      "hitTakeProfit2": false,
+      "startedAt": "2026-01-29T18:02:58.571Z",
+      "lastUpdatedAt": "2026-01-29T18:02:58.575Z",
+      "closedAt": "2026-01-29T18:02:58.581Z",
+      "priceHistory": [
+        {
+          "timestamp": "2026-01-29T18:02:58.571Z",
+          "price": 101.52567010847982,
+          "pnl": 0,
+          "pnlPercent": 0
+        },
+        {
+          "timestamp": "2026-01-29T18:02:58.575Z",
+          "price": 101.52567010847982,
+          "pnl": -1.5256701084798152,
+          "pnlPercent": -1.5256701084798152
+        }
+      ],
+      "outcome": "loss",
+      "finalPnl": -3.799999999999997,
+      "finalPnlPercent": -3.799999999999997,
+      "verificationUrl": null,
+      "publicVerificationId": "verify_1769709778571_tztmqcen"
+    },
+    "TEST_BTCUSDT_1769709778568_8": {
+      "signalId": "TEST_BTCUSDT_1769709778568_8",
+      "symbol": "BTCUSDT",
+      "direction": "LONG",
+      "confidence": 73,
+      "patternKey": null,
+      "entryPrice": 50000,
+      "stopLoss": 48100,
+      "takeProfit1": 52500,
+      "takeProfit2": 54500,
+      "startPrice": 49139.22260381996,
+      "currentPrice": 49139.22260381996,
+      "highestPrice": 49139.22260381996,
+      "lowestPrice": 49139.22260381996,
+      "currentPnl": -860.7773961800413,
+      "currentPnlPercent": -1.7215547923600825,
+      "maxPnl": 0,
+      "maxPnlPercent": 0,
+      "maxDrawdown": 860.7773961800413,
+      "maxDrawdownPercent": 1.7215547923600825,
+      "status": "closed",
+      "hitStopLoss": false,
+      "hitTakeProfit1": false,
+      "hitTakeProfit2": false,
+      "startedAt": "2026-01-29T18:02:58.572Z",
+      "lastUpdatedAt": "2026-01-29T18:02:58.576Z",
+      "closedAt": "2026-01-29T18:02:58.581Z",
+      "priceHistory": [
+        {
+          "timestamp": "2026-01-29T18:02:58.572Z",
+          "price": 49139.22260381996,
+          "pnl": 0,
+          "pnlPercent": 0
+        },
+        {
+          "timestamp": "2026-01-29T18:02:58.576Z",
+          "price": 49139.22260381996,
+          "pnl": -860.7773961800413,
+          "pnlPercent": -1.7215547923600825
+        }
+      ],
+      "outcome": "loss",
+      "finalPnl": -1900,
+      "finalPnlPercent": -3.8,
+      "verificationUrl": null,
+      "publicVerificationId": "verify_1769709778572_g5m9b6gv"
+    },
+    "TEST_BTCUSDT_1769709778568_9": {
+      "signalId": "TEST_BTCUSDT_1769709778568_9",
+      "symbol": "BTCUSDT",
+      "direction": "SHORT",
+      "confidence": 86,
+      "patternKey": null,
+      "entryPrice": 50000,
+      "stopLoss": 51800,
+      "takeProfit1": 47000,
+      "takeProfit2": 44600,
+      "startPrice": 49139.22260381996,
+      "currentPrice": 49139.22260381996,
+      "highestPrice": 49139.22260381996,
+      "lowestPrice": 49139.22260381996,
+      "currentPnl": 860.7773961800413,
+      "currentPnlPercent": 1.7215547923600825,
+      "maxPnl": 860.7773961800413,
+      "maxPnlPercent": 1.7215547923600825,
+      "maxDrawdown": 0,
+      "maxDrawdownPercent": 0,
+      "status": "closed",
+      "hitStopLoss": false,
+      "hitTakeProfit1": false,
+      "hitTakeProfit2": false,
+      "startedAt": "2026-01-29T18:02:58.572Z",
+      "lastUpdatedAt": "2026-01-29T18:02:58.576Z",
+      "closedAt": "2026-01-29T18:02:58.582Z",
+      "priceHistory": [
+        {
+          "timestamp": "2026-01-29T18:02:58.572Z",
+          "price": 49139.22260381996,
+          "pnl": 0,
+          "pnlPercent": 0
+        },
+        {
+          "timestamp": "2026-01-29T18:02:58.576Z",
+          "price": 49139.22260381996,
+          "pnl": 860.7773961800413,
+          "pnlPercent": 1.7215547923600825
+        }
+      ],
+      "outcome": "loss",
+      "finalPnl": -1800,
+      "finalPnlPercent": -3.5999999999999996,
+      "verificationUrl": null,
+      "publicVerificationId": "verify_1769709778572_u4pwnk8j"
+    }
+  },
+  "patterns": {},
+  "symbols": {
+    "SOLUSDT": {
+      "symbol": "SOLUSDT",
+      "totalSignals": 2,
+      "activeSignals": 0,
+      "closedSignals": 2,
+      "winCount": 1,
+      "lossCount": 1,
+      "winRate": 50,
+      "totalPnl": 2.200000000000003,
+      "avgPnl": 1.1000000000000014
+    },
+    "ETHUSDT": {
+      "symbol": "ETHUSDT",
+      "totalSignals": 5,
+      "activeSignals": 0,
+      "closedSignals": 5,
+      "winCount": 4,
+      "lossCount": 1,
+      "winRate": 80,
+      "totalPnl": 559.5,
+      "avgPnl": 111.9
+    },
+    "BTCUSDT": {
+      "symbol": "BTCUSDT",
+      "totalSignals": 3,
+      "activeSignals": 0,
+      "closedSignals": 3,
+      "winCount": 0,
+      "lossCount": 3,
+      "winRate": 0,
+      "totalPnl": -5400,
+      "avgPnl": -1800
+    }
+  },
+  "overall": {
+    "totalSignals": 10,
+    "activeSignals": 0,
+    "closedSignals": 10,
+    "winCount": 5,
+    "lossCount": 5,
+    "winRate": 50,
+    "totalPnl": -4838.3,
+    "avgPnl": -483.83000000000004,
+    "bestTrade": {
+      "signalId": "TEST_ETHUSDT_1769709778565_2",
+      "symbol": "ETHUSDT",
+      "direction": "LONG",
+      "pnl": 195,
+      "pnlPercent": 6.5,
+      "date": "2026-01-29T18:02:58.578Z"
+    },
+    "worstTrade": {
+      "signalId": "TEST_BTCUSDT_1769709778568_8",
+      "symbol": "BTCUSDT",
+      "direction": "LONG",
+      "pnl": -1900,
+      "pnlPercent": -3.8,
+      "date": "2026-01-29T18:02:58.581Z"
+    }
+  },
+  "timeframes": {
+    "daily": {
+      "2026-01-29": {
+        "date": "2026-01-29",
+        "signals": 10,
+        "wins": 5,
+        "losses": 5,
+        "winRate": 50,
+        "pnl": -4838.3
+      }
+    },
+    "weekly": {
+      "2026-05": {
+        "week": "2026-05",
+        "signals": 10,
+        "wins": 5,
+        "losses": 5,
+        "winRate": 50,
+        "pnl": -4838.3
+      }
+    },
+    "monthly": {
+      "2026-01": {
+        "month": "2026-01",
+        "signals": 10,
+        "wins": 5,
+        "losses": 5,
+        "winRate": 50,
+        "pnl": -4838.3
+      }
+    }
+  }
+}

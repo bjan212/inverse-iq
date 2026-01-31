@@ -1,0 +1,122 @@
+[
+  {
+    "userId": "test_user",
+    "timestamp": 1769766468679,
+    "exchanges": {
+      "binance": {
+        "error": "Request failed with status code 401"
+      }
+    },
+    "overallRecommendation": "VERY LOW RISK LEVEL: Portfolio is extremely conservative. Significant opportunity to increase exposure for potentially higher returns.",
+    "riskAssessment": {
+      "totalRisk": null,
+      "maxDrawdown": 1,
+      "riskScore": null
+    }
+  },
+  {
+    "userId": "boo",
+    "timestamp": 1769768356649,
+    "exchanges": {
+      "binance": {
+        "positions": [],
+        "balance": 0.68359303,
+        "totalPositionValue": 0,
+        "riskLevel": "low",
+        "recommendations": [
+          "No open positions found."
+        ]
+      }
+    },
+    "overallRecommendation": "VERY LOW RISK LEVEL: Portfolio is extremely conservative. Significant opportunity to increase exposure for potentially higher returns.",
+    "riskAssessment": {
+      "totalRisk": 0,
+      "maxDrawdown": 1,
+      "riskScore": 3
+    }
+  },
+  {
+    "userId": "boo",
+    "timestamp": 1769768395701,
+    "exchanges": {
+      "binance": {
+        "positions": [],
+        "balance": 0.68359303,
+        "totalPositionValue": 0,
+        "riskLevel": "low",
+        "recommendations": [
+          "No open positions found."
+        ]
+      }
+    },
+    "overallRecommendation": "VERY LOW RISK LEVEL: Portfolio is extremely conservative. Significant opportunity to increase exposure for potentially higher returns.",
+    "riskAssessment": {
+      "totalRisk": 0,
+      "maxDrawdown": 1,
+      "riskScore": 3
+    }
+  },
+  {
+    "userId": "boo",
+    "timestamp": 1769768510873,
+    "exchanges": {
+      "binance": {
+        "positions": [],
+        "balance": 0.68359303,
+        "totalPositionValue": 0,
+        "riskLevel": "low",
+        "recommendations": [
+          "No open positions found."
+        ]
+      }
+    },
+    "overallRecommendation": "VERY LOW RISK LEVEL: Portfolio is extremely conservative. Significant opportunity to increase exposure for potentially higher returns.",
+    "riskAssessment": {
+      "totalRisk": 0,
+      "maxDrawdown": 1,
+      "riskScore": 3
+    }
+  },
+  {
+    "userId": "boo",
+    "timestamp": 1769793454219,
+    "exchanges": {
+      "binance": {
+        "positions": [],
+        "balance": 0.68359303,
+        "totalPositionValue": 0,
+        "riskLevel": "low",
+        "recommendations": [
+          "No open positions found."
+        ]
+      }
+    },
+    "overallRecommendation": "VERY LOW RISK LEVEL: Portfolio is extremely conservative. Significant opportunity to increase exposure for potentially higher returns.",
+    "riskAssessment": {
+      "totalRisk": 0,
+      "maxDrawdown": 1,
+      "riskScore": 3
+    }
+  },
+  {
+    "userId": "boo",
+    "timestamp": 1769793459153,
+    "exchanges": {
+      "binance": {
+        "positions": [],
+        "balance": 0.68359303,
+        "totalPositionValue": 0,
+        "riskLevel": "low",
+        "recommendations": [
+          "No open positions found."
+        ]
+      }
+    },
+    "overallRecommendation": "VERY LOW RISK LEVEL: Portfolio is extremely conservative. Significant opportunity to increase exposure for potentially higher returns.",
+    "riskAssessment": {
+      "totalRisk": 0,
+      "maxDrawdown": 1,
+      "riskScore": 3
+    }
+  }
+]
