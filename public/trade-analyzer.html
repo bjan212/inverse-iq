@@ -135,6 +135,31 @@
             transform: translateY(-2px);
         }
         
+        .header-btn.danger {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+        
+        .header-btn.danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+        }
+        
+        .user-display {
+            color: #9ca3af;
+            font-size: 14px;
+        }
+        
+        .user-id {
+            color: #4ade80;
+            font-weight: 600;
+        }
+        
+        .hidden {
+            display: none;
+        }
+
         /* Dashboard Grid */
         .dashboard-grid {
             display: grid;
@@ -417,32 +442,40 @@
     </style>
 </head>
 </head>
-<body class="min-h-screen">
-    <header class="bg-dark border-b border-dark py-4">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center">
-                <h1 class="text-2xl font-bold text-white">Trade Analyzer</h1>
-                <div class="flex items-center space-x-4">
-                    <span id="userDisplay" class="text-gray-300">User ID: <span id="currentUserId">guest</span></span>
-                    <button id="changeUserBtn" class="btn-secondary text-sm">Change User</button>
+<body>
+    <div class="container">
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <div class="terminal-dot red"></div>
+                <div class="terminal-dot yellow"></div>
+                <div class="terminal-dot green"></div>
+                <div class="terminal-title">xrypt:~/trade-analyzer</div>
+            </div>
+            <div class="terminal-content">
+                <!-- Header -->
+                <div class="header">
+                    <div>
+                        <div class="logo">Xrypt</div>
+                        <div class="header-subtitle">AI-Powered Trade Analysis & Risk Management</div>
+                    </div>
+                    <div class="header-actions">
+                        <span class="user-display">User: <span class="user-id" id="currentUserId">guest</span></span>
+                        <button class="header-btn" id="changeUserBtn">Change User</button>
+                        <button class="header-btn danger hidden" id="stopAllTradesBtn">
+                            <i class="fas fa-stop-circle"></i> STOP ALL TRADES
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </header>
-    
-    <nav class="bg-dark border-b border-dark">
-        <div class="container mx-auto px-4">
-            <div class="flex space-x-4">
-                <div class="tab active" data-tab="dashboard">Dashboard</div>
-                <div class="tab" data-tab="exchanges">Exchange Connections</div>
-                <div class="tab" data-tab="positions">Open Positions</div>
-                <div class="tab" data-tab="analysis">Trade Analysis</div>
-                <div class="tab" data-tab="history">Analysis History</div>
-            </div>
-        </div>
-    </nav>
-    
-    <main class="container mx-auto px-4 py-8">
+                
+                <!-- Tabs -->
+                <div class="tabs">
+                    <div class="tab active" data-tab="dashboard">Dashboard</div>
+                    <div class="tab" data-tab="exchanges">Exchanges</div>
+                    <div class="tab" data-tab="positions">Open Positions</div>
+                    <div class="tab" data-tab="analysis">Analysis</div>
+                    <div class="tab" data-tab="history">History</div>
+                </div>
+                
         <!-- Dashboard Tab -->
         <div id="dashboard-tab" class="tab-content active">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -591,7 +624,9 @@
                 </div>
             </div>
         </div>
-    </main>
+            </div>
+        </div>
+    </div>
     
     <!-- User ID Modal -->
     <div id="userIdModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
