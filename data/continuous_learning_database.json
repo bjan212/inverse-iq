@@ -1,9 +1,9 @@
 {
   "version": 1,
   "created": "2026-01-31T17:40:22.514Z",
-  "lastUpdated": "2026-01-31T17:42:22.525Z",
+  "lastUpdated": "2026-01-31T17:45:52.541Z",
   "totalTraders": 3,
-  "totalTrades": 3783,
+  "totalTrades": 7997,
   "totalPatterns": 10,
   "patterns": {
     "BTCUSDT_LONG_RSI40_NEUTRAL": {
@@ -15,18 +15,18 @@
         "online_data",
         "online_signals_realtime"
       ],
-      "occurrences": 1032,
-      "totalLoss": 10486.19999999972,
+      "occurrences": 2236,
+      "totalLoss": 22720.099999999395,
       "avgLoss": 10.161046511627637,
       "conditions": {
         "priceLevel": 0,
         "priceChange24h": 0,
         "volume24h": 0,
         "volumeRatio": 1,
-        "rsi": 50.0000000000001,
+        "rsi": 49.999999999999986,
         "macd": "NEUTRAL",
         "marketSentiment": "NEUTRAL",
-        "fearGreedIndex": 50.0000000000001,
+        "fearGreedIndex": 49.999999999999986,
         "fundingRate": 0,
         "openInterest": 0,
         "longShortRatio": 1
@@ -34,8 +34,8 @@
       "confidence": 100,
       "source": "trader",
       "created": "2026-01-31T17:40:22.995Z",
-      "lastSeen": "2026-01-31T17:42:22.525Z",
-      "version": 1032
+      "lastSeen": "2026-01-31T17:45:52.539Z",
+      "version": 2236
     },
     "BTC_LONG_RSI40_NEUTRAL": {
       "key": "BTC_LONG_RSI40_NEUTRAL",
@@ -46,9 +46,71 @@
         "online_data",
         "online_signals_realtime"
       ],
-      "occurrences": 594,
-      "totalLoss": 4379.640000000014,
+      "occurrences": 1287,
+      "totalLoss": 9489.22000000003,
       "avgLoss": 7.373131313131337,
+      "conditions": {
+        "priceLevel": 0,
+        "priceChange24h": 0,
+        "volume24h": 0,
+        "volumeRatio": 1,
+        "rsi": 50.00000000000003,
+        "macd": "NEUTRAL",
+        "marketSentiment": "NEUTRAL",
+        "fearGreedIndex": 50.00000000000003,
+        "fundingRate": 0,
+        "openInterest": 0,
+        "longShortRatio": 1
+      },
+      "confidence": 98,
+      "source": "trader",
+      "created": "2026-01-31T17:40:22.996Z",
+      "lastSeen": "2026-01-31T17:45:52.539Z",
+      "version": 1287
+    },
+    "ETHUSDT_LONG_RSI40_NEUTRAL": {
+      "key": "ETHUSDT_LONG_RSI40_NEUTRAL",
+      "symbol": "ETHUSDT",
+      "originalDirection": "LONG",
+      "inverseDirection": "SHORT",
+      "traders": [
+        "online_data",
+        "online_signals_realtime"
+      ],
+      "occurrences": 2418,
+      "totalLoss": 1298.8300000000395,
+      "avgLoss": 0.5371505376344249,
+      "conditions": {
+        "priceLevel": 0,
+        "priceChange24h": 0,
+        "volume24h": 0,
+        "volumeRatio": 1,
+        "rsi": 49.99999999999999,
+        "macd": "NEUTRAL",
+        "marketSentiment": "NEUTRAL",
+        "fearGreedIndex": 49.99999999999999,
+        "fundingRate": 0,
+        "openInterest": 0,
+        "longShortRatio": 1
+      },
+      "confidence": 95,
+      "source": "trader",
+      "created": "2026-01-31T17:40:22.996Z",
+      "lastSeen": "2026-01-31T17:45:52.541Z",
+      "version": 2418
+    },
+    "ETH_LONG_RSI40_NEUTRAL": {
+      "key": "ETH_LONG_RSI40_NEUTRAL",
+      "symbol": "ETH",
+      "originalDirection": "LONG",
+      "inverseDirection": "SHORT",
+      "traders": [
+        "online_data",
+        "online_signals_realtime"
+      ],
+      "occurrences": 1248,
+      "totalLoss": 592.0200000000114,
+      "avgLoss": 0.4743750000000091,
       "conditions": {
         "priceLevel": 0,
         "priceChange24h": 0,
@@ -62,73 +124,11 @@
         "openInterest": 0,
         "longShortRatio": 1
       },
-      "confidence": 95,
-      "source": "trader",
-      "created": "2026-01-31T17:40:22.996Z",
-      "lastSeen": "2026-01-31T17:42:22.525Z",
-      "version": 594
-    },
-    "ETHUSDT_LONG_RSI40_NEUTRAL": {
-      "key": "ETHUSDT_LONG_RSI40_NEUTRAL",
-      "symbol": "ETHUSDT",
-      "originalDirection": "LONG",
-      "inverseDirection": "SHORT",
-      "traders": [
-        "online_data",
-        "online_signals_realtime"
-      ],
-      "occurrences": 1116,
-      "totalLoss": 599.4600000000182,
-      "avgLoss": 0.5371505376344249,
-      "conditions": {
-        "priceLevel": 0,
-        "priceChange24h": 0,
-        "volume24h": 0,
-        "volumeRatio": 1,
-        "rsi": 50.000000000000085,
-        "macd": "NEUTRAL",
-        "marketSentiment": "NEUTRAL",
-        "fearGreedIndex": 50.000000000000085,
-        "fundingRate": 0,
-        "openInterest": 0,
-        "longShortRatio": 1
-      },
       "confidence": 92,
       "source": "trader",
       "created": "2026-01-31T17:40:22.996Z",
-      "lastSeen": "2026-01-31T17:42:22.525Z",
-      "version": 1116
-    },
-    "ETH_LONG_RSI40_NEUTRAL": {
-      "key": "ETH_LONG_RSI40_NEUTRAL",
-      "symbol": "ETH",
-      "originalDirection": "LONG",
-      "inverseDirection": "SHORT",
-      "traders": [
-        "online_data",
-        "online_signals_realtime"
-      ],
-      "occurrences": 576,
-      "totalLoss": 273.24000000000524,
-      "avgLoss": 0.4743750000000091,
-      "conditions": {
-        "priceLevel": 0,
-        "priceChange24h": 0,
-        "volume24h": 0,
-        "volumeRatio": 1,
-        "rsi": 50.00000000000002,
-        "macd": "NEUTRAL",
-        "marketSentiment": "NEUTRAL",
-        "fearGreedIndex": 50.00000000000002,
-        "fundingRate": 0,
-        "openInterest": 0,
-        "longShortRatio": 1
-      },
-      "confidence": 92,
-      "source": "trader",
-      "created": "2026-01-31T17:40:22.996Z",
-      "lastSeen": "2026-01-31T17:42:22.525Z",
-      "version": 576
+      "lastSeen": "2026-01-31T17:45:52.541Z",
+      "version": 1248
     },
     "BTCUSDT_SHORT_RSINaN_undefined": {
       "key": "BTCUSDT_SHORT_RSINaN_undefined",
