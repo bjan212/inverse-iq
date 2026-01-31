@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "created": "2026-01-30T09:45:29.669Z",
-  "lastUpdated": "2026-01-30T10:45:29.924Z",
+  "created": "2026-01-31T17:40:22.514Z",
+  "lastUpdated": "2026-01-31T17:42:22.525Z",
   "totalTraders": 3,
-  "totalTrades": 73621,
+  "totalTrades": 3783,
   "totalPatterns": 10,
   "patterns": {
     "BTCUSDT_LONG_RSI40_NEUTRAL": {
@@ -15,27 +15,27 @@
         "online_data",
         "online_signals_realtime"
       ],
-      "occurrences": 20984,
-      "totalLoss": 213219.39999999705,
-      "avgLoss": 10.161046511627767,
+      "occurrences": 1032,
+      "totalLoss": 10486.19999999972,
+      "avgLoss": 10.161046511627637,
       "conditions": {
         "priceLevel": 0,
         "priceChange24h": 0,
         "volume24h": 0,
         "volumeRatio": 1,
-        "rsi": 50.00000000000001,
+        "rsi": 50.0000000000001,
         "macd": "NEUTRAL",
         "marketSentiment": "NEUTRAL",
-        "fearGreedIndex": 50.00000000000001,
+        "fearGreedIndex": 50.0000000000001,
         "fundingRate": 0,
         "openInterest": 0,
         "longShortRatio": 1
       },
       "confidence": 100,
       "source": "trader",
-      "created": "2026-01-30T09:45:29.883Z",
-      "lastSeen": "2026-01-30T10:45:29.923Z",
-      "version": 20984
+      "created": "2026-01-31T17:40:22.995Z",
+      "lastSeen": "2026-01-31T17:42:22.525Z",
+      "version": 1032
     },
     "BTC_LONG_RSI40_NEUTRAL": {
       "key": "BTC_LONG_RSI40_NEUTRAL",
@@ -46,27 +46,27 @@
         "online_data",
         "online_signals_realtime"
       ],
-      "occurrences": 12078,
-      "totalLoss": 89052.68000000028,
+      "occurrences": 594,
+      "totalLoss": 4379.640000000014,
       "avgLoss": 7.373131313131337,
       "conditions": {
         "priceLevel": 0,
         "priceChange24h": 0,
         "volume24h": 0,
         "volumeRatio": 1,
-        "rsi": 49.999999999999964,
+        "rsi": 50.000000000000036,
         "macd": "NEUTRAL",
         "marketSentiment": "NEUTRAL",
-        "fearGreedIndex": 49.999999999999964,
+        "fearGreedIndex": 50.000000000000036,
         "fundingRate": 0,
         "openInterest": 0,
         "longShortRatio": 1
       },
-      "confidence": 100,
+      "confidence": 95,
       "source": "trader",
-      "created": "2026-01-30T09:45:29.884Z",
-      "lastSeen": "2026-01-30T10:45:29.923Z",
-      "version": 12078
+      "created": "2026-01-31T17:40:22.996Z",
+      "lastSeen": "2026-01-31T17:42:22.525Z",
+      "version": 594
     },
     "ETHUSDT_LONG_RSI40_NEUTRAL": {
       "key": "ETHUSDT_LONG_RSI40_NEUTRAL",
@@ -77,27 +77,27 @@
         "online_data",
         "online_signals_realtime"
       ],
-      "occurrences": 22692,
-      "totalLoss": 12189.020000000628,
-      "avgLoss": 0.5371505376344363,
+      "occurrences": 1116,
+      "totalLoss": 599.4600000000182,
+      "avgLoss": 0.5371505376344249,
       "conditions": {
         "priceLevel": 0,
         "priceChange24h": 0,
         "volume24h": 0,
         "volumeRatio": 1,
-        "rsi": 50.00000000000001,
+        "rsi": 50.000000000000085,
         "macd": "NEUTRAL",
         "marketSentiment": "NEUTRAL",
-        "fearGreedIndex": 50.00000000000001,
+        "fearGreedIndex": 50.000000000000085,
         "fundingRate": 0,
         "openInterest": 0,
         "longShortRatio": 1
       },
-      "confidence": 100,
+      "confidence": 92,
       "source": "trader",
-      "created": "2026-01-30T09:45:29.884Z",
-      "lastSeen": "2026-01-30T10:45:29.924Z",
-      "version": 22692
+      "created": "2026-01-31T17:40:22.996Z",
+      "lastSeen": "2026-01-31T17:42:22.525Z",
+      "version": 1116
     },
     "ETH_LONG_RSI40_NEUTRAL": {
       "key": "ETH_LONG_RSI40_NEUTRAL",
@@ -108,54 +108,27 @@
         "online_data",
         "online_signals_realtime"
       ],
-      "occurrences": 11712,
-      "totalLoss": 5555.880000000108,
-      "avgLoss": 0.47437500000000926,
+      "occurrences": 576,
+      "totalLoss": 273.24000000000524,
+      "avgLoss": 0.4743750000000091,
       "conditions": {
         "priceLevel": 0,
         "priceChange24h": 0,
         "volume24h": 0,
         "volumeRatio": 1,
-        "rsi": 49.999999999999986,
+        "rsi": 50.00000000000002,
         "macd": "NEUTRAL",
         "marketSentiment": "NEUTRAL",
-        "fearGreedIndex": 49.999999999999986,
+        "fearGreedIndex": 50.00000000000002,
         "fundingRate": 0,
         "openInterest": 0,
         "longShortRatio": 1
       },
-      "confidence": 98,
+      "confidence": 92,
       "source": "trader",
-      "created": "2026-01-30T09:45:29.884Z",
-      "lastSeen": "2026-01-30T10:45:29.924Z",
-      "version": 11712
-    },
-    "BTCUSDT_LONG_RSINaN_undefined": {
-      "key": "BTCUSDT_LONG_RSINaN_undefined",
-      "symbol": "BTCUSDT",
-      "originalDirection": "LONG",
-      "inverseDirection": "SHORT",
-      "traders": [
-        "public_market_data"
-      ],
-      "occurrences": 24,
-      "totalLoss": 112.76999999999998,
-      "avgLoss": 4.6987499999999995,
-      "conditions": {
-        "resistance": 89942.44,
-        "breakoutHigh": 90135,
-        "closePrice": 89580,
-        "wickSize": 555,
-        "bodySize": 231.33000000000175,
-        "volume": 2152.74387,
-        "priceChange": 0.2589070436079258
-      },
-      "confidence": 81,
-      "source": "public",
-      "patternType": "FALSE_BREAKOUT",
-      "created": "2026-01-30T09:45:37.768Z",
-      "lastSeen": "2026-01-30T09:45:37.769Z",
-      "version": 24
+      "created": "2026-01-31T17:40:22.996Z",
+      "lastSeen": "2026-01-31T17:42:22.525Z",
+      "version": 576
     },
     "BTCUSDT_SHORT_RSINaN_undefined": {
       "key": "BTCUSDT_SHORT_RSINaN_undefined",
@@ -165,49 +138,50 @@
       "traders": [
         "public_market_data"
       ],
-      "occurrences": 34,
-      "totalLoss": 149.78000000000003,
-      "avgLoss": 4.40529411764706,
+      "occurrences": 31,
+      "totalLoss": 125.53000000000003,
+      "avgLoss": 4.049354838709679,
       "conditions": {
-        "lowerWick": 888.7099999999919,
-        "bodySize": 231.33000000000175,
-        "wickRatio": 3.841741235464424,
-        "volume": 2152.74387,
-        "low": 88459.96,
-        "close": 89580
+        "lowerWick": 242.30999999999767,
+        "bodySize": 65.82000000000698,
+        "wickRatio": 3.681403828623093,
+        "volume": 913.68581,
+        "low": 92724.98,
+        "close": 93033.11
       },
       "confidence": 81,
       "source": "public",
       "patternType": "LIQUIDATION_WICK",
-      "created": "2026-01-30T09:45:37.768Z",
-      "lastSeen": "2026-01-30T09:45:37.769Z",
-      "version": 34
+      "created": "2026-01-31T17:40:31.173Z",
+      "lastSeen": "2026-01-31T17:40:31.173Z",
+      "version": 31
     },
-    "ETHUSDT_SHORT_RSINaN_undefined": {
-      "key": "ETHUSDT_SHORT_RSINaN_undefined",
-      "symbol": "ETHUSDT",
-      "originalDirection": "SHORT",
-      "inverseDirection": "LONG",
+    "BTCUSDT_LONG_RSINaN_undefined": {
+      "key": "BTCUSDT_LONG_RSINaN_undefined",
+      "symbol": "BTCUSDT",
+      "originalDirection": "LONG",
+      "inverseDirection": "SHORT",
       "traders": [
         "public_market_data"
       ],
-      "occurrences": 26,
-      "totalLoss": 178.25000000000003,
-      "avgLoss": 6.855769230769232,
+      "occurrences": 21,
+      "totalLoss": 94.82000000000001,
+      "avgLoss": 4.515238095238096,
       "conditions": {
-        "lowerWick": 27.710000000000036,
-        "bodySize": 3.799999999999727,
-        "wickRatio": 7.292105263158428,
-        "volume": 30900.8484,
-        "low": 3055.13,
-        "close": 3086.64
+        "resistance": 94500,
+        "breakoutHigh": 94789.08,
+        "closePrice": 94177.99,
+        "wickSize": 485.68000000000757,
+        "bodySize": 125.40999999998894,
+        "volume": 1133.04005,
+        "priceChange": -0.13298566117445282
       },
       "confidence": 81,
       "source": "public",
-      "patternType": "LIQUIDATION_WICK",
-      "created": "2026-01-30T09:45:37.769Z",
-      "lastSeen": "2026-01-30T09:45:37.769Z",
-      "version": 26
+      "patternType": "FALSE_BREAKOUT",
+      "created": "2026-01-31T17:40:31.173Z",
+      "lastSeen": "2026-01-31T17:40:31.173Z",
+      "version": 21
     },
     "ETHUSDT_LONG_RSINaN_undefined": {
       "key": "ETHUSDT_LONG_RSINaN_undefined",
@@ -217,24 +191,50 @@
       "traders": [
         "public_market_data"
       ],
-      "occurrences": 34,
-      "totalLoss": 175.63999999999993,
-      "avgLoss": 5.165882352941175,
+      "occurrences": 33,
+      "totalLoss": 170.63999999999993,
+      "avgLoss": 5.170909090909089,
       "conditions": {
-        "resistance": 3146.97,
-        "breakoutHigh": 3150.01,
-        "closePrice": 3123,
-        "wickSize": 17.800000000000182,
-        "bodySize": 9.210000000000036,
-        "volume": 24779.0727,
-        "priceChange": -0.2940415872498982
+        "upperWick": 4.630000000000109,
+        "bodySize": 1.2899999999999636,
+        "wickRatio": 3.589147286821891,
+        "volume": 16690.5703,
+        "high": 3145.92,
+        "close": 3141.29
       },
       "confidence": 81,
       "source": "public",
-      "patternType": "FALSE_BREAKOUT",
-      "created": "2026-01-30T09:45:37.769Z",
-      "lastSeen": "2026-01-30T09:45:37.769Z",
-      "version": 34
+      "patternType": "LIQUIDATION_WICK",
+      "created": "2026-01-31T17:40:31.173Z",
+      "lastSeen": "2026-01-31T17:40:31.173Z",
+      "version": 33
+    },
+    "ETHUSDT_SHORT_RSINaN_undefined": {
+      "key": "ETHUSDT_SHORT_RSINaN_undefined",
+      "symbol": "ETHUSDT",
+      "originalDirection": "SHORT",
+      "inverseDirection": "LONG",
+      "traders": [
+        "public_market_data"
+      ],
+      "occurrences": 29,
+      "totalLoss": 244.7,
+      "avgLoss": 8.437931034482759,
+      "conditions": {
+        "support": 3144.37,
+        "breakdownLow": 3133.68,
+        "closePrice": 3146.37,
+        "wickSize": 12.690000000000055,
+        "bodySize": 5.690000000000055,
+        "volume": 16861.0597,
+        "priceChange": -0.18051686833372635
+      },
+      "confidence": 77,
+      "source": "public",
+      "patternType": "FALSE_BREAKDOWN",
+      "created": "2026-01-31T17:40:31.173Z",
+      "lastSeen": "2026-01-31T17:40:31.173Z",
+      "version": 29
     },
     "BNBUSDT_LONG_RSINaN_undefined": {
       "key": "BNBUSDT_LONG_RSINaN_undefined",
@@ -244,24 +244,24 @@
       "traders": [
         "public_market_data"
       ],
-      "occurrences": 33,
-      "totalLoss": 103.27999999999999,
-      "avgLoss": 3.1296969696969694,
+      "occurrences": 30,
+      "totalLoss": 88.41000000000001,
+      "avgLoss": 2.9470000000000005,
       "conditions": {
-        "resistance": 878,
-        "breakoutHigh": 882.37,
-        "closePrice": 877.99,
-        "wickSize": 4.3799999999999955,
-        "bodySize": 2.669999999999959,
-        "volume": 13810.328,
-        "priceChange": 0.3050313028378146
+        "resistance": 914,
+        "breakoutHigh": 916.55,
+        "closePrice": 912.23,
+        "wickSize": 4.319999999999936,
+        "bodySize": 1.1100000000000136,
+        "volume": 7098.405,
+        "priceChange": 0.12182807972605295
       },
       "confidence": 81,
       "source": "public",
       "patternType": "FALSE_BREAKOUT",
-      "created": "2026-01-30T09:45:37.769Z",
-      "lastSeen": "2026-01-30T09:45:37.769Z",
-      "version": 33
+      "created": "2026-01-31T17:40:31.173Z",
+      "lastSeen": "2026-01-31T17:40:31.173Z",
+      "version": 30
     },
     "BNBUSDT_SHORT_RSINaN_undefined": {
       "key": "BNBUSDT_SHORT_RSINaN_undefined",
@@ -271,23 +271,23 @@
       "traders": [
         "public_market_data"
       ],
-      "occurrences": 26,
-      "totalLoss": 111.42000000000002,
-      "avgLoss": 4.285384615384616,
+      "occurrences": 27,
+      "totalLoss": 131.58,
+      "avgLoss": 4.873333333333334,
       "conditions": {
-        "lowerWick": 4.350000000000023,
-        "bodySize": 1.1299999999999955,
-        "wickRatio": 3.8495575221239293,
-        "volume": 6905.311,
-        "low": 868.65,
-        "close": 873
+        "lowerWick": 1.9799999999999045,
+        "bodySize": 0.6000000000000227,
+        "wickRatio": 3.2999999999997156,
+        "volume": 19590.636,
+        "low": 908.2,
+        "close": 910.78
       },
       "confidence": 81,
       "source": "public",
       "patternType": "LIQUIDATION_WICK",
-      "created": "2026-01-30T09:45:37.769Z",
-      "lastSeen": "2026-01-30T09:45:37.769Z",
-      "version": 26
+      "created": "2026-01-31T17:40:31.173Z",
+      "lastSeen": "2026-01-31T17:40:31.173Z",
+      "version": 27
     }
   },
   "performance": {
@@ -299,7 +299,7 @@
   "traderHistory": [
     {
       "id": "online_data",
-      "addedAt": "2026-01-30T09:45:29.885Z",
+      "addedAt": "2026-01-31T17:40:22.997Z",
       "totalTrades": 602,
       "totalLosses": 553,
       "patternsContributed": 553,
@@ -307,15 +307,15 @@
     },
     {
       "id": "public_market_data",
-      "addedAt": "2026-01-30T09:45:37.769Z",
-      "totalTrades": 177,
-      "totalLosses": 177,
-      "patternsContributed": 177,
+      "addedAt": "2026-01-31T17:40:31.173Z",
+      "totalTrades": 171,
+      "totalLosses": 171,
+      "patternsContributed": 171,
       "source": "public"
     },
     {
       "id": "online_signals_realtime",
-      "addedAt": "2026-01-30T09:45:59.677Z",
+      "addedAt": "2026-01-31T17:40:52.522Z",
       "totalTrades": 602,
       "totalLosses": 553,
       "patternsContributed": 553,
