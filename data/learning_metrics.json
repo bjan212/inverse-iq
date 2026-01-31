@@ -1,5 +1,5 @@
 {
-  "totalDataPoints": 2997,
+  "totalDataPoints": 3153,
   "patternsLearned": 0,
   "accuracyImprovements": [
     {
@@ -31,15 +31,21 @@
       "previousAccuracy": 0,
       "currentAccuracy": 0,
       "improvement": 0
+    },
+    {
+      "timestamp": "2026-01-31T18:44:23.127Z",
+      "previousAccuracy": 0,
+      "currentAccuracy": 0,
+      "improvement": 0
     }
   ],
   "dataSourceContributions": {
-    "onlineSignals": 1630,
-    "traderSubmissions": 810,
-    "performanceFeedback": 400,
-    "publicMarketData": 157
+    "onlineSignals": 1713,
+    "traderSubmissions": 852,
+    "performanceFeedback": 422,
+    "publicMarketData": 166
   },
-  "learningRate": 10,
+  "learningRate": 9.376543222738743,
   "lastAccuracyCheck": 0,
   "startTime": 1769881231209
 }

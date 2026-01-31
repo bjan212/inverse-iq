@@ -1,6 +1,6 @@
 # Manual Testing Guide for XRYPT.NET Platform
 
-## Prerequisites
+§## Prerequisites
 
 1. **Start the Server**
 ```bash

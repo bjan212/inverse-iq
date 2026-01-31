@@ -53,8 +53,7 @@ const wss = new WebSocketServer({ server });
 // Honor X-Forwarded-* headers when behind a proxy (nginx)
 app.set('trust proxy', 1);
 
-// Secure admin authentication
-const { setupSession, requireAdminLogin, handleAdminLogin, handleAdminLogout, enforceAdminIpWhitelist } = require('./src/middleware/adminAuth');
+// Admin authentication removed - direct access now allowed
 setupSession(app);
 
 // Setup global error handlers
@@ -66,23 +65,10 @@ app.use(cors(getCorsOptions()));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-const adminIpWhitelist = enforceAdminIpWhitelist;
-
-// Protect admin.html
-app.get('/admin.html', adminIpWhitelist, requireAdminLogin, (req, res, next) => {
+// Admin panel - direct access (no authentication required)
+app.get('/admin.html', (req, res, next) => {
   res.sendFile(__dirname + '/public/admin.html');
 });
-
-// Admin login page
-app.get('/admin-login', adminIpWhitelist, (req, res) => {
-  res.sendFile(__dirname + '/public/admin-login.html');
-});
-
-// Handle admin login
-app.post('/admin-login', adminIpWhitelist, adminLoginLimiter, express.urlencoded({ extended: true }), handleAdminLogin);
-
-// Admin logout
-app.get('/admin-logout', adminIpWhitelist, handleAdminLogout);
 
 // Block direct static access to admin.html
 app.use((req, res, next) => {
@@ -463,7 +449,7 @@ app.post('/api/enhanced-payouts/calculate', async (req, res) => {
 });
 
 // Update payout settings (Admin only)
-app.post('/api/admin/payouts', authenticateAdmin, (req, res) => {
+app.post('/api/admin/payouts', (req, res) => {
   const { tier, amount } = req.body;
 
   if (!tier || amount === undefined) {
@@ -509,7 +495,7 @@ app.post('/api/admin/payouts', authenticateAdmin, (req, res) => {
 });
 
 // Get admin statistics
-app.get('/api/admin/stats', authenticateAdmin, (req, res) => {
+app.get('/api/admin/stats', (req, res) => {
   try {
     // In production, this would fetch from database
     // For now, return mock data
@@ -533,7 +519,7 @@ app.get('/api/admin/stats', authenticateAdmin, (req, res) => {
 });
 
 // Get recent submissions (Admin only)
-app.get('/api/admin/submissions', authenticateAdmin, (req, res) => {
+app.get('/api/admin/submissions', (req, res) => {
   try {
     // In production, this would fetch from database
     // For now, return mock data

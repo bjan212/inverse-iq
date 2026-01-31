@@ -1,4 +1,4 @@
-# Trade Analyzer Fixes - Complete
+§# Trade Analyzer Fixes - Complete
 
 ## Issues Fixed
 

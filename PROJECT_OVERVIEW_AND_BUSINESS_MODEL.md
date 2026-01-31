@@ -1,4 +1,4 @@
-# XRYPT.NET: Advanced Trading Intelligence Platform
+    # XRYPT.NET: Advanced Trading Intelligence Platform
 
 ## What Is XRYPT.NET?
 
