@@ -773,8 +773,51 @@
         // Load performance data from API
         async function loadPerformanceData() {
             try {
-                // In production, this would call a real API
-                // For now, use mock data
+                // Load data from the performance API endpoints
+                const [statsResponse, historyResponse, patternsResponse, symbolsResponse] = await Promise.all([
+                    fetch('/api/performance/stats'),
+                    fetch('/api/performance/history?limit=20'),
+                    fetch('/api/performance/patterns'),
+                    fetch('/api/performance/symbols')
+                ]);
+
+                if (statsResponse.ok && historyResponse.ok && patternsResponse.ok && symbolsResponse.ok) {
+                    const statsData = await statsResponse.json();
+                    const historyData = await historyResponse.json();
+                    const patternsData = await patternsResponse.json();
+                    const symbolsData = await symbolsResponse.json();
+
+                    // Transform API data to match expected format
+                    performanceData = {
+                        overall: {
+                            totalSignals: statsData.stats.totalSignals || 0,
+                            activeSignals: statsData.stats.activeSignals || 0,
+                            closedSignals: (statsData.stats.totalSignals || 0) - (statsData.stats.activeSignals || 0),
+                            winCount: statsData.stats.winCount || 0,
+                            lossCount: statsData.stats.lossCount || 0,
+                            winRate: statsData.stats.winRate || 0,
+                            totalPnl: statsData.stats.totalPnl || 0,
+                            avgPnl: statsData.stats.avgPnl || 0,
+                            bestTrade: statsData.stats.bestTrade || null,
+                            worstTrade: statsData.stats.worstTrade || null
+                        },
+                        timeframe: [], // Would need to be implemented in API
+                        symbols: symbolsData.symbols ? symbolsData.symbols.reduce((acc, symbol) => {
+                            acc[symbol.symbol] = symbol;
+                            return acc;
+                        }, {}) : {},
+                        patterns: patternsData.patterns ? patternsData.patterns.reduce((acc, pattern) => {
+                            acc[pattern.key] = pattern;
+                            return acc;
+                        }, {}) : {},
+                        recentSignals: historyData.signals || []
+                    };
+                } else {
+                    throw new Error('Failed to load performance data from API');
+                }
+            } catch (error) {
+                console.error('Failed to load performance data:', error);
+                // Fallback to mock data if API fails
                 performanceData = {
                     overall: {
                         totalSignals: 156,

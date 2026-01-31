@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ook<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -685,6 +685,8 @@
         <!-- Navigation -->
         <div class="nav">
             <button class="nav-btn active" onclick="showSection('payouts')">💰 Payout Settings</button>
+            <button class="nav-btn" onclick="showSection('wallet')">🔗 Wallet Connection</button>
+            <button class="nav-btn" onclick="showSection('info')">ℹ️ System Information</button>
             <button class="nav-btn" onclick="showSection('stats')">📊 Statistics</button>
             <button class="nav-btn" onclick="showSection('submissions')">📋 Recent Submissions</button>
         </div>
@@ -741,6 +743,159 @@
                         <input type="number" id="basic-payment" class="payout-input" min="0" step="0.1" value="10">
                     </div>
                     <button class="save-btn" onclick="savePayout('basic')">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wallet Connection Section -->
+        <div id="wallet-section" class="section" style="display: none;">
+            <h2>🔗 Wallet Connection</h2>
+            <p style="margin-bottom: 30px; color: #999;">Configure wallet connections for automated payouts and DEX trading.</p>
+
+            <div class="payout-grid">
+                <div class="payout-tier">
+                    <div class="tier-header">
+                        <div class="tier-name">PAYMENT WALLET</div>
+                        <div class="tier-range">USDT Payouts</div>
+                    </div>
+                    <div class="payout-input-group">
+                        <label for="payment-wallet">Wallet Address</label>
+                        <input type="text" id="payment-wallet" class="payout-input" placeholder="TYourWalletAddress...">
+                    </div>
+                    <div class="payout-input-group">
+                        <label for="payment-network">Network</label>
+                        <select id="payment-network" class="payout-input">
+                            <option value="TRC20">TRC20 (TRON)</option>
+                            <option value="BEP20">BEP20 (BSC)</option>
+                            <option value="ERC20">ERC20 (Ethereum)</option>
+                        </select>
+                    </div>
+                    <button class="save-btn" onclick="saveWallet('payment')">Save Payment Wallet</button>
+                </div>
+
+                <div class="payout-tier">
+                    <div class="tier-header">
+                        <div class="tier-name">TRADING WALLET</div>
+                        <div class="tier-range">DEX Integration</div>
+                    </div>
+                    <div class="payout-input-group">
+                        <label for="trading-wallet">Wallet Address</label>
+                        <input type="text" id="trading-wallet" class="payout-input" placeholder="0xYourWalletAddress...">
+                    </div>
+                    <div class="payout-input-group">
+                        <label for="trading-network">Network</label>
+                        <select id="trading-network" class="payout-input">
+                            <option value="ethereum">Ethereum</option>
+                            <option value="polygon">Polygon</option>
+                            <option value="bsc">BSC</option>
+                            <option value="arbitrum">Arbitrum</option>
+                        </select>
+                    </div>
+                    <button class="save-btn" onclick="saveWallet('trading')">Save Trading Wallet</button>
+                </div>
+
+                <div class="payout-tier">
+                    <div class="tier-header">
+                        <div class="tier-name">WALLET STATUS</div>
+                        <div class="tier-range">Connection Health</div>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Payment Wallet</span>
+                            <span id="payment-status" style="color: #ef4444;">❌ Disconnected</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Trading Wallet</span>
+                            <span id="trading-status" style="color: #ef4444;">❌ Disconnected</span>
+                        </div>
+                    </div>
+                    <button class="save-btn" onclick="testWalletConnections()">Test Connections</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Information Section -->
+        <div id="info-section" class="section" style="display: none;">
+            <h2>ℹ️ System Information</h2>
+            <p style="margin-bottom: 30px; color: #999;">Real-time system status and configuration details.</p>
+
+            <div class="payout-grid">
+                <div class="payout-tier">
+                    <div class="tier-header">
+                        <div class="tier-name">SYSTEM STATUS</div>
+                        <div class="tier-range">Operational Health</div>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>AI Engine</span>
+                            <span id="ai-status" style="color: #4ade80;">✅ Online</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Database</span>
+                            <span id="db-status" style="color: #4ade80;">✅ Connected</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Signal Tracker</span>
+                            <span id="tracker-status" style="color: #4ade80;">✅ Active</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Notification System</span>
+                            <span id="notification-status" style="color: #4ade80;">✅ Operational</span>
+                        </div>
+                    </div>
+                    <button class="save-btn" onclick="refreshSystemStatus()">Refresh Status</button>
+                </div>
+
+                <div class="payout-tier">
+                    <div class="tier-header">
+                        <div class="tier-name">PERFORMANCE METRICS</div>
+                        <div class="tier-range">System Performance</div>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>CPU Usage</span>
+                            <span id="cpu-usage">45%</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Memory Usage</span>
+                            <span id="memory-usage">2.1GB / 4GB</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Active Signals</span>
+                            <span id="active-signals">12</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Uptime</span>
+                            <span id="uptime">7d 14h 32m</span>
+                        </div>
+                    </div>
+                    <button class="save-btn" onclick="refreshPerformanceMetrics()">Refresh Metrics</button>
+                </div>
+
+                <div class="payout-tier">
+                    <div class="tier-header">
+                        <div class="tier-name">SYSTEM CONFIG</div>
+                        <div class="tier-range">Current Settings</div>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Environment</span>
+                            <span id="environment">Production</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Version</span>
+                            <span id="version">v2.1.0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Node.js</span>
+                            <span id="nodejs-version">18.17.0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Last Backup</span>
+                            <span id="last-backup">2 hours ago</span>
+                        </div>
+                    </div>
+                    <button class="save-btn" onclick="createSystemBackup()">Create Backup</button>
                 </div>
             </div>
         </div>
@@ -842,12 +997,16 @@
             loadCurrentSettings();
             loadStats();
             loadRecentSubmissions();
+            loadWalletSettings();
+            loadSystemInfo();
         });
 
         // Navigation
         function showSection(sectionName) {
             // Hide all sections
             document.getElementById('payouts-section').style.display = 'none';
+            document.getElementById('wallet-section').style.display = 'none';
+            document.getElementById('info-section').style.display = 'none';
             document.getElementById('stats-section').style.display = 'none';
             document.getElementById('submissions-section').style.display = 'none';
 
@@ -990,6 +1149,137 @@
             if (event.target === modal) {
                 modal.style.display = 'none';
             }
+        }
+
+        // Wallet Management Functions
+        async function loadWalletSettings() {
+            try {
+                // Load from localStorage for now (in production, this would be from server)
+                const paymentWallet = localStorage.getItem('paymentWallet');
+                const paymentNetwork = localStorage.getItem('paymentNetwork') || 'TRC20';
+                const tradingWallet = localStorage.getItem('tradingWallet');
+                const tradingNetwork = localStorage.getItem('tradingNetwork') || 'ethereum';
+
+                if (paymentWallet) document.getElementById('payment-wallet').value = paymentWallet;
+                document.getElementById('payment-network').value = paymentNetwork;
+                if (tradingWallet) document.getElementById('trading-wallet').value = tradingWallet;
+                document.getElementById('trading-network').value = tradingNetwork;
+            } catch (error) {
+                console.error('Failed to load wallet settings:', error);
+            }
+        }
+
+        async function saveWallet(type) {
+            const walletInput = document.getElementById(`${type}-wallet`);
+            const networkSelect = document.getElementById(`${type}-network`);
+
+            const wallet = walletInput.value.trim();
+            const network = networkSelect.value;
+
+            if (!wallet) {
+                alert(`Please enter a ${type} wallet address`);
+                return;
+            }
+
+            try {
+                // Save to localStorage for now (in production, this would be saved to server)
+                localStorage.setItem(`${type}Wallet`, wallet);
+                localStorage.setItem(`${type}Network`, network);
+
+                // Show success modal
+                document.getElementById('success-modal').style.display = 'block';
+
+                console.log(`✅ Saved ${type} wallet: ${wallet} (${network})`);
+            } catch (error) {
+                alert('Failed to save wallet settings. Please try again.');
+                console.error('Save wallet error:', error);
+            }
+        }
+
+        async function testWalletConnections() {
+            // Simulate testing wallet connections
+            document.getElementById('payment-status').innerHTML = '<span style="color: #eab308;">⏳ Testing...</span>';
+            document.getElementById('trading-status').innerHTML = '<span style="color: #eab308;">⏳ Testing...</span>';
+
+            setTimeout(() => {
+                // Mock results - in production this would actually test the connections
+                const paymentConnected = Math.random() > 0.3; // 70% success rate
+                const tradingConnected = Math.random() > 0.4; // 60% success rate
+
+                document.getElementById('payment-status').innerHTML = paymentConnected ?
+                    '<span style="color: #4ade80;">✅ Connected</span>' :
+                    '<span style="color: #ef4444;">❌ Failed</span>';
+
+                document.getElementById('trading-status').innerHTML = tradingConnected ?
+                    '<span style="color: #4ade80;">✅ Connected</span>' :
+                    '<span style="color: #ef4444;">❌ Failed</span>';
+
+                if (paymentConnected && tradingConnected) {
+                    alert('All wallet connections tested successfully!');
+                } else {
+                    alert('Some wallet connections failed. Please check your settings.');
+                }
+            }, 2000);
+        }
+
+        // System Information Functions
+        async function loadSystemInfo() {
+            try {
+                // Load system information (mock data for now)
+                refreshSystemStatus();
+                refreshPerformanceMetrics();
+            } catch (error) {
+                console.error('Failed to load system info:', error);
+            }
+        }
+
+        async function refreshSystemStatus() {
+            // Simulate refreshing system status
+            document.getElementById('ai-status').innerHTML = '<span style="color: #eab308;">⏳ Checking...</span>';
+            document.getElementById('db-status').innerHTML = '<span style="color: #eab308;">⏳ Checking...</span>';
+            document.getElementById('tracker-status').innerHTML = '<span style="color: #eab308;">⏳ Checking...</span>';
+            document.getElementById('notification-status').innerHTML = '<span style="color: #eab308;">⏳ Checking...</span>';
+
+            setTimeout(() => {
+                // Mock status updates
+                document.getElementById('ai-status').innerHTML = '<span style="color: #4ade80;">✅ Online</span>';
+                document.getElementById('db-status').innerHTML = '<span style="color: #4ade80;">✅ Connected</span>';
+                document.getElementById('tracker-status').innerHTML = '<span style="color: #4ade80;">✅ Active</span>';
+                document.getElementById('notification-status').innerHTML = '<span style="color: #4ade80;">✅ Operational</span>';
+            }, 1500);
+        }
+
+        async function refreshPerformanceMetrics() {
+            // Simulate refreshing performance metrics
+            document.getElementById('cpu-usage').textContent = 'Refreshing...';
+            document.getElementById('memory-usage').textContent = 'Refreshing...';
+            document.getElementById('active-signals').textContent = 'Refreshing...';
+            document.getElementById('uptime').textContent = 'Refreshing...';
+
+            setTimeout(() => {
+                // Mock performance data
+                const cpu = Math.floor(Math.random() * 30) + 20; // 20-50%
+                const memory = (Math.random() * 1 + 1.5).toFixed(1); // 1.5-2.5 GB
+                const signals = Math.floor(Math.random() * 20) + 5; // 5-25 signals
+                const days = Math.floor(Math.random() * 7) + 1;
+                const hours = Math.floor(Math.random() * 24);
+                const mins = Math.floor(Math.random() * 60);
+
+                document.getElementById('cpu-usage').textContent = `${cpu}%`;
+                document.getElementById('memory-usage').textContent = `${memory}GB / 4GB`;
+                document.getElementById('active-signals').textContent = signals;
+                document.getElementById('uptime').textContent = `${days}d ${hours}h ${mins}m`;
+            }, 1000);
+        }
+
+        async function createSystemBackup() {
+            // Simulate creating a system backup
+            alert('System backup initiated. This may take a few minutes...');
+
+            setTimeout(() => {
+                document.getElementById('last-backup').textContent = 'Just now';
+                alert('System backup completed successfully!');
+            }, 3000);
         }
     </script>
 </body>

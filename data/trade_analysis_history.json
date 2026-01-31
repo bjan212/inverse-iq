@@ -223,5 +223,47 @@
       "maxDrawdown": 1,
       "riskScore": 3
     }
+  },
+  {
+    "userId": "boo",
+    "timestamp": 1769891318697,
+    "exchanges": {
+      "binance": {
+        "positions": [],
+        "balance": 0.68359303,
+        "totalPositionValue": 0,
+        "riskLevel": "low",
+        "recommendations": [
+          "No open positions found."
+        ]
+      }
+    },
+    "overallRecommendation": "VERY LOW RISK LEVEL: Portfolio is extremely conservative. Significant opportunity to increase exposure for potentially higher returns.",
+    "riskAssessment": {
+      "totalRisk": 0,
+      "maxDrawdown": 1,
+      "riskScore": 3
+    }
+  },
+  {
+    "userId": "boo",
+    "timestamp": 1769891320616,
+    "exchanges": {
+      "binance": {
+        "positions": [],
+        "balance": 0.68359303,
+        "totalPositionValue": 0,
+        "riskLevel": "low",
+        "recommendations": [
+          "No open positions found."
+        ]
+      }
+    },
+    "overallRecommendation": "VERY LOW RISK LEVEL: Portfolio is extremely conservative. Significant opportunity to increase exposure for potentially higher returns.",
+    "riskAssessment": {
+      "totalRisk": 0,
+      "maxDrawdown": 1,
+      "riskScore": 3
+    }
   }
 ]
