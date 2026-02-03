@@ -54,7 +54,7 @@ const wss = new WebSocketServer({ server });
 app.set('trust proxy', 1);
 
 // Admin authentication removed - direct access now allowed
-setupSession(app);
+// setupSession(app); // Commented out - not needed for this integration
 
 // Setup global error handlers
 setupGlobalErrorHandlers();
@@ -2478,7 +2478,7 @@ app.delete('/api/admin/backup/delete', authenticateAdmin, async (req, res) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000; // Changed to 4000 to avoid conflict with ai-prompt-builder
 
 server.listen(PORT, () => {
   console.log(`\n╔════════════════════════════════════════════════════════════╗`);
