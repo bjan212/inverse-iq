@@ -409,4 +409,169 @@ Format as JSON:
       winRate,
     };
   }),
+
+  /**
+   * Find the best trade opportunity across all major markets
+   * Scans multiple symbols and returns the highest confidence setup
+   */
+  findBestTrade: protectedProcedure
+    .input(
+      z.object({
+        riskLevel: z.enum(["very_high", "high", "medium", "low"]),
+        capital: z.number(),
+        leverage: z.number().min(1).max(50),
+        exchange: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { riskLevel, capital, leverage } = input;
+      const userId = ctx.user.id;
+
+      // List of major trading pairs to scan
+      const symbolsToScan = [
+        "BTC/USDT",
+        "ETH/USDT",
+        "SOL/USDT",
+        "BNB/USDT",
+        "XRP/USDT",
+        "ADA/USDT",
+        "DOGE/USDT",
+        "MATIC/USDT",
+      ];
+
+      console.log(`🔍 Scanning ${symbolsToScan.length} markets for best opportunity...`);
+
+      // Fetch market data for all symbols in parallel
+      const marketDataPromises = symbolsToScan.map(async (symbol) => {
+        try {
+          const cleanSymbol = symbol.replace("/", "");
+          const response = await axios.get(
+            `https://api.binance.com/api/v3/ticker/24hr?symbol=${cleanSymbol}`,
+            { timeout: 5000 }
+          );
+
+          return {
+            symbol,
+            price: parseFloat(response.data.lastPrice),
+            change24h: parseFloat(response.data.priceChangePercent),
+            volume: parseFloat(response.data.volume),
+            available: true,
+          };
+        } catch (error) {
+          console.warn(`Failed to fetch data for ${symbol}:`, error.message);
+          return { symbol, available: false };
+        }
+      });
+
+      const allMarketData = await Promise.all(marketDataPromises);
+      const availableMarkets = allMarketData.filter((m) => m.available);
+
+      console.log(`✅ Found ${availableMarkets.length} available markets`);
+
+      // Quick AI analysis for each market to get confidence scores
+      const analysisPromises = availableMarkets.map(async (market) => {
+        try {
+          // Get inverse patterns for this symbol
+          const db = await getDb();
+          let inversePatternsList: any[] = [];
+          if (db) {
+            inversePatternsList = await db
+              .select()
+              .from(inversePatterns)
+              .where(and(eq(inversePatterns.userId, userId), eq(inversePatterns.symbol, market.symbol)))
+              .orderBy(desc(inversePatterns.confidenceBoost))
+              .limit(3);
+          }
+
+          const inverseContext =
+            inversePatternsList.length > 0
+              ? `\n\nInverse patterns learned: ${inversePatternsList.length} pattern(s) suggest caution or opportunity.`
+              : "";
+
+          // Quick confidence assessment
+          const quickAnalysis = await invokeLLM({
+            messages: [
+              {
+                role: "system",
+                content: `You are a trading analyst. Quickly assess the confidence level (1-10) for entering a trade on ${market.symbol}.`,
+              },
+              {
+                role: "user",
+                content: `Market: ${market.symbol}
+Price: $${market.price}
+24h Change: ${market.change24h}%
+Volume: ${market.volume}
+Risk Level: ${riskLevel}${inverseContext}
+
+Provide ONLY a JSON response with: {"confidence": <1-10>, "direction": "LONG" or "SHORT", "reason": "<brief reason>"}`,
+              },
+            ],
+            response_format: {
+              type: "json_schema",
+              json_schema: {
+                name: "quick_assessment",
+                strict: true,
+                schema: {
+                  type: "object",
+                  properties: {
+                    confidence: { type: "integer", minimum: 1, maximum: 10 },
+                    direction: { type: "string", enum: ["LONG", "SHORT"] },
+                    reason: { type: "string" },
+                  },
+                  required: ["confidence", "direction", "reason"],
+                  additionalProperties: false,
+                },
+              },
+            },
+          });
+
+          const analysisContent = typeof quickAnalysis.choices[0]?.message?.content === "string"
+            ? quickAnalysis.choices[0].message.content
+            : "{}";
+          const assessment = JSON.parse(analysisContent);
+
+          return {
+            symbol: market.symbol,
+            ...market,
+            ...assessment,
+          };
+        } catch (error) {
+          console.warn(`Analysis failed for ${market.symbol}:`, error.message);
+          return {
+            symbol: market.symbol,
+            ...market,
+            confidence: 0,
+            direction: "LONG",
+            reason: "Analysis failed",
+          };
+        }
+      });
+
+      const allAnalyses = await Promise.all(analysisPromises);
+
+      // Sort by confidence (highest first)
+      const sortedByConfidence = allAnalyses
+        .filter((a) => a.confidence > 0)
+        .sort((a, b) => b.confidence - a.confidence);
+
+      if (sortedByConfidence.length === 0) {
+        throw new Error("No viable trading opportunities found at this time");
+      }
+
+      const bestOpportunity = sortedByConfidence[0];
+
+      console.log(`🎯 Best opportunity: ${bestOpportunity.symbol} (Confidence: ${bestOpportunity.confidence}/10)`);
+
+      return {
+        symbol: bestOpportunity.symbol,
+        confidence: bestOpportunity.confidence,
+        direction: bestOpportunity.direction,
+        reason: bestOpportunity.reason,
+        price: bestOpportunity.price,
+        change24h: bestOpportunity.change24h,
+        allOpportunities: sortedByConfidence.slice(0, 5), // Top 5
+        scannedMarkets: symbolsToScan.length,
+        timestamp: new Date().toISOString(),
+      };
+    }),
 });

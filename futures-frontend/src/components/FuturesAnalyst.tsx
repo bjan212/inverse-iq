@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
-import { Loader2, TrendingUp, TrendingDown, Shield, Brain, Users, Zap, Clock, AlertTriangle } from "lucide-react";
+import { Loader2, TrendingUp, TrendingDown, Shield, Brain, Users, Zap, Clock, AlertTriangle, Settings, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 // Quiz removed - direct signal generation
 import { Streamdown } from "streamdown";
 import { Copy, Check } from "lucide-react";
+import { AISettingsModal } from "@/components/AISettingsModal";
 
 interface AgentAnalysis {
   quant: string;
@@ -47,6 +48,8 @@ export default function FuturesAnalyst() {
   const [marketData, setMarketData] = useState<any>(null);
   // Quiz removed - all users can generate signals directly
   const [copied, setCopied] = useState(false);
+  const [showAISettings, setShowAISettings] = useState(false);
+  const [isFindingBestTrade, setIsFindingBestTrade] = useState(false);
 
   // Fetch market data
   const { data: liveMarketData, refetch: refetchMarketData } = trpc.futures.getMarketData.useQuery(
@@ -72,6 +75,38 @@ export default function FuturesAnalyst() {
       toast.error(`Failed to generate signal: ${error.message}`);
     },
   });
+
+  const findBestTradeMutation = trpc.futures.findBestTrade.useMutation({
+    onSuccess: (data) => {
+      setIsFindingBestTrade(false);
+      toast.success(`Best opportunity: ${data.symbol} (${data.direction}) - Confidence: ${data.confidence}/10`);
+      
+      // Auto-fill the form with best opportunity
+      setSymbol(data.symbol);
+      
+      // Show detailed results
+      toast.info(data.reason, { duration: 5000 });
+      
+      // Auto-generate full signal for best opportunity
+      setTimeout(() => {
+        handleGenerateSignal();
+      }, 1000);
+    },
+    onError: (error) => {
+      setIsFindingBestTrade(false);
+      toast.error(`Failed to find best trade: ${error.message}`);
+    },
+  });
+
+  const handleFindBestTrade = () => {
+    setIsFindingBestTrade(true);
+    findBestTradeMutation.mutate({
+      riskLevel,
+      capital,
+      leverage: leverage[0],
+      exchange: exchange === "all" ? undefined : exchange,
+    });
+  };
 
   const handleGenerateSignal = () => {
     // Fetch market data first
@@ -277,24 +312,57 @@ ${agents.contrarian}
             </Select>
           </div>
 
-          <Button
-            onClick={handleGenerateSignal}
-            disabled={generateSignalMutation.isPending}
-            className="w-full"
-            size="lg"
-          >
-            {generateSignalMutation.isPending ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Analyzing...
-              </>
-            ) : (
-              <>
-                <Zap className="w-4 h-4 mr-2" />
-                Generate Signal
-              </>
-            )}
-          </Button>
+          {/* Action Buttons */}
+          <div className="space-y-2">
+            <Button
+              onClick={() => setShowAISettings(true)}
+              variant="outline"
+              className="w-full"
+              size="sm"
+            >
+              <Settings className="w-4 h-4 mr-2" />
+              AI Settings
+            </Button>
+
+            <Button
+              onClick={handleFindBestTrade}
+              disabled={isFindingBestTrade || findBestTradeMutation.isPending}
+              variant="secondary"
+              className="w-full"
+              size="lg"
+            >
+              {isFindingBestTrade ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Scanning Markets...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Find Best Trade Now
+                </>
+              )}
+            </Button>
+
+            <Button
+              onClick={handleGenerateSignal}
+              disabled={generateSignalMutation.isPending}
+              className="w-full"
+              size="lg"
+            >
+              {generateSignalMutation.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                <>
+                  <Zap className="w-4 h-4 mr-2" />
+                  Generate Signal
+                </>
+              )}
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
@@ -540,6 +608,15 @@ ${agents.contrarian}
       </div>
 
       {/* Quiz removed - all users can generate signals directly */}
+
+      {/* AI Settings Modal */}
+      <AISettingsModal
+        open={showAISettings}
+        onOpenChange={setShowAISettings}
+        onSuccess={() => {
+          toast.success("AI ensemble enabled! Better signals incoming.");
+        }}
+      />
     </>
   );
 }
