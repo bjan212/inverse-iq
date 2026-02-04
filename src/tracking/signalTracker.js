@@ -14,6 +14,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { logEngineEvent } = require('../utils/engineLogger');
 
 class SignalTracker {
   constructor(storagePath = './data/active_signals.json') {
@@ -76,6 +77,13 @@ class SignalTracker {
 
     console.log(`📍 Signal tracked: ${signal.signalId} (${signal.symbol} ${signal.direction})`);
 
+    logEngineEvent('info', 'SignalTracker: signal registered', {
+      signalId: signal.signalId,
+      symbol: signal.symbol,
+      direction: signal.direction,
+      confidence: signal.confidence
+    });
+
     return trackedSignal;
   }
 
@@ -127,6 +135,13 @@ class SignalTracker {
 
     console.log(`✅ Signal outcome recorded: ${signalId} → ${outcome.outcome.toUpperCase()}`);
 
+    logEngineEvent('info', 'SignalTracker: outcome recorded', {
+      signalId,
+      outcome: outcome.outcome,
+      pnl: signal.pnl,
+      pnlPercentage: signal.pnlPercentage
+    });
+
     return signal;
   }
 
@@ -147,6 +162,7 @@ class SignalTracker {
       await this.saveSignals();
 
       console.log(`⏰ Signal expired: ${signalId}`);
+      logEngineEvent('warning', 'SignalTracker: signal expired', { signalId });
       return true;
     }
 

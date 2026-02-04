@@ -20,6 +20,7 @@ const DataPipeline = require('./src/ai-engine/dataPipeline');
 const SignalTracker = require('./src/tracking/signalTracker');
 const NotificationManager = require('./src/notifications/notificationManager');
 const BackupManager = require('./src/utils/backupManager');
+const { readEngineLogs, logEngineEvent } = require('./src/utils/engineLogger');
 
 // Security and validation middleware
 const {
@@ -184,6 +185,23 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date(),
     activeConnections: connections.size
   });
+});
+
+// Engine logs (recent activity)
+app.get('/api/logs', (req, res) => {
+  try {
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 100, 1), 500);
+    const logs = readEngineLogs(limit);
+    res.json({
+      success: true,
+      logs
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 // Submit trading data
@@ -2502,6 +2520,8 @@ server.listen(PORT, () => {
   console.log(`  🌍 Web: http://localhost:${PORT}`);
   console.log(`  ⚙️ Admin: http://localhost:${PORT}/admin.html`);
   console.log(`\n  Ready to accept submissions!\n`);
+
+  logEngineEvent('info', 'Server started', { port: PORT });
 });
 
 module.exports = { app, server };

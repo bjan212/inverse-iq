@@ -19,6 +19,7 @@
 const SelfImprovingEngine = require('./selfImprovingEngine');
 const PublicDataAnalyzer = require('./publicDataAnalyzer');
 const BinancePublicCollector = require('../collectors/binancePublicCollector');
+const { logEngineEvent } = require('../utils/engineLogger');
 
 class HybridEngine extends SelfImprovingEngine {
   constructor(dbPath = './data/hybrid_pattern_database.json') {
@@ -97,6 +98,11 @@ class HybridEngine extends SelfImprovingEngine {
     console.log('\n╔════════════════════════════════════════════════════════════╗');
     console.log('║         BOOTSTRAPPING AI WITH PUBLIC DATA                 ║');
     console.log('╚════════════════════════════════════════════════════════════╝\n');
+
+    logEngineEvent('info', 'HybridAI: bootstrapWithPublicData started', {
+      symbols,
+      days
+    });
     
     console.log(`📊 Collecting ${days} days of data for ${symbols.length} symbols...`);
     
@@ -138,6 +144,12 @@ class HybridEngine extends SelfImprovingEngine {
     
     console.log('\n✅ Bootstrap complete!');
     this.showDatabaseStatus();
+
+    logEngineEvent('info', 'HybridAI: bootstrapWithPublicData completed', {
+      patternsAdded: result.patternsAdded,
+      patternsUpdated: result.patternsUpdated,
+      totalPatterns: result.totalPatterns
+    });
     
     return result;
   }
@@ -148,6 +160,11 @@ class HybridEngine extends SelfImprovingEngine {
    */
   async addPublicDataPatterns(publicData) {
     console.log('\n🔄 Adding public data patterns to database...\n');
+
+    logEngineEvent('info', 'HybridAI: addPublicDataPatterns started', {
+      traderId: publicData.traderId,
+      trades: (publicData.trades || []).length
+    });
     
     const trades = publicData.trades || [];
     console.log(`   Processing ${trades.length} public patterns...`);
@@ -238,6 +255,12 @@ class HybridEngine extends SelfImprovingEngine {
     console.log(`   Patterns added: ${patternsAdded}`);
     console.log(`   Patterns updated: ${patternsUpdated}`);
     console.log(`   Total patterns: ${this.patternDatabase.totalPatterns}`);
+
+    logEngineEvent('info', 'HybridAI: addPublicDataPatterns completed', {
+      patternsAdded,
+      patternsUpdated,
+      totalPatterns: this.patternDatabase.totalPatterns
+    });
     
     return {
       patternsAdded,
@@ -308,9 +331,14 @@ class HybridEngine extends SelfImprovingEngine {
    */
   async addNewTraderData(traderData) {
     console.log('\n🔄 ADDING REAL TRADER DATA (High Value!)...\n');
-    
+
     const traderId = traderData.traderId || `trader_${Date.now()}`;
     const trades = traderData.trades || [];
+
+    logEngineEvent('info', 'HybridAI: addNewTraderData started', {
+      traderId,
+      trades: trades.length
+    });
     
     console.log(`   Trader: ${traderId}`);
     console.log(`   Processing ${trades.length} trades...`);
@@ -406,6 +434,14 @@ class HybridEngine extends SelfImprovingEngine {
     console.log(`   Patterns updated: ${patternsUpdated}`);
     console.log(`   Patterns upgraded to COMBINED: ${patternsUpgraded} 🎯`);
     console.log(`   Total patterns: ${this.patternDatabase.totalPatterns}`);
+
+    logEngineEvent('info', 'HybridAI: addNewTraderData completed', {
+      traderId,
+      patternsAdded,
+      patternsUpdated,
+      patternsUpgraded,
+      totalPatterns: this.patternDatabase.totalPatterns
+    });
     
     return {
       patternsAdded,
@@ -775,6 +811,10 @@ class HybridEngine extends SelfImprovingEngine {
    */
   async generateSmartSignals(symbols = ['BTCUSDT', 'ETHUSDT']) {
     console.log('\n🎯 Generating smart signals with caching and trading levels...\n');
+
+    logEngineEvent('info', 'HybridAI: generateSmartSignals started', {
+      symbols
+    });
     
     const signals = [];
     
@@ -847,6 +887,11 @@ class HybridEngine extends SelfImprovingEngine {
     }
     
     console.log(`\n✅ Generated ${signals.length} smart signals (${this.signalCache.size} cached)`);
+
+    logEngineEvent('info', 'HybridAI: generateSmartSignals completed', {
+      signalsGenerated: signals.length,
+      cachedSignals: this.signalCache.size
+    });
     
     // Track signals if tracker is available
     if (this.signalTracker) {

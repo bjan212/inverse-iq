@@ -17,6 +17,7 @@
 const fs = require('fs');
 const path = require('path');
 const InverseSignalEngine = require('./inverseSignalEngine');
+const { logEngineEvent } = require('../utils/engineLogger');
 
 class SelfImprovingEngine extends InverseSignalEngine {
   constructor(dbPath = './data/pattern_database.json') {
@@ -55,8 +56,15 @@ class SelfImprovingEngine extends InverseSignalEngine {
    */
   async addNewTraderData(traderData) {
     console.log('\n🔄 INCREMENTAL LEARNING: Adding new trader data...\n');
-    
+
     const traderId = traderData.traderId || `trader_${Date.now()}`;
+    const trades = traderData.trades || [];
+
+    logEngineEvent('info', 'AI: addNewTraderData started', {
+      traderId,
+      trades: trades.length
+    });
+    try {
     
     // Check if trader already exists
     const existingTrader = this.patternDatabase.traderHistory.find(t => t.id === traderId);
@@ -67,7 +75,6 @@ class SelfImprovingEngine extends InverseSignalEngine {
     }
     
     // Process this trader's data
-    const trades = traderData.trades || [];
     console.log(`   Processing ${trades.length} trades...`);
     
     // Extract loss patterns from this trader
@@ -153,12 +160,21 @@ class SelfImprovingEngine extends InverseSignalEngine {
     console.log(`   Total patterns in database: ${this.patternDatabase.totalPatterns}`);
     console.log(`   Total traders: ${this.patternDatabase.totalTraders}`);
 
-    return {
+    const summary = {
       patternsAdded,
       patternsUpdated,
       totalPatterns: this.patternDatabase.totalPatterns,
       totalTraders: this.patternDatabase.totalTraders
     };
+    logEngineEvent('info', 'AI: addNewTraderData completed', summary);
+    return summary;
+    } catch (error) {
+      logEngineEvent('error', 'AI: addNewTraderData failed', {
+        traderId,
+        error: error.message
+      });
+      throw error;
+    }
   }
 
   /**
@@ -204,11 +220,17 @@ class SelfImprovingEngine extends InverseSignalEngine {
    */
   async recordSignalOutcome(signalId, outcome) {
     console.log(`\n📊 Recording signal outcome: ${signalId} → ${outcome}\n`);
+
+    logEngineEvent('info', 'AI: recordSignalOutcome started', {
+      signalId,
+      outcome
+    });
     
     // Find the pattern that generated this signal
     const signal = this.findSignalById(signalId);
     if (!signal) {
       console.log('⚠️  Signal not found');
+      logEngineEvent('warning', 'AI: recordSignalOutcome signal not found', { signalId });
       return;
     }
     
@@ -217,6 +239,10 @@ class SelfImprovingEngine extends InverseSignalEngine {
     
     if (!pattern) {
       console.log('⚠️  Pattern not found');
+      logEngineEvent('warning', 'AI: recordSignalOutcome pattern not found', {
+        signalId,
+        patternKey
+      });
       return;
     }
     
@@ -266,6 +292,15 @@ class SelfImprovingEngine extends InverseSignalEngine {
     console.log(`   Win Rate: ${(pattern.performance.wins / (pattern.performance.wins + pattern.performance.losses) * 100).toFixed(2)}%`);
     console.log(`   Avg PnL: $${pattern.performance.avgPnl.toFixed(2)}`);
     console.log(`   New Confidence: ${pattern.confidence}%`);
+
+    logEngineEvent('info', 'AI: recordSignalOutcome completed', {
+      signalId,
+      patternKey,
+      confidence: pattern.confidence,
+      wins: pattern.performance.wins,
+      losses: pattern.performance.losses,
+      accuracy: this.patternDatabase.performance.accuracy
+    });
     
     return pattern.performance;
   }
@@ -276,6 +311,10 @@ class SelfImprovingEngine extends InverseSignalEngine {
    */
   async generateSmartSignals(symbols = ['BTCUSDT', 'ETHUSDT']) {
     console.log('\n🎯 Generating smart signals from pattern database...\n');
+
+    logEngineEvent('info', 'AI: generateSmartSignals started', {
+      symbols
+    });
     
     const signals = [];
     
@@ -305,6 +344,10 @@ class SelfImprovingEngine extends InverseSignalEngine {
     }
     
     console.log(`\n✅ Generated ${signals.length} smart signals`);
+
+    logEngineEvent('info', 'AI: generateSmartSignals completed', {
+      signalsGenerated: signals.length
+    });
     
     return signals;
   }
@@ -574,11 +617,17 @@ class SelfImprovingEngine extends InverseSignalEngine {
         const data = await fs.promises.readFile(this.dbPath, 'utf8');
         this.patternDatabase = JSON.parse(data);
         console.log(`✅ Loaded pattern database: ${this.patternDatabase.totalPatterns} patterns from ${this.patternDatabase.totalTraders} traders`);
+        logEngineEvent('info', 'AI: database loaded', {
+          totalPatterns: this.patternDatabase.totalPatterns,
+          totalTraders: this.patternDatabase.totalTraders
+        });
       } else {
         console.log('📝 Creating new pattern database');
+        logEngineEvent('info', 'AI: database initialized', { path: this.dbPath });
       }
     } catch (error) {
       console.error('Failed to load database:', error.message);
+      logEngineEvent('error', 'AI: database load failed', { error: error.message });
     }
   }
 
@@ -591,8 +640,13 @@ class SelfImprovingEngine extends InverseSignalEngine {
 
       await fs.promises.writeFile(this.dbPath, JSON.stringify(this.patternDatabase, null, 2));
       console.log(`💾 Database saved: ${this.patternDatabase.totalPatterns} patterns`);
+      logEngineEvent('info', 'AI: database saved', {
+        totalPatterns: this.patternDatabase.totalPatterns,
+        totalTraders: this.patternDatabase.totalTraders
+      });
     } catch (error) {
       console.error('Failed to save database:', error.message);
+      logEngineEvent('error', 'AI: database save failed', { error: error.message });
     }
   }
 

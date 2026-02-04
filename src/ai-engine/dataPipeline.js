@@ -8,6 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 const SelfImprovingEngine = require('./selfImprovingEngine');
+const { logEngineEvent } = require('../utils/engineLogger');
 
 class DataPipeline {
   constructor() {
@@ -38,6 +39,11 @@ class DataPipeline {
 
       console.log(`📥 Processing submission: ${data.submissionId} (${data.trades.length} trades)`);
 
+      logEngineEvent('info', 'DataPipeline: processing submission', {
+        submissionId: data.submissionId,
+        trades: data.trades.length
+      });
+
       const traderData = {
         traderId: data.submissionId,
         trades: data.trades
@@ -46,6 +52,14 @@ class DataPipeline {
       const result = await this.aiEngine.addNewTraderData(traderData);
 
       console.log(`✅ AI Engine updated: +${result.patternsAdded} patterns, strengthened ${result.patternsUpdated}`);
+
+      logEngineEvent('info', 'DataPipeline: submission processed', {
+        submissionId: data.submissionId,
+        tradesProcessed: data.trades.length,
+        patternsAdded: result.patternsAdded,
+        patternsUpdated: result.patternsUpdated,
+        totalPatterns: result.totalPatterns
+      });
 
       this.processedSubmissions.add(data.submissionId);
 
@@ -60,6 +74,10 @@ class DataPipeline {
 
     } catch (error) {
       console.error(`❌ Error processing ${filename}:`, error.message);
+      logEngineEvent('error', 'DataPipeline: submission processing failed', {
+        filename,
+        error: error.message
+      });
       return null;
     }
   }
