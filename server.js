@@ -73,6 +73,15 @@ app.get('/admin.html', (req, res, next) => {
   res.sendFile(__dirname + '/public/admin.html');
 });
 
+// Signal Monitoring Dashboard
+app.get('/dashboard', (req, res) => {
+  res.sendFile(__dirname + '/public/signal-monitoring-dashboard.html');
+});
+
+app.get('/monitoring', (req, res) => {
+  res.sendFile(__dirname + '/public/signal-monitoring-dashboard.html');
+});
+
 // Block direct static access to admin.html
 app.use((req, res, next) => {
   if (req.path === '/admin.html') {
