@@ -1,9 +1,9 @@
 {
   "version": 1,
   "created": "2025-11-29T04:25:33.189Z",
-  "lastUpdated": "2026-01-11T16:24:26.187Z",
+  "lastUpdated": "2026-02-03T14:31:17.047Z",
   "totalTraders": 2,
-  "totalTrades": 12042,
+  "totalTrades": 12225,
   "totalPatterns": 10,
   "patterns": {
     "BTCUSDT_SHORT_RSINaN_undefined": {
@@ -14,9 +14,9 @@
       "traders": [
         "public_market_data"
       ],
-      "occurrences": 377,
-      "totalLoss": 2185.7399999999975,
-      "avgLoss": 5.79771883289124,
+      "occurrences": 411,
+      "totalLoss": 2363.8899999999985,
+      "avgLoss": 5.7515571776155685,
       "conditions": {
         "support": 109858.44,
         "breakdownLow": 109735.59,
@@ -30,8 +30,8 @@
       "source": "public",
       "patternType": "FALSE_BREAKDOWN",
       "created": "2025-11-29T04:25:43.175Z",
-      "lastSeen": "2026-01-09T05:50:36.750Z",
-      "version": 377
+      "lastSeen": "2026-02-03T14:31:17.046Z",
+      "version": 411
     },
     "BTCUSDT_LONG_RSINaN_undefined": {
       "key": "BTCUSDT_LONG_RSINaN_undefined",
@@ -41,9 +41,9 @@
       "traders": [
         "public_market_data"
       ],
-      "occurrences": 295,
-      "totalLoss": 1629.4099999999983,
-      "avgLoss": 5.523423728813554,
+      "occurrences": 314,
+      "totalLoss": 1719.4599999999987,
+      "avgLoss": 5.475987261146493,
       "conditions": {
         "upperWick": 338.20999999999185,
         "bodySize": 26.010000000009313,
@@ -56,8 +56,8 @@
       "source": "public",
       "patternType": "LIQUIDATION_WICK",
       "created": "2025-11-29T04:25:43.175Z",
-      "lastSeen": "2026-01-09T05:50:36.750Z",
-      "version": 295
+      "lastSeen": "2026-02-03T14:31:17.046Z",
+      "version": 314
     },
     "ETHUSDT_LONG_RSINaN_undefined": {
       "key": "ETHUSDT_LONG_RSINaN_undefined",
@@ -67,9 +67,9 @@
       "traders": [
         "public_market_data"
       ],
-      "occurrences": 306,
-      "totalLoss": 2245.98,
-      "avgLoss": 7.3398039215686275,
+      "occurrences": 338,
+      "totalLoss": 2435.1800000000007,
+      "avgLoss": 7.20467455621302,
       "conditions": {
         "resistance": 3902,
         "breakoutHigh": 3909.39,
@@ -83,8 +83,8 @@
       "source": "public",
       "patternType": "FALSE_BREAKOUT",
       "created": "2025-11-29T04:25:43.175Z",
-      "lastSeen": "2026-01-09T05:50:36.751Z",
-      "version": 306
+      "lastSeen": "2026-02-03T14:31:17.046Z",
+      "version": 338
     },
     "ETHUSDT_SHORT_RSINaN_undefined": {
       "key": "ETHUSDT_SHORT_RSINaN_undefined",
@@ -94,9 +94,9 @@
       "traders": [
         "public_market_data"
       ],
-      "occurrences": 222,
-      "totalLoss": 2006.6300000000022,
-      "avgLoss": 9.038873873873884,
+      "occurrences": 258,
+      "totalLoss": 2403.6700000000023,
+      "avgLoss": 9.316550387596909,
       "conditions": {
         "support": 3728.09,
         "breakdownLow": 3715.69,
@@ -110,8 +110,8 @@
       "source": "public",
       "patternType": "FALSE_BREAKDOWN",
       "created": "2025-11-29T04:25:43.175Z",
-      "lastSeen": "2026-01-09T05:50:36.751Z",
-      "version": 222
+      "lastSeen": "2026-02-03T14:31:17.046Z",
+      "version": 258
     },
     "BNBUSDT_LONG_RSINaN_undefined": {
       "key": "BNBUSDT_LONG_RSINaN_undefined",
@@ -121,9 +121,9 @@
       "traders": [
         "public_market_data"
       ],
-      "occurrences": 290,
-      "totalLoss": 1638.7999999999993,
-      "avgLoss": 5.651034482758618,
+      "occurrences": 319,
+      "totalLoss": 1728.3899999999996,
+      "avgLoss": 5.418150470219435,
       "conditions": {
         "resistance": 1096.42,
         "breakoutHigh": 1096.7,
@@ -137,8 +137,8 @@
       "source": "public",
       "patternType": "FALSE_BREAKOUT",
       "created": "2025-11-29T04:25:43.176Z",
-      "lastSeen": "2026-01-09T05:50:36.751Z",
-      "version": 290
+      "lastSeen": "2026-02-03T14:31:17.046Z",
+      "version": 319
     },
     "BNBUSDT_SHORT_RSINaN_undefined": {
       "key": "BNBUSDT_SHORT_RSINaN_undefined",
@@ -148,9 +148,9 @@
       "traders": [
         "public_market_data"
       ],
-      "occurrences": 318,
-      "totalLoss": 2595.129999999997,
-      "avgLoss": 8.160786163522003,
+      "occurrences": 351,
+      "totalLoss": 2830.769999999998,
+      "avgLoss": 8.06487179487179,
       "conditions": {
         "support": 1080.79,
         "breakdownLow": 1080.22,
@@ -164,8 +164,8 @@
       "source": "public",
       "patternType": "FALSE_BREAKDOWN",
       "created": "2025-11-29T04:25:43.176Z",
-      "lastSeen": "2026-01-09T05:50:36.751Z",
-      "version": 318
+      "lastSeen": "2026-02-03T14:31:17.046Z",
+      "version": 351
     },
     "BTCUSDT_LONG_RSI40_NEUTRAL": {
       "key": "BTCUSDT_LONG_RSI40_NEUTRAL",

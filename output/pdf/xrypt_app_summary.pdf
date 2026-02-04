@@ -1,0 +1,89 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 2416 >>
+stream
+BT
+/F2 18 Tf
+1 0 0 1 54 716 Tm (Xrypt Trading Service - One-Page Summary) Tj
+/F2 12 Tf
+1 0 0 1 54 700 Tm (What it is) Tj
+/F1 10 Tf
+1 0 0 1 54 688 Tm (Xrypt is an AI-powered trading signal generator that uses inverse learning from trader losses to) Tj
+/F1 10 Tf
+1 0 0 1 54 676 Tm (identify profitable patterns and continuously improve. It also supports DEX trading execution) Tj
+/F1 10 Tf
+1 0 0 1 54 664 Tm (across multiple chains.) Tj
+/F2 12 Tf
+1 0 0 1 54 648 Tm (Who it is for) Tj
+/F1 10 Tf
+1 0 0 1 54 636 Tm (Crypto traders who want AI-generated signals with optional on-chain DEX execution.) Tj
+/F2 12 Tf
+1 0 0 1 54 620 Tm (What it does) Tj
+/F1 10 Tf
+1 0 0 1 54 608 Tm (- Generates AI trading signals with confidence scores and risk levels.) Tj
+/F1 10 Tf
+1 0 0 1 54 596 Tm (- Learns from trader losses and multiple data sources to improve accuracy over time.) Tj
+/F1 10 Tf
+1 0 0 1 54 584 Tm (- Collects public market data and trader submissions for continuous learning.) Tj
+/F1 10 Tf
+1 0 0 1 54 572 Tm (- Integrates DEX trading and multi-chain support \(Ethereum, BSC, Arbitrum, Polygon\).) Tj
+/F1 10 Tf
+1 0 0 1 54 560 Tm (- Enables Web3 wallet connections for on-chain trade execution.) Tj
+/F1 10 Tf
+1 0 0 1 54 548 Tm (- Exposes REST and WebSocket endpoints for signals, feedback, and notifications.) Tj
+/F2 12 Tf
+1 0 0 1 54 532 Tm (How it works) Tj
+/F1 10 Tf
+1 0 0 1 54 520 Tm (- Frontend provides a signals UI \(signals.html\) and Web3 trading interface.) Tj
+/F1 10 Tf
+1 0 0 1 54 508 Tm (- Backend runs an Express server with REST APIs, WebSocket updates, and DEX endpoints.) Tj
+/F1 10 Tf
+1 0 0 1 54 496 Tm (- AI engine \(HybridEngine\) combines public market data with trader data patterns.) Tj
+/F1 10 Tf
+1 0 0 1 54 484 Tm (- Data collection layer pulls exchange data plus trader submissions and feedback.) Tj
+/F1 10 Tf
+1 0 0 1 54 472 Tm (- Blockchain layer executes on Uniswap V3, PancakeSwap, and QuickSwap.) Tj
+/F2 12 Tf
+1 0 0 1 54 456 Tm (How to run) Tj
+/F1 10 Tf
+1 0 0 1 54 444 Tm (1. Install dependencies: npm install) Tj
+/F1 10 Tf
+1 0 0 1 54 432 Tm (2. Create environment file: cp .env.example .env \(then edit values\)) Tj
+/F1 10 Tf
+1 0 0 1 54 420 Tm (3. Configure RPC endpoints: ./scripts/setupRPCConfig.sh) Tj
+/F1 10 Tf
+1 0 0 1 54 408 Tm (4. Bootstrap the AI engine: npm run bootstrap) Tj
+/F1 10 Tf
+1 0 0 1 54 396 Tm (5. Start the server: npm start \(open http://localhost:3000/signals.html\)) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+6 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000251 00000 n 
+0000002719 00000 n 
+0000002789 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+2864
+%%EOF

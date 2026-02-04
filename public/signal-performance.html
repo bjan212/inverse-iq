@@ -816,7 +816,7 @@
                     throw new Error('Failed to load performance data from API');
                 }
             } catch (error) {
-                console.error('Failed to load performance data:', error);
+                console.error('Failed to load performance data from API:', error);
                 // Fallback to mock data if API fails
                 performanceData = {
                     overall: {
@@ -941,8 +941,6 @@
                         }
                     ]
                 };
-            } catch (error) {
-                console.error('Failed to load performance data:', error);
             }
         }
         

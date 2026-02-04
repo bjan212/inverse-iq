@@ -1,4 +1,4 @@
-# InverseIQ-Themed DEX Interface with Automated Futures Trading
+ aq# InverseIQ-Themed DEX Interface with Automated Futures Trading
 ## Comprehensive Implementation Plan
 
 ---

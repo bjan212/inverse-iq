@@ -232,7 +232,7 @@ class HybridEngine extends SelfImprovingEngine {
     this.patternDatabase.totalPatterns = Object.keys(this.patternDatabase.patterns).length;
     this.patternDatabase.lastUpdated = new Date();
     
-    this.saveDatabase();
+    await this.saveDatabase();
     
     console.log(`✅ Public data integration complete:`);
     console.log(`   Patterns added: ${patternsAdded}`);
@@ -251,44 +251,56 @@ class HybridEngine extends SelfImprovingEngine {
    * Weights patterns based on data source and confirmation
    */
   calculateHybridConfidence(pattern) {
-    const now = Date.now();
-    const daysSinceLastSeen = (now - new Date(pattern.lastSeen)) / (1000 * 60 * 60 * 24);
+    let confidence = 50; // Base confidence
 
-    const sourceBase = {
-      combined: 28,
-      trader: 20,
-      public: 12
-    }[pattern.source] || 10;
+    // Source-based confidence
+    if (pattern.source === 'combined') {
+      confidence += 30;
+    } else if (pattern.source === 'trader') {
+      confidence += 20;
+    } else if (pattern.source === 'public') {
+      confidence += 10;
+    }
 
-    // Sample strength with diminishing returns
-    const traderFactor = Math.min(pattern.traders.length * 7, 28);
-    const occurrenceFactor = Math.min(Math.log(1 + pattern.occurrences) * 6, 18);
+    // Trader count bonus
+    const traderBonus = Math.min(pattern.traders.length * 8, 25);
+    confidence += traderBonus;
 
-    // Laplace-smoothed performance (prevents divide-by-zero and overfitting)
-    let performanceBonus = 0;
+    // Occurrence bonus
+    const occurrenceBonus = Math.min(pattern.occurrences * 1.5, 15);
+    confidence += occurrenceBonus;
+
+    // Loss amount bonus
+    if (pattern.totalLoss > 20000) confidence += 15;
+    else if (pattern.totalLoss > 10000) confidence += 12;
+    else if (pattern.totalLoss > 5000) confidence += 8;
+    else if (pattern.totalLoss > 1000) confidence += 5;
+
+    // Pattern type bonus
+    if (pattern.patternType === 'FALSE_BREAKOUT') confidence += 5;
+    if (pattern.patternType === 'LIQUIDATION_WICK') confidence += 5;
+
+    // Recent activity bonus
+    const daysSinceLastSeen = (Date.now() - new Date(pattern.lastSeen)) / (1000 * 60 * 60 * 24);
+    if (daysSinceLastSeen < 7) confidence += 5;
+    else if (daysSinceLastSeen < 30) confidence += 3;
+
+    // Performance-based adjustment
     if (pattern.performance) {
       const wins = pattern.performance.wins || 0;
       const losses = pattern.performance.losses || 0;
-      const smoothed = (wins + 1) / (wins + losses + 2);
-      performanceBonus = Math.max(-12, Math.min(18, (smoothed - 0.5) * 60));
+      const total = wins + losses;
+      if (total > 0) {
+        const successRate = wins / total;
+        if (successRate > 0.8) confidence += 10;
+        else if (successRate > 0.7) confidence += 5;
+        else if (successRate < 0.5) confidence -= 10;
+      }
     }
 
-    // Recency decay to avoid stale patterns dominating
-    const recencyPenalty = Math.min(12, Math.max(0, (daysSinceLastSeen / 30) * 4));
-
-    // Loss magnitude influences conviction but capped
-    let lossBonus = 0;
-    if (pattern.totalLoss > 20000) lossBonus = 12;
-    else if (pattern.totalLoss > 10000) lossBonus = 9;
-    else if (pattern.totalLoss > 5000) lossBonus = 6;
-    else if (pattern.totalLoss > 1000) lossBonus = 3;
-
-    // Specific pattern types that historically travel well
-    const patternTypeBonus = ['FALSE_BREAKOUT', 'LIQUIDATION_WICK'].includes(pattern.patternType) ? 4 : 0;
-
-    const raw = 40 + sourceBase + traderFactor + occurrenceFactor + performanceBonus + lossBonus + patternTypeBonus - recencyPenalty;
-    return Math.min(Math.max(Math.round(raw), 0), 100);
+    return Math.min(Math.max(confidence, 0), 100);
   }
+// ...existing code...
 
   /**
    * HYBRID FEATURE 4: Add Real Trader Data
@@ -387,7 +399,7 @@ class HybridEngine extends SelfImprovingEngine {
     
     this.dataSources.traderPatterns += patternsAdded;
     
-    this.saveDatabase();
+    await this.saveDatabase();
     
     console.log(`\n✅ Trader data integration complete:`);
     console.log(`   Patterns added: ${patternsAdded}`);
@@ -517,9 +529,10 @@ class HybridEngine extends SelfImprovingEngine {
     const direction = signal.direction;
     const confidence = signal.confidence;
     const riskLevel = signal.riskLevel;
+    const DEFAULT_ATR_PERCENTAGE = 0.02; // 2% default volatility
     
     // Get ATR (Average True Range) for volatility-based calculations
-    const atr = marketData.atr || (currentPrice * 0.02); // Default 2% if no ATR
+    const atr = marketData.atr || (currentPrice * DEFAULT_ATR_PERCENTAGE);
     
     // Calculate stop loss distance based on risk level
     const stopLossMultiplier = this.getStopLossMultiplier(riskLevel, confidence);
@@ -571,14 +584,14 @@ class HybridEngine extends SelfImprovingEngine {
    */
   getStopLossMultiplier(riskLevel, confidence) {
     // Base multipliers by risk level
-    const baseMultipliers = {
-      'VERY_LOW': 1.5,  // Tighter stop for very low risk
-      'LOW': 2.0,       // Standard stop
-      'MEDIUM': 2.5,    // Wider stop for medium risk
-      'HIGH': 3.0       // Widest stop for high risk
+    const STOP_LOSS_MULTIPLIERS = {
+      VERY_LOW: 1.5,  // Tighter stop for very low risk
+      LOW: 2.0,       // Standard stop
+      MEDIUM: 2.5,    // Wider stop for medium risk
+      HIGH: 3.0       // Widest stop for high risk
     };
     
-    let multiplier = baseMultipliers[riskLevel] || 2.0;
+    let multiplier = STOP_LOSS_MULTIPLIERS[riskLevel] || 2.0;
     
     // Adjust based on confidence
     // Higher confidence = can use tighter stops
@@ -600,12 +613,12 @@ class HybridEngine extends SelfImprovingEngine {
    */
   getTakeProfitMultiplier(confidence, targetLevel) {
     // Base multipliers for TP1 (conservative) and TP2 (aggressive)
-    const baseMultipliers = {
+    const TAKE_PROFIT_MULTIPLIERS = {
       1: 2.5,  // TP1: 2.5x ATR (conservative)
       2: 4.5   // TP2: 4.5x ATR (aggressive)
     };
     
-    let multiplier = baseMultipliers[targetLevel] || 2.5;
+    let multiplier = TAKE_PROFIT_MULTIPLIERS[targetLevel] || 2.5;
     
     // Adjust based on confidence
     // Higher confidence = can target larger profits
@@ -649,6 +662,13 @@ class HybridEngine extends SelfImprovingEngine {
   calculateSimilarity(current, cached) {
     if (!cached || !current) return 0;
     
+    // Weights for different market conditions
+    const SIMILARITY_WEIGHTS = {
+      PRICE: 0.4,   // Price is most important
+      RSI: 0.3,     // RSI is important
+      VOLUME: 0.3   // Volume is important
+    };
+    
     // Compare key market conditions
     const priceDiff = Math.abs(current.price - cached.price) / cached.price;
     const rsiDiff = Math.abs(current.rsi - cached.rsi) / 100;
@@ -656,9 +676,9 @@ class HybridEngine extends SelfImprovingEngine {
     
     // Weight the differences
     const similarity = 1 - (
-      (priceDiff * 0.4) +  // Price is most important
-      (rsiDiff * 0.3) +     // RSI is important
-      (volumeDiff * 0.3)    // Volume is important
+      (priceDiff * SIMILARITY_WEIGHTS.PRICE) +
+      (rsiDiff * SIMILARITY_WEIGHTS.RSI) +
+      (volumeDiff * SIMILARITY_WEIGHTS.VOLUME)
     );
     
     return Math.max(0, Math.min(1, similarity));

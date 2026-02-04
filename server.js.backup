@@ -46,9 +46,6 @@ const {
   sanitizeHtml
 } = require('./src/middleware/validation');
 
-
-// Admin authentication middleware
-const { setupSession, requireAdminLogin, handleAdminLogin, handleAdminLogout, enforceAdminIpWhitelist } = require('./src/middleware/adminAuth');
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
