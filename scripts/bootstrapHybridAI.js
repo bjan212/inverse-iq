@@ -41,6 +41,25 @@ async function main() {
     console.log('\n✅ Bootstrap Phase Complete!');
     console.log(`   Public patterns added: ${bootstrapResult.patternsAdded}`);
     
+    // STEP 1B: Bootstrap with DEX data (optional)
+    console.log('\n═══════════════════════════════════════════════════════════');
+    console.log('STEP 1B: Bootstrap with DEX Market Data (Optional)');
+    console.log('═══════════════════════════════════════════════════════════\n');
+    
+    console.log('🔷 Adding DEX market patterns from Dexscreener...');
+    console.log('⏳ This may take a moment...\n');
+    
+    try {
+      // Bootstrap with popular DEX tokens (leaving empty to get trending data)
+      const dexResult = await engine.bootstrapWithDEXData([], null);
+      
+      console.log('\n✅ DEX Bootstrap Complete!');
+      console.log(`   DEX patterns added: ${dexResult.patternsAdded}`);
+    } catch (dexError) {
+      console.error('\n⚠️  DEX bootstrap failed:', dexError.message);
+      console.log('💡 Continuing with CEX data only...');
+    }
+    
   } catch (error) {
     console.error('\n❌ Bootstrap failed:', error.message);
     console.log('\n💡 Tip: Make sure you have internet connection for Binance API');
