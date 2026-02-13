@@ -1,5 +1,22 @@
 # Local Deployment Guide - Dexscreener Integration
 
+---
+
+## 📚 Navigation Menu
+
+**Dexscreener Integration Documentation:**
+- 📖 **[Integration Guide](docs/DEXSCREENER_INTEGRATION.md)** - Complete API reference
+- 🚀 **[Local Deployment Guide](LOCAL_DEPLOYMENT_GUIDE.md)** *(You are here)* - Step-by-step setup
+- 📋 **[Implementation Summary](DEXSCREENER_INTEGRATION_SUMMARY.md)** - Technical details
+- 💻 **[Example Code](examples/dexscreener-example.js)** - Working demonstration
+- 🏠 **[Main README](README.md)** - Project overview
+
+**External Resources:**
+- 🔗 [Dexscreener API Docs](https://docs.dexscreener.com/api/reference)
+- 🔗 [Dexscreener Platform](https://dexscreener.com)
+
+---
+
 ## 🚀 Quick Start (5 Minutes)
 
 This guide will help you deploy the inverse-iq system locally with the new Dexscreener API integration.

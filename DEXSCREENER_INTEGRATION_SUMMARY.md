@@ -1,5 +1,22 @@
 # Dexscreener API Integration - Implementation Summary
 
+---
+
+## 📚 Navigation Menu
+
+**Dexscreener Integration Documentation:**
+- 📖 **[Integration Guide](docs/DEXSCREENER_INTEGRATION.md)** - Complete API reference
+- 🚀 **[Local Deployment Guide](LOCAL_DEPLOYMENT_GUIDE.md)** - Step-by-step setup
+- 📋 **[Implementation Summary](DEXSCREENER_INTEGRATION_SUMMARY.md)** *(You are here)* - Technical details
+- 💻 **[Example Code](examples/dexscreener-example.js)** - Working demonstration
+- 🏠 **[Main README](README.md)** - Project overview
+
+**External Resources:**
+- 🔗 [Dexscreener API Docs](https://docs.dexscreener.com/api/reference)
+- 🔗 [Dexscreener Platform](https://dexscreener.com)
+
+---
+
 ## Overview
 Successfully integrated the Dexscreener API (https://docs.dexscreener.com/api/reference) into the inverse-iq repository to enhance data-fetching mechanisms with DEX market data.
 

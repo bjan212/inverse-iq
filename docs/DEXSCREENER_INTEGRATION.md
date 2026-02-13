@@ -1,5 +1,22 @@
 # Dexscreener API Integration Guide
 
+---
+
+## 📚 Navigation Menu
+
+**Dexscreener Integration Documentation:**
+- 📖 **[Integration Guide](../docs/DEXSCREENER_INTEGRATION.md)** *(You are here)* - Complete API reference
+- 🚀 **[Local Deployment Guide](../LOCAL_DEPLOYMENT_GUIDE.md)** - Step-by-step setup
+- 📋 **[Implementation Summary](../DEXSCREENER_INTEGRATION_SUMMARY.md)** - Technical details
+- 💻 **[Example Code](../examples/dexscreener-example.js)** - Working demonstration
+- 🏠 **[Main README](../README.md)** - Project overview
+
+**External Resources:**
+- 🔗 [Dexscreener API Docs](https://docs.dexscreener.com/api/reference)
+- 🔗 [Dexscreener Platform](https://dexscreener.com)
+
+---
+
 ## Overview
 
 This document explains how to use the Dexscreener API integration in the Xrypt trading platform. Dexscreener provides real-time DEX (Decentralized Exchange) market data across multiple blockchains, which enhances our AI trading signals by combining CEX and DEX market patterns.
