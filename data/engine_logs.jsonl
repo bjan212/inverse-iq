@@ -1,7 +1,0 @@
-{"timestamp":"2026-02-13T11:56:06.510Z","type":"info","message":"AI: database initialized","meta":{"path":"./data/test_pattern_database.json"}}
-{"timestamp":"2026-02-13T11:56:34.856Z","type":"info","message":"AI: database initialized","meta":{"path":"./data/test_hybrid_db.json"}}
-{"timestamp":"2026-02-13T11:56:34.860Z","type":"info","message":"AI: database initialized","meta":{"path":"./data/test_hybrid_db.json"}}
-{"timestamp":"2026-02-13T11:56:34.860Z","type":"info","message":"AI: database initialized","meta":{"path":"./data/test_hybrid_db.json"}}
-{"timestamp":"2026-02-13T11:56:34.861Z","type":"info","message":"HybridAI: addPublicDataPatterns started","meta":{"traderId":"test_public_data","trades":1}}
-{"timestamp":"2026-02-13T11:56:34.863Z","type":"info","message":"AI: database saved","meta":{"totalPatterns":1,"totalTraders":1}}
-{"timestamp":"2026-02-13T11:56:34.863Z","type":"info","message":"HybridAI: addPublicDataPatterns completed","meta":{"patternsAdded":1,"patternsUpdated":0,"totalPatterns":1}}
