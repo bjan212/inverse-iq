@@ -19,6 +19,7 @@
 const SelfImprovingEngine = require('./selfImprovingEngine');
 const PublicDataAnalyzer = require('./publicDataAnalyzer');
 const BinancePublicCollector = require('../collectors/binancePublicCollector');
+const DexscreenerCollector = require('../collectors/dexscreenerCollector');
 const { logEngineEvent } = require('../utils/engineLogger');
 
 class HybridEngine extends SelfImprovingEngine {
@@ -27,12 +28,14 @@ class HybridEngine extends SelfImprovingEngine {
     
     this.publicAnalyzer = new PublicDataAnalyzer();
     this.publicCollector = new BinancePublicCollector();
+    this.dexCollector = new DexscreenerCollector();
     
     // Track data sources
     this.dataSources = {
       publicPatterns: 0,
       traderPatterns: 0,
-      combinedPatterns: 0
+      combinedPatterns: 0,
+      dexPatterns: 0
     };
     
     // Signal caching to prevent spam
@@ -270,6 +273,82 @@ class HybridEngine extends SelfImprovingEngine {
   }
 
   /**
+   * HYBRID FEATURE 2B: Bootstrap with DEX Data
+   * Initialize AI with DEX market patterns from Dexscreener
+   * @param {Array<string>} tokenAddresses - Token addresses to analyze (optional)
+   * @param {string} chainId - Blockchain to focus on (optional)
+   */
+  async bootstrapWithDEXData(tokenAddresses = [], chainId = null) {
+    console.log('\n╔════════════════════════════════════════════════════════════╗');
+    console.log('║         BOOTSTRAPPING AI WITH DEX DATA                    ║');
+    console.log('╚════════════════════════════════════════════════════════════╝\n');
+
+    logEngineEvent('info', 'HybridAI: bootstrapWithDEXData started', {
+      tokenCount: tokenAddresses.length,
+      chainId
+    });
+    
+    console.log(`📊 Collecting DEX market data...`);
+    
+    try {
+      // Collect comprehensive DEX data
+      const dexData = await this.dexCollector.getComprehensiveData(tokenAddresses, chainId);
+      
+      // Analyze DEX patterns
+      console.log('\n🔍 Analyzing DEX patterns...');
+      const analysis = this.dexCollector.analyzeDEXPatterns(dexData.pairs);
+      
+      console.log(`✅ DEX data analysis complete: ${analysis.patterns.length} patterns found`);
+      console.log(`   Total pairs analyzed: ${analysis.stats.totalPairs}`);
+      console.log(`   High volume pairs: ${analysis.stats.highVolumePairs}`);
+      console.log(`   Low liquidity pairs: ${analysis.stats.lowLiquidityPairs}`);
+      
+      // Convert DEX patterns to trader format
+      const traderData = {
+        traderId: 'dex_market_data',
+        trades: analysis.patterns.map(pattern => ({
+          symbol: pattern.symbol,
+          side: pattern.type === 'low_liquidity_risk' ? 'LONG' : 'SHORT',
+          pnl: -100, // Simulated loss for pattern
+          entryTime: Date.now(),
+          conditions: {
+            patternType: pattern.type,
+            chainId: pattern.chainId,
+            liquidity: pattern.liquidity,
+            priceChange: pattern.priceChange,
+            volume: pattern.volume
+          },
+          pattern: pattern.type,
+          confidence: pattern.confidence
+        }))
+      };
+      
+      // Add to database
+      console.log('\n📥 Adding DEX patterns to AI database...');
+      const result = await this.addPublicDataPatterns(traderData);
+      
+      this.dataSources.dexPatterns = result.patternsAdded;
+      
+      console.log('\n✅ DEX bootstrap complete!');
+      this.showDatabaseStatus();
+
+      logEngineEvent('info', 'HybridAI: bootstrapWithDEXData completed', {
+        patternsAdded: result.patternsAdded,
+        patternsUpdated: result.patternsUpdated,
+        totalPatterns: result.totalPatterns
+      });
+      
+      return result;
+    } catch (error) {
+      console.error('❌ DEX bootstrap failed:', error.message);
+      logEngineEvent('error', 'HybridAI: bootstrapWithDEXData failed', {
+        error: error.message
+      });
+      throw error;
+    }
+  }
+
+  /**
    * HYBRID FEATURE 3: Enhanced Confidence Calculation
    * Weights patterns based on data source and confirmation
    */
@@ -283,6 +362,8 @@ class HybridEngine extends SelfImprovingEngine {
       confidence += 20;
     } else if (pattern.source === 'public') {
       confidence += 10;
+    } else if (pattern.source === 'dex') {
+      confidence += 12; // DEX data slightly higher than pure public
     }
 
     // Trader count bonus
@@ -302,6 +383,8 @@ class HybridEngine extends SelfImprovingEngine {
     // Pattern type bonus
     if (pattern.patternType === 'FALSE_BREAKOUT') confidence += 5;
     if (pattern.patternType === 'LIQUIDATION_WICK') confidence += 5;
+    if (pattern.patternType === 'low_liquidity_risk') confidence += 4;
+    if (pattern.patternType === 'extreme_price_move') confidence += 6;
 
     // Recent activity bonus
     const daysSinceLastSeen = (Date.now() - new Date(pattern.lastSeen)) / (1000 * 60 * 60 * 24);

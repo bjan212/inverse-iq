@@ -59,11 +59,12 @@ To qualify for data collection, traders must meet:
 2. ✅ **Bybit Futures** (USDT Perpetual)
 3. ✅ **OKX Futures** (USDT Perpetual)
 4. ✅ **MEXC Futures** (USDT Perpetual)
+5. ✅ **Dexscreener** (DEX market data across all chains)
 
 ### **Coming Soon:**
-5. 🔜 **Bitget Futures**
-6. 🔜 **Gate.io Futures**
-7. 🔜 **KuCoin Futures**
+6. 🔜 **Bitget Futures**
+7. 🔜 **Gate.io Futures**
+8. 🔜 **KuCoin Futures**
 
 ---
 
@@ -249,6 +250,7 @@ const signals = await engine.generateSmartSignals(['BTCUSDT', 'ETHUSDT']);
 ## 📚 **Documentation:**
 
 - 📖 [Hybrid AI Guide](docs/HYBRID_AI_GUIDE.md)
+- 📖 [Dexscreener Integration](docs/DEXSCREENER_INTEGRATION.md)
 - 📖 [Alternative Data Sources](docs/ALTERNATIVE_DATA_SOURCES.md)
 - 📖 [Platform Architecture](docs/PLATFORM_ARCHITECTURE.md)
 - 📖 [Deployment Guide](docs/DEPLOYMENT_GUIDE.md)

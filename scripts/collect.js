@@ -14,6 +14,7 @@ const BinanceCollector = require('../src/collectors/binanceCollector');
 const BybitCollector = require('../src/collectors/bybitCollector');
 const OKXCollector = require('../src/collectors/okxCollector');
 const MEXCCollector = require('../src/collectors/mexcCollector');
+const DexscreenerCollector = require('../src/collectors/dexscreenerCollector');
 const fs = require('fs');
 const path = require('path');
 
@@ -40,26 +41,40 @@ async function main() {
   const params = parseArgs();
   
   // Validate required parameters
-  if (!params.platform || !params['api-key'] || !params['api-secret']) {
-    console.error('❌ Missing required parameters!\n');
+  if (!params.platform) {
+    console.error('❌ Missing required parameter: --platform\n');
     console.log('Usage:');
-    console.log('  node collect.js --platform <platform> --api-key <key> --api-secret <secret>\n');
+    console.log('  node collect.js --platform <platform> [options]\n');
     console.log('Supported platforms:');
-    console.log('  - binance (Binance Futures)');
-    console.log('  - bybit (Bybit Futures)');
-    console.log('  - okx (OKX Futures) - requires --passphrase');
-    console.log('  - mexc (MEXC Futures)\n');
-    console.log('Example:');
-    console.log('  node collect.js --platform binance --api-key abc123 --api-secret xyz789\n');
+    console.log('  - binance (Binance Futures) - requires --api-key and --api-secret');
+    console.log('  - bybit (Bybit Futures) - requires --api-key and --api-secret');
+    console.log('  - okx (OKX Futures) - requires --api-key, --api-secret, and --passphrase');
+    console.log('  - mexc (MEXC Futures) - requires --api-key and --api-secret');
+    console.log('  - dexscreener (DEX data, no authentication required)\n');
+    console.log('Examples:');
+    console.log('  node collect.js --platform binance --api-key abc123 --api-secret xyz789');
+    console.log('  node collect.js --platform dexscreener --query USDC');
+    console.log('  node collect.js --platform dexscreener --tokens 0x... --chain ethereum\n');
     process.exit(1);
   }
   
   const platform = params.platform.toLowerCase();
+  
+  // For non-DEX platforms, require API credentials
+  if (platform !== 'dexscreener' && (!params['api-key'] || !params['api-secret'])) {
+    console.error('❌ Missing required parameters: --api-key and --api-secret\n');
+    console.log(`Usage for ${platform}:`);
+    console.log(`  node collect.js --platform ${platform} --api-key <key> --api-secret <secret>\n`);
+    process.exit(1);
+  }
+  
   const apiKey = params['api-key'];
   const apiSecret = params['api-secret'];
   
   console.log(`Platform: ${platform.toUpperCase()}`);
-  console.log(`API Key: ${apiKey.substring(0, 8)}...${apiKey.substring(apiKey.length - 4)}`);
+  if (apiKey) {
+    console.log(`API Key: ${apiKey.substring(0, 8)}...${apiKey.substring(apiKey.length - 4)}`);
+  }
   console.log('');
   
   // Create collector based on platform
@@ -87,6 +102,53 @@ async function main() {
     
     case 'mexc':
       collector = new MEXCCollector(apiKey, apiSecret);
+      break;
+    
+    case 'dexscreener':
+      collector = new DexscreenerCollector();
+      console.log('📊 Using Dexscreener (public DEX data, no authentication needed)\n');
+      
+      // For dexscreener, run a different workflow
+      try {
+        if (params.query) {
+          console.log(`🔍 Searching for: ${params.query}\n`);
+          const result = await collector.searchPairs(params.query);
+          console.log(`\n✅ Search complete! Found ${result.pairs?.length || 0} pairs\n`);
+          
+          // Save result
+          const outputPath = path.join('./output', `dex_search_${Date.now()}.json`);
+          fs.writeFileSync(outputPath, JSON.stringify(result, null, 2));
+          console.log(`💾 Results saved to: ${outputPath}\n`);
+          
+        } else if (params.tokens) {
+          const tokens = params.tokens.split(',');
+          const chain = params.chain || null;
+          
+          console.log(`📊 Fetching data for ${tokens.length} token(s)...\n`);
+          const result = await collector.getComprehensiveData(tokens, chain);
+          console.log(`\n✅ Collection complete!\n`);
+          
+          // Save result
+          const outputPath = path.join('./output', `dex_data_${Date.now()}.json`);
+          fs.writeFileSync(outputPath, JSON.stringify(result, null, 2));
+          console.log(`💾 Results saved to: ${outputPath}\n`);
+          
+        } else {
+          console.log('📊 Fetching trending DEX data...\n');
+          const result = await collector.getComprehensiveData([], null);
+          console.log(`\n✅ Collection complete!\n`);
+          
+          // Save result
+          const outputPath = path.join('./output', `dex_trending_${Date.now()}.json`);
+          fs.writeFileSync(outputPath, JSON.stringify(result, null, 2));
+          console.log(`💾 Results saved to: ${outputPath}\n`);
+        }
+        
+        process.exit(0);
+      } catch (error) {
+        console.error('❌ DEX data collection failed:', error.message);
+        process.exit(1);
+      }
       break;
     
     default:
